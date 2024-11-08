@@ -96,5 +96,34 @@ namespace SpaceInvaders
             set { int_enable = value; }
         }
 
+        public ulong HL
+        {
+            get { return (ulong)this.H << 8 | (ulong)this.L; }
+            set
+            {
+                this.H = (byte)((value >> 8) & 0xFF);
+                this.L = (byte)(value & 0xFF);
+            }
+        }
+
+        public ulong DE
+        {
+            get { return (ulong)this.D << 8 | (ulong)this.E; }
+            set
+            {
+                this.D = (byte)((value >> 8) & 0xFF);
+                this.E = (byte)(value & 0xFF);
+            }
+        }
+
+        public ulong BC
+        {
+            get { return (ulong)this.B << 8 | (ulong)this.C; }
+            set
+            {
+                this.B = (byte)((value >> 8) & 0xFF);
+                this.C = (byte)(value & 0xFF);
+            }
+        }
     }
 }

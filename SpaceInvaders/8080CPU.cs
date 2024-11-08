@@ -306,84 +306,133 @@ namespace SpaceInvaders
 
         private void OP_02(byte opcode)
         {
-            ulong addr = (ulong)registers.B << 8 | (ulong)registers.C;
+            ulong addr = registers.BC;
             registers.memory[addr] = registers.A;
         }
 
         private void OP_03(byte opcode)
         {
-            ulong addr = (ulong)registers.B << 8 | (ulong)registers.C;
+            ulong addr = registers.BC;
             addr += 1;
-            registers.B = (byte)((addr >> 8) & 0xFF);
-            registers.C = (byte)(addr & 0xFF);
+            registers.BC = addr;
         }
 
         private void OP_04(byte opcode)
         {
             registers.B += 1;
-            registers.Flags.Z = CalculateZeroFlag(registers.B);
-            registers.Flags.S = CalculateSignFlag(registers.B);
-            registers.Flags.P = CalculateParityFlag(registers.B);
+            UpdateZSP(registers.C);
         }
 
         private void OP_05(byte opcode)
         {
             registers.B -= 1;
-            registers.Flags.Z = CalculateZeroFlag(registers.B);
-            registers.Flags.S = CalculateSignFlag(registers.B);
-            registers.Flags.P = CalculateParityFlag(registers.B);
+            UpdateZSP(registers.C);
         }
 
         private void OP_06(byte opcode)
-        { }
+        {
+            registers.B = registers.memory[registers.PC + 1];
+            registers.PC += 2;
+        }
 
         private void OP_07(byte opcode)
-        { }
+        {
+            int bit7 = ((registers.A & 128) == 128) ? 1 : 0;
+            registers.A = (byte)((registers.A << 1) | bit7);
+            registers.Flags.CY = (byte)bit7;
+        }
 
         private void OP_08(byte opcode)
-        { }
+        { } // unused
 
         private void OP_09(byte opcode)
-        { }
+        {
+            ulong addr = registers.HL + registers.BC;
+
+
+            registers.Flags.CY = (byte)addr;
+            registers.HL = (ulong)(addr & 0xFFFF);
+        }
 
         private void OP_0A(byte opcode)
-        { }
+        {
+            ulong addr = registers.BC;
+            registers.A = registers.memory[addr];
+        }
 
         private void OP_0B(byte opcode)
-        { }
+        {
+            ulong addr = registers.BC;
+            addr -= 1;
+            registers.BC = addr;
+        }
 
         private void OP_0C(byte opcode)
-        { }
+        { 
+            registers.C += 1;
+            UpdateZSP(registers.C);
+        }
 
         private void OP_0D(byte opcode)
-        { }
+        {
+            registers.C -= 1;
+            UpdateZSP(registers.C);
+        }
 
         private void OP_0E(byte opcode)
-        { }
+        {
+            registers.C = registers.memory[registers.PC + 1];
+            registers.PC += 2;
+        }
 
         private void OP_0F(byte opcode)
-        { }
+        {
+            int bit0 = registers.A & 0x01;
+            registers.A >>= 1;
+            registers.A |= (byte)(bit0 << 7);
+            registers.Flags.CY = (byte)bit0;
+        }
 
         private void OP_10(byte opcode)
-        { }
+        { } // unused
 
         private void OP_11(byte opcode)
-        { }
+        {
+            registers.D = registers.memory[registers.PC + 2];
+            registers.E = registers.memory[registers.PC + 1];
+            registers.PC += 3;
+        }
 
         private void OP_12(byte opcode)
-        { }
+        { 
+            ulong addr = registers.DE;
+            registers.memory[addr] = registers.A;
+        }
 
         private void OP_13(byte opcode)
-        { }
+        {
+            ulong addr = registers.DE; ;
+            addr += 1;
+            registers.DE = addr;
+        }
 
         private void OP_14(byte opcode)
-        { }
+        {
+            registers.D += 1;
+            UpdateZSP(registers.D);
+        }
 
         private void OP_15(byte opcode)
-        { }
+        {
+            registers.D -= 1;
+            UpdateZSP(registers.D);
+        }
 
         private void OP_16(byte opcode)
-        { }
+        {
+            registers.D = registers.memory[registers.PC + 1];
+            registers.PC += 2;
+        }
 
         private void OP_17(byte opcode)
         { }
@@ -1213,6 +1262,13 @@ namespace SpaceInvaders
             var sw = Stopwatch.StartNew();
             while (sw.ElapsedTicks < ticks) { }
             registers.PC += 1;
+        }
+
+        private void UpdateZSP(byte v)
+        {
+            CalculateZeroFlag(v);
+            CalculateSignFlag(v);
+            CalculateParityFlag(v);
         }
 
         private byte CalculateZeroFlag(byte v)
