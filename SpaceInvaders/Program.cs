@@ -14,7 +14,8 @@ namespace SpaceInvaders
         static void Main(string[] args)
         {
             cpu = new _8080CPU();
-            cpu.ReadROM(@"invaders");
+            cpu.ReadROM(@"invaders.rom");
+            cpu.RunEmulation();
         }
 
     }
