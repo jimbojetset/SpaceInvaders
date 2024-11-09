@@ -348,9 +348,7 @@ namespace SpaceInvaders
         private void OP_09(byte opcode)
         {
             ulong addr = registers.HL + registers.BC;
-
-
-            registers.Flags.CY = (byte)addr;
+            registers.Flags.WordCY = (byte)addr;
             registers.HL = (ulong)(addr & 0xFFFF);
         }
 
@@ -435,82 +433,168 @@ namespace SpaceInvaders
         }
 
         private void OP_17(byte opcode)
-        { }
+        {
+            int bit7 = ((registers.A & 128) == 128) ? 1 : 0;
+            int bit0 = registers.Flags.CY;
+            registers.A = (byte)((registers.A << 1) | bit0);
+        }
 
         private void OP_18(byte opcode)
-        { }
+        { } // unused
 
         private void OP_19(byte opcode)
-        { }
+        {
+            ulong addr = registers.DE + registers.HL;
+            registers.Flags.WordCY = (byte)addr;
+            registers.HL = addr & 0xFFFF;
+        }
 
         private void OP_1A(byte opcode)
-        { }
+        {
+            ulong addr = registers.DE;
+            registers.A = registers.memory[addr];
+        }
 
         private void OP_1B(byte opcode)
-        { }
+        {
+            ulong addr = registers.DE;
+            addr -= 1;
+            registers.DE = addr;
+        }
 
         private void OP_1C(byte opcode)
-        { }
+        {
+            registers.E += 1;
+            UpdateZSP(registers.E);
+        }
 
         private void OP_1D(byte opcode)
-        { }
+        {
+            registers.E -= 1;
+            UpdateZSP(registers.E);
+        }
 
         private void OP_1E(byte opcode)
-        { }
+        { 
+            registers.E = registers.memory[registers.PC + 1];
+            registers.PC += 2;
+        }
 
         private void OP_1F(byte opcode)
-        { }
+        {
+            int bit0 = registers.A & 1;
+            int bit7 = registers.Flags.CY;
+            registers.A = (byte)((registers.A >> 1) | (bit7 << 7));
+            registers.Flags.CY = (byte)bit0;
+        }
 
         private void OP_20(byte opcode)
-        { }
+        { } // unused
 
         private void OP_21(byte opcode)
-        { }
+        {
+            registers.H = registers.memory[registers.PC + 2];
+            registers.L = registers.memory[registers.PC + 1];
+            registers.PC += 3;
+
+        }
 
         private void OP_22(byte opcode)
-        { }
+        {
+            ulong addr = ReadOpcodeWord();
+            registers.memory[addr] = registers.L;
+            registers.memory[addr + 1] = registers.H;
+        }
 
         private void OP_23(byte opcode)
-        { }
+        { 
+            ulong addr = registers.HL;
+            addr += 1;
+            registers.HL = addr;
+        }
 
         private void OP_24(byte opcode)
-        { }
+        {
+            registers.H += 1;
+            UpdateZSP(registers.H);
+        }
 
         private void OP_25(byte opcode)
-        { }
+        {
+            registers.H -= 1;
+            UpdateZSP(registers.H);
+        }
 
         private void OP_26(byte opcode)
-        { }
+        {
+            registers.H = registers.memory[registers.PC + 1];
+            registers.PC += 2;
+        }
 
         private void OP_27(byte opcode)
-        { }
+        {
+            if ((registers.A & 0x0F) > 9)
+            {
+                registers.A += 6;
+            }
+            if ((1 == registers.Flags.CY) || ((registers.A & 0xF0) > 0x90))
+            {
+                registers.A += 0x60;
+                registers.Flags.CY = 1;
+                UpdateZSP(registers.A);
+            }
+        }
 
         private void OP_28(byte opcode)
-        { }
+        { } // unused
 
         private void OP_29(byte opcode)
-        { }
+        { 
+            ulong addr = registers.HL + registers.HL;
+            registers.Flags.WordCY = (byte)addr;
+            registers.HL = addr & 0xFFFF;
+        }
 
         private void OP_2A(byte opcode)
-        { }
+        {
+            ulong addr = ReadOpcodeWord();
+            registers.L = registers.memory[addr];
+            registers.H = registers.memory[addr + 1];
+            registers.PC += 3;
+        }
 
         private void OP_2B(byte opcode)
-        { }
+        { 
+            ulong addr = registers.HL;
+            addr -= 1;
+            registers.HL = addr;
+        }
 
         private void OP_2C(byte opcode)
-        { }
+        {
+            registers.L += 1;
+            UpdateZSP(registers.L);
+        }
 
         private void OP_2D(byte opcode)
-        { }
+        {
+            registers.L -= 1;
+            UpdateZSP(registers.L);
+        }
 
         private void OP_2E(byte opcode)
-        { }
+        { 
+            registers.L = registers.memory[registers.PC + 1];
+            registers.PC += 2;
+        }
 
         private void OP_2F(byte opcode)
-        { }
+        { 
+        registers.A = (byte)~registers.A;
+        }
 
         private void OP_30(byte opcode)
-        { }
+        { } // unused
 
         private void OP_31(byte opcode)
         { }
@@ -560,9 +644,7 @@ namespace SpaceInvaders
         }
 
         private void OP_40(byte opcode)
-        {
-            registers.B = registers.B;
-        }
+        { } // unused
 
         private void OP_41(byte opcode)
         {
@@ -1294,5 +1376,16 @@ namespace SpaceInvaders
             byte p = (byte)(e ? 1 : 0);
             return p;
         }
+
+        private ulong ReadOpcodeWord()
+        {
+            return MakeWord(registers.memory[registers.PC + 2] , registers.memory[registers.PC + 1]);
+        }
+
+        private ulong MakeWord(int hi, int lo)
+        {
+            return (ulong)(hi << 8 | lo);
+        }
+
     }
 }

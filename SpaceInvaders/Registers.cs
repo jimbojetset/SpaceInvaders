@@ -125,5 +125,6 @@ namespace SpaceInvaders
                 this.C = (byte)(value & 0xFF);
             }
         }
+
     }
 }

@@ -20,9 +20,9 @@ namespace SpaceInvaders
             this.Z = 0;
             this.S = 0;
             this.P = 0;
-            this.CY = 0;
-            this.AC = 0;
-            this.Pad = 3;
+            this.cy = 0;
+            this.ac = 0;
+            this.pad = 3;
         }
 
         public byte Z
@@ -47,6 +47,18 @@ namespace SpaceInvaders
         {
             get { return this.cy; }
             set { this.cy = value; }
+        }
+
+        public byte WordCY
+        {
+            get { return this.cy; }
+            set { this.cy = (byte)((value > 0xFFFF) ? 1 : 0); }
+        }
+
+        public byte ByteCY
+        {
+            get { return this.cy; }
+            set { this.cy = (byte)((value > 0xFF) ? 1 : 0); }
         }
 
         public byte AC
