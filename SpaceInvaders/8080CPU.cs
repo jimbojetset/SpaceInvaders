@@ -434,7 +434,7 @@ namespace SpaceInvaders
         {
             uint bit7 = (uint)(((registers.A & 128) == 128) ? 1 : 0);
             uint bit0 = registers.Flags.CY;
-            registers.A = (byte)((registers.A << 1) | bit0);
+            registers.A = (byte)((uint)(registers.A << 1) | bit0);
         }
 
         private void OP_18(byte opcode)
@@ -482,7 +482,7 @@ namespace SpaceInvaders
         {
             int bit0 = registers.A & 1;
             uint bit7 = registers.Flags.CY;
-            registers.A = (byte)((registers.A >> 1) | (bit7 << 7));
+            registers.A = (byte)((uint)(registers.A >> 1) | (bit7 << 7));
             registers.Flags.CY = (byte)bit0;
         }
 
