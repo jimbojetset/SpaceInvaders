@@ -8,102 +8,84 @@ namespace SpaceInvaders
 {
     internal class Flags
     {
-        private byte z; // Zero bit
-        private byte s; // Sign bit
-        private byte p; // Parity bit
-        private byte cy; // Carry bit
-        private byte ac; // Auxiliary carry bit
-        private byte pad;
+        private uint z; // Zero bit
+        private uint s; // Sign bit
+        private uint p; // Parity bit
+        private uint cy; // Carry bit
+        private uint ac; // Auxiliary carry bit
+        private uint pad;
 
         public Flags()
         {
-            this.Z = 0;
-            this.S = 0;
-            this.P = 0;
-            this.cy = 0;
-            this.ac = 0;
+            this.Z = 1;
+            this.S = 1;
+            this.P = 1;
+            this.cy = 1;
+            this.ac = 1;
             this.pad = 3;
         }
 
-        public byte Z
+        public uint Z
         {
             get { return this.z; }
             set { this.z = value; }
         }
 
-        public byte S
+        public uint S
         {
             get { return this.s; }
             set { this.s = value; }
         }
 
-        public byte P
+        public uint P
         {
             get { return this.p; }
             set { this.p = value; }
         }
 
-        public byte CY
+        public uint CY
         {
             get { return this.cy; }
             set { this.cy = value; }
         }
 
-        public byte WordCY
-        {
-            get { return this.cy; }
-            set { this.cy = (byte)((value > 0xFFFF) ? 1 : 0); }
-        }
-
-        public byte ByteCY
-        {
-            get { return this.cy; }
-            set { this.cy = (byte)((value > 0xFF) ? 1 : 0); }
-        }
-
-        public byte AC
+        public uint AC
         {
             get { return this.ac; }
             set { this.ac = value; }
         }
 
-        public byte Pad
+        public uint Pad
         {
             get { return this.pad; }
             set { this.pad = value; }
         }
 
-        public void UpdateZSP(byte v)
+        public void UpdateByteCY(ulong value)
         {
-            CalculateZeroFlag(v);
-            CalculateSignFlag(v);
-            CalculateParityFlag(v);
+            this.CY = (uint)((value > 0xFF) ? 1 : 0);
         }
 
-        public void CalculateZeroFlag(byte v)
+        public void UpdateWordCY(ulong value)
         {
-            byte b = (byte)((v == 0) ? 1 : 0);
-            this.Z = b;
+            this.CY = (uint)((value > 0xFFFF) ? 1 : 0);
         }
 
-        public void CalculateSignFlag(byte v)
+        public void UpdateZSP(uint value)
         {
-            bool s = (v & 0x80) != 0;
-            if (s) this.S = 1;
-            this.S = 0;
+
+            this.Z = (uint)(((value & 0xFF) == 0) ? 1 : 0);
+            this.S = (uint)(((value & 0x80) == 0) ? 1 : 0);
+            this.P = CalculateParityFlag(value);
         }
 
-        public void CalculateParityFlag(byte v)
+        private uint CalculateParityFlag(uint value)
         {
             int x = 0;
             for (int i = 0; i < 8; i++)
-                if ((v & (1 << i)) > 0)
+                if ((value & (1 << i)) > 0)
                     x++;
-            bool e = (x & 1) == 0;
-            byte b = (byte)(e ? 1 : 0);
-            this.P = b;
+            return (uint)(((x & 1) == 0) ? 1 : 0);
         }
-
-
     }
 }

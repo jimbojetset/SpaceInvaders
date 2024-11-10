@@ -346,7 +346,7 @@ namespace SpaceInvaders
         private void OP_09(byte opcode)
         {
             var addr = registers.HL + registers.BC;
-            registers.Flags.WordCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.HL = (ulong)(addr & 0xFFFF);
         }
 
@@ -432,8 +432,8 @@ namespace SpaceInvaders
 
         private void OP_17(byte opcode)
         {
-            int bit7 = ((registers.A & 128) == 128) ? 1 : 0;
-            int bit0 = registers.Flags.CY;
+            uint bit7 = (uint)(((registers.A & 128) == 128) ? 1 : 0);
+            uint bit0 = registers.Flags.CY;
             registers.A = (byte)((registers.A << 1) | bit0);
         }
 
@@ -443,7 +443,7 @@ namespace SpaceInvaders
         private void OP_19(byte opcode)
         {
             var addr = registers.DE + registers.HL;
-            registers.Flags.WordCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.HL = addr & 0xFFFF;
         }
 
@@ -481,7 +481,7 @@ namespace SpaceInvaders
         private void OP_1F(byte opcode)
         {
             int bit0 = registers.A & 1;
-            int bit7 = registers.Flags.CY;
+            uint bit7 = registers.Flags.CY;
             registers.A = (byte)((registers.A >> 1) | (bit7 << 7));
             registers.Flags.CY = (byte)bit0;
         }
@@ -549,7 +549,7 @@ namespace SpaceInvaders
         private void OP_29(byte opcode)
         {
             var addr = registers.HL + registers.HL;
-            registers.Flags.WordCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.HL = addr & 0xFFFF;
         }
 
@@ -649,7 +649,7 @@ namespace SpaceInvaders
         private void OP_39(byte opcode)
         {
             var value = registers.HL + registers.SP;
-            registers.Flags.WordCY = (byte)value;
+            registers.Flags.UpdateByteCY(value);
             registers.HL = (value & 0xFFFF);
         }
 
@@ -1004,7 +1004,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.B;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1012,7 +1012,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.C;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1020,7 +1020,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.D;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1028,7 +1028,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.E;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1036,7 +1036,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.H;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1044,7 +1044,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.L;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1053,7 +1053,7 @@ namespace SpaceInvaders
             var addr2 = registers.HL;
             var addr = (uint)registers.A + (uint)registers.memory[addr2];
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1061,7 +1061,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.A;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1069,7 +1069,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.B + (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1077,7 +1077,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.C + (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1085,7 +1085,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.D + (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1093,7 +1093,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.E + (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1101,7 +1101,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.H + (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1109,7 +1109,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.L + (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1118,7 +1118,7 @@ namespace SpaceInvaders
             var addr2 = registers.HL;
             var addr = (uint)registers.A + (uint)registers.memory[addr2] + (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1126,7 +1126,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A + (uint)registers.A + (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1134,7 +1134,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.B;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1142,7 +1142,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.C;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1150,7 +1150,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.D;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1158,7 +1158,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.E;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1166,7 +1166,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.H;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1174,7 +1174,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.L;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1183,7 +1183,7 @@ namespace SpaceInvaders
             var addr2 = registers.HL;
             var addr = (uint)registers.A - (uint)registers.memory[addr2];
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1191,7 +1191,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.A;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1199,7 +1199,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.B - (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1207,7 +1207,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.C - (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1215,7 +1215,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.D - (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1223,7 +1223,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.E - (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1231,7 +1231,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.H - (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1239,7 +1239,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.L - (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1248,7 +1248,7 @@ namespace SpaceInvaders
             var addr2 = registers.HL;
             var addr = (uint)registers.A - (uint)registers.memory[addr2] - (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1256,7 +1256,7 @@ namespace SpaceInvaders
         {
             var addr = (uint)registers.A - (uint)registers.A - (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
-            registers.Flags.ByteCY = (byte)addr;
+            registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1264,42 +1264,42 @@ namespace SpaceInvaders
         {
             registers.A &= registers.B;
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_A1(byte opcode)
         {
             registers.A &= registers.C;
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_A2(byte opcode)
         {
             registers.A &= registers.D;
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_A3(byte opcode)
         {
             registers.A &= registers.E;
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_A4(byte opcode)
         {
             registers.A &= registers.H;
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_A5(byte opcode)
         {
             registers.A &= registers.L;
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_A6(byte opcode)
@@ -1307,7 +1307,7 @@ namespace SpaceInvaders
             var addr = registers.HL;
             registers.A &= registers.memory[addr];
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
 
         }
 
@@ -1315,49 +1315,49 @@ namespace SpaceInvaders
         {
             registers.A &= registers.A;
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_A8(byte opcode)
         {
             registers.A = (byte)(registers.A ^ registers.B);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_A9(byte opcode)
         {
             registers.A = (byte)(registers.A ^ registers.C);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_AA(byte opcode)
         {
             registers.A = (byte)(registers.A ^ registers.D);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_AB(byte opcode)
         {
             registers.A = (byte)(registers.A ^ registers.E);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_AC(byte opcode)
         {
             registers.A = (byte)(registers.A ^ registers.H);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_AD(byte opcode)
         {
             registers.A = (byte)(registers.A ^ registers.L);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_AE(byte opcode)
@@ -1365,56 +1365,56 @@ namespace SpaceInvaders
             var addr = registers.HL;
             registers.A = (byte)(registers.A ^ registers.memory[addr]);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_AF(byte opcode)
         {
             registers.A = (byte)(registers.A ^ registers.A);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_B0(byte opcode)
         {
             registers.A = (byte)(registers.A | registers.B);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_B1(byte opcode)
         {
             registers.A = (byte)(registers.A | registers.C);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_B2(byte opcode)
         {
             registers.A = (byte)(registers.A | registers.D);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_B3(byte opcode)
         {
             registers.A = (byte)(registers.A | registers.E);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_B4(byte opcode)
         {
             registers.A = (byte)(registers.A | registers.H);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_B5(byte opcode)
         {
             registers.A = (byte)(registers.A | registers.L);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_B6(byte opcode)
@@ -1422,56 +1422,56 @@ namespace SpaceInvaders
             var addr = registers.HL;
             registers.A = (byte)(registers.A | registers.memory[addr]);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_B7(byte opcode)
         {
             registers.A = (byte)(registers.A | registers.A);
             registers.Flags.UpdateZSP(registers.A);
-            registers.Flags.ByteCY = registers.A;
+            registers.Flags.UpdateByteCY(registers.A);
         }
 
         private void OP_B8(byte opcode)
         {
             var addr = (byte)(registers.A - registers.B);
             registers.Flags.UpdateZSP(addr);
-            registers.Flags.ByteCY = addr;
+            registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_B9(byte opcode)
         {
             var addr = (byte)(registers.A - registers.C);
             registers.Flags.UpdateZSP(addr);
-            registers.Flags.ByteCY = addr;
+            registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_BA(byte opcode)
         {
             var addr = (byte)(registers.A - registers.D);
             registers.Flags.UpdateZSP(addr);
-            registers.Flags.ByteCY = addr;
+            registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_BB(byte opcode)
         {
             var addr = (byte)(registers.A - registers.E);
             registers.Flags.UpdateZSP(addr);
-            registers.Flags.ByteCY = addr;
+            registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_BC(byte opcode)
         {
             var addr = (byte)(registers.A - registers.H);
             registers.Flags.UpdateZSP(addr);
-            registers.Flags.ByteCY = addr;
+            registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_BD(byte opcode)
         {
             var addr = (byte)(registers.A - registers.L);
             registers.Flags.UpdateZSP(addr);
-            registers.Flags.ByteCY = addr;
+            registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_BE(byte opcode)
@@ -1479,14 +1479,14 @@ namespace SpaceInvaders
             var addr2 = registers.HL;
             var addr = (byte)(registers.A - registers.memory[addr2]);
             registers.Flags.UpdateZSP(addr);
-            registers.Flags.ByteCY = addr;
+            registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_BF(byte opcode)
         {
             var addr = (byte)(registers.A - registers.A);
             registers.Flags.UpdateZSP(addr);
-            registers.Flags.ByteCY = addr;
+            registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_C0(byte opcode)
