@@ -32,6 +32,13 @@ namespace SpaceInvaders
             }
         }
 
+        public byte[] GetVideoRam()
+        {
+            byte[] videoRAM = new byte[0xFE00];
+            Buffer.BlockCopy(registers.memory, 0x2400, videoRAM, 0, 0xFE00);
+            return videoRAM;
+        }
+
         private void CallOpcode(byte opcode)
         {
             string opcodeHex = opcode.ToString("X2");
