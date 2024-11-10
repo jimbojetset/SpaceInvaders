@@ -318,13 +318,13 @@ namespace SpaceInvaders
         private void OP_04(byte opcode)
         {
             registers.B += 1;
-            UpdateZSP(registers.C);
+            registers.Flags.UpdateZSP(registers.C);
         }
 
         private void OP_05(byte opcode)
         {
             registers.B -= 1;
-            UpdateZSP(registers.C);
+            registers.Flags.UpdateZSP(registers.C);
         }
 
         private void OP_06(byte opcode)
@@ -366,13 +366,13 @@ namespace SpaceInvaders
         private void OP_0C(byte opcode)
         {
             registers.C += 1;
-            UpdateZSP(registers.C);
+            registers.Flags.UpdateZSP(registers.C);
         }
 
         private void OP_0D(byte opcode)
         {
             registers.C -= 1;
-            UpdateZSP(registers.C);
+            registers.Flags.UpdateZSP(registers.C);
         }
 
         private void OP_0E(byte opcode)
@@ -415,13 +415,13 @@ namespace SpaceInvaders
         private void OP_14(byte opcode)
         {
             registers.D += 1;
-            UpdateZSP(registers.D);
+            registers.Flags.UpdateZSP(registers.D);
         }
 
         private void OP_15(byte opcode)
         {
             registers.D -= 1;
-            UpdateZSP(registers.D);
+            registers.Flags.UpdateZSP(registers.D);
         }
 
         private void OP_16(byte opcode)
@@ -463,13 +463,13 @@ namespace SpaceInvaders
         private void OP_1C(byte opcode)
         {
             registers.E += 1;
-            UpdateZSP(registers.E);
+            registers.Flags.UpdateZSP(registers.E);
         }
 
         private void OP_1D(byte opcode)
         {
             registers.E -= 1;
-            UpdateZSP(registers.E);
+            registers.Flags.UpdateZSP(registers.E);
         }
 
         private void OP_1E(byte opcode)
@@ -514,13 +514,13 @@ namespace SpaceInvaders
         private void OP_24(byte opcode)
         {
             registers.H += 1;
-            UpdateZSP(registers.H);
+            registers.Flags.UpdateZSP(registers.H);
         }
 
         private void OP_25(byte opcode)
         {
             registers.H -= 1;
-            UpdateZSP(registers.H);
+            registers.Flags.UpdateZSP(registers.H);
         }
 
         private void OP_26(byte opcode)
@@ -539,7 +539,7 @@ namespace SpaceInvaders
             {
                 registers.A += 0x60;
                 registers.Flags.CY = 1;
-                UpdateZSP(registers.A);
+                registers.Flags.UpdateZSP(registers.A);
             }
         }
 
@@ -571,13 +571,13 @@ namespace SpaceInvaders
         private void OP_2C(byte opcode)
         {
             registers.L += 1;
-            UpdateZSP(registers.L);
+            registers.Flags.UpdateZSP(registers.L);
         }
 
         private void OP_2D(byte opcode)
         {
             registers.L -= 1;
-            UpdateZSP(registers.L);
+            registers.Flags.UpdateZSP(registers.L);
         }
 
         private void OP_2E(byte opcode)
@@ -617,7 +617,7 @@ namespace SpaceInvaders
             ulong addr = registers.HL;
             byte value = registers.memory[addr];
             value += 1;
-            UpdateZSP(value);
+            registers.Flags.UpdateZSP(value);
             registers.memory[addr] = (byte)(value & 0xFF);
         }
 
@@ -626,7 +626,7 @@ namespace SpaceInvaders
             ulong addr = registers.HL;
             byte value = registers.memory[addr];
             value -= 1;
-            UpdateZSP(value);
+            registers.Flags.UpdateZSP(value);
             registers.memory[addr] = (byte)(value & 0xFF);
         }
 
@@ -668,13 +668,13 @@ namespace SpaceInvaders
         private void OP_3C(byte opcode)
         {
             registers.A += 1;
-            UpdateZSP(registers.A);
+            registers.Flags.UpdateZSP(registers.A);
         }
 
         private void OP_3D(byte opcode)
         {
             registers.A -= 1;
-            UpdateZSP(registers.A);
+            registers.Flags.UpdateZSP(registers.A);
         }
 
         private void OP_3E(byte opcode)
@@ -1001,205 +1001,522 @@ namespace SpaceInvaders
         }
 
         private void OP_80(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.B;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_81(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.C;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_82(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.D;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_83(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.E;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_84(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.H;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_85(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.L;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_86(byte opcode)
-        { }
+        {
+            ulong addr2 = registers.HL;
+            uint addr = (uint)registers.A + (uint)registers.memory[addr2];
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_87(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.A;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_88(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.B + (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_89(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.C + (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_8A(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.D + (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_8B(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.E + (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_8C(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.H + (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_8D(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.L + (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_8E(byte opcode)
-        { }
+        {
+            ulong addr2 = registers.HL;
+            uint addr = (uint)registers.A + (uint)registers.memory[addr2] + (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_8F(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A + (uint)registers.A + (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_90(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.B;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_91(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.C;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_92(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.D;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_93(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.E;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_94(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.H;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_95(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.L;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_96(byte opcode)
-        { }
+        {
+            ulong addr2 = registers.HL;
+            uint addr = (uint)registers.A - (uint)registers.memory[addr2];
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_97(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.A;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_98(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.B - (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_99(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.C - (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_9A(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.D - (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_9B(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.E - (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_9C(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.H - (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_9D(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.L - (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_9E(byte opcode)
-        { }
+        {
+            ulong addr2 = registers.HL;
+            uint addr = (uint)registers.A - (uint)registers.memory[addr2] - (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_9F(byte opcode)
-        { }
+        {
+            uint addr = (uint)registers.A - (uint)registers.A - (uint)registers.Flags.CY;
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.ByteCY = (byte)addr;
+            registers.A = (byte)(addr & 0xFF);
+        }
 
         private void OP_A0(byte opcode)
-        { }
+        {
+            registers.A &= registers.B;
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_A1(byte opcode)
-        { }
+        {
+            registers.A &= registers.C;
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_A2(byte opcode)
-        { }
+        {
+            registers.A &= registers.D;
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_A3(byte opcode)
-        { }
+        {
+            registers.A &= registers.E;
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_A4(byte opcode)
-        { }
+        {
+            registers.A &= registers.H;
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_A5(byte opcode)
-        { }
+        {
+            registers.A &= registers.L;
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_A6(byte opcode)
-        { }
+        {
+            ulong addr = registers.HL;
+            registers.A &= registers.memory[addr];
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+
+        }
 
         private void OP_A7(byte opcode)
-        { }
+        {
+            registers.A &= registers.A;
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_A8(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A ^ registers.B);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_A9(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A ^ registers.C);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_AA(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A ^ registers.D);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_AB(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A ^ registers.E);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_AC(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A ^ registers.H);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_AD(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A ^ registers.L);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_AE(byte opcode)
-        { }
+        {
+            ulong addr = registers.HL;
+            registers.A = (byte)(registers.A ^ registers.memory[addr]);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_AF(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A ^ registers.A);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_B0(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A | registers.B);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_B1(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A | registers.C);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_B2(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A | registers.D);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_B3(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A | registers.E);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_B4(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A | registers.H);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_B5(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A | registers.L);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_B6(byte opcode)
-        { }
+        {
+            ulong addr = registers.HL;
+            registers.A = (byte)(registers.A | registers.memory[addr]);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_B7(byte opcode)
-        { }
+        {
+            registers.A = (byte)(registers.A | registers.A);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.Flags.ByteCY = registers.A;
+        }
 
         private void OP_B8(byte opcode)
-        { }
+        {
+            byte addr = (byte)(registers.A - registers.B);
+            registers.Flags.UpdateZSP(addr);
+            registers.Flags.ByteCY = addr;
+        }
 
         private void OP_B9(byte opcode)
-        { }
+        {
+            byte addr = (byte)(registers.A - registers.C);
+            registers.Flags.UpdateZSP(addr);
+            registers.Flags.ByteCY = addr;
+        }
 
         private void OP_BA(byte opcode)
-        { }
+        {
+            byte addr = (byte)(registers.A - registers.D);
+            registers.Flags.UpdateZSP(addr);
+            registers.Flags.ByteCY = addr;
+        }
 
         private void OP_BB(byte opcode)
-        { }
+        {
+            byte addr = (byte)(registers.A - registers.E);
+            registers.Flags.UpdateZSP(addr);
+            registers.Flags.ByteCY = addr;
+        }
 
         private void OP_BC(byte opcode)
-        { }
+        {
+            byte addr = (byte)(registers.A - registers.H);
+            registers.Flags.UpdateZSP(addr);
+            registers.Flags.ByteCY = addr;
+        }
 
         private void OP_BD(byte opcode)
-        { }
+        {
+            byte addr = (byte)(registers.A - registers.L);
+            registers.Flags.UpdateZSP(addr);
+            registers.Flags.ByteCY = addr;
+        }
 
         private void OP_BE(byte opcode)
-        { }
+        {
+            ulong addr2 = registers.HL;
+            byte addr = (byte)(registers.A - registers.memory[addr2]);
+            registers.Flags.UpdateZSP(addr);
+            registers.Flags.ByteCY = addr;
+        }
 
         private void OP_BF(byte opcode)
-        { }
+        {
+            byte addr = (byte)(registers.A - registers.A);
+            registers.Flags.UpdateZSP(addr);
+            registers.Flags.ByteCY = addr;
+        }
 
         private void OP_C0(byte opcode)
-        { }
+        { 
+            if(registers.Flags.Z == 0)
+            {
+                Ret();
+                registers.PC -= 1;
+            }
+        }
 
         private void OP_C1(byte opcode)
-        { }
+        {
+            registers.C = registers.memory[registers.SP];
+            registers.B = registers.memory[registers.SP + 1];
+            registers.SP += 2;
+        }
 
         private void OP_C2(byte opcode)
-        { }
+        {
+            if (registers.Flags.Z == 0)
+            {
+                ulong addr = ReadOpcodeWord();
+                registers.PC = addr - 1;
+            }
+            else
+            {
+                registers.PC += 2;
+            }
+        }
 
         private void OP_C3(byte opcode)
         {
@@ -1407,43 +1724,12 @@ namespace SpaceInvaders
             while (sw.ElapsedTicks < ticks) { }
         }
 
-        private void UpdateZSP(byte v)
-        {
-            CalculateZeroFlag(v);
-            CalculateSignFlag(v);
-            CalculateParityFlag(v);
-        }
-
-        private byte CalculateZeroFlag(byte v)
-        {
-            byte z = (byte)((v == 0) ? 1 : 0);
-            return z;
-        }
-
-        private byte CalculateSignFlag(byte v)
-        {
-            bool s = (v & 0x80) != 0;
-            if (s) return 1;
-            return 0;
-        }
-
-        private byte CalculateParityFlag(byte v)
-        {
-            int x = 0;
-            for (int i = 0; i < 8; i++)
-                if ((v & (1 << i)) > 0)
-                    x++;
-            bool e = (x & 1) == 0;
-            byte p = (byte)(e ? 1 : 0);
-            return p;
-        }
-
         private ushort ReadOpcodeWord()
         {
             return MakeWord(registers.memory[registers.PC + 2], registers.memory[registers.PC + 1]);
         }
 
-        private ushort MakeWord(int hi, int lo)
+        private ushort MakeWord(uint hi, uint lo)
         {
             return (ushort)(hi << 8 | lo);
         }
@@ -1456,6 +1742,14 @@ namespace SpaceInvaders
             registers.memory[registers.SP - 2] = (byte)retlo;
             registers.SP -= 2;
             registers.PC = address;
+        }
+
+        private void Ret()
+        {
+            uint pclo = registers.memory[registers.SP];
+            uint pchi = registers.memory[registers.SP + 1];
+            registers.PC = MakeWord(pchi, pclo);
+            registers.SP += 2;
         }
 
     }

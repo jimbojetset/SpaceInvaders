@@ -72,5 +72,38 @@ namespace SpaceInvaders
             get { return this.pad; }
             set { this.pad = value; }
         }
+
+        public void UpdateZSP(byte v)
+        {
+            CalculateZeroFlag(v);
+            CalculateSignFlag(v);
+            CalculateParityFlag(v);
+        }
+
+        public void CalculateZeroFlag(byte v)
+        {
+            byte b = (byte)((v == 0) ? 1 : 0);
+            this.Z = b;
+        }
+
+        public void CalculateSignFlag(byte v)
+        {
+            bool s = (v & 0x80) != 0;
+            if (s) this.S = 1;
+            this.S = 0;
+        }
+
+        public void CalculateParityFlag(byte v)
+        {
+            int x = 0;
+            for (int i = 0; i < 8; i++)
+                if ((v & (1 << i)) > 0)
+                    x++;
+            bool e = (x & 1) == 0;
+            byte b = (byte)(e ? 1 : 0);
+            this.P = b;
+        }
+
+
     }
 }
