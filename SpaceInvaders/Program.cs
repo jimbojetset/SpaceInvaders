@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace SpaceInvaders
 {
@@ -17,6 +18,5 @@ namespace SpaceInvaders
             cpu.ReadROM(@"invaders.rom");
             cpu.RunEmulation();
         }
-
     }
 }
