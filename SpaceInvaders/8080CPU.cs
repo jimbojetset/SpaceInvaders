@@ -19,9 +19,7 @@ namespace SpaceInvaders
             romObj.Seek(0, SeekOrigin.Begin);
             registers.PC = 0;
             for (int i = 0; i < romObj.Length; i++)
-            {
                 registers.memory[i] = (byte)romObj.ReadByte();
-            }
         }
 
         public void RunEmulation()
