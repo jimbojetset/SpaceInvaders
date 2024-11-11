@@ -87,5 +87,41 @@ namespace SpaceInvaders
                     x++;
             return (uint)(((x & 1) == 0) ? 1 : 0);
         }
+
+        public byte ToByte()
+        {
+            /**
+             * 7 6 5 4 3 2 1 0
+             * S Z 0 A 0 P 1 C
+             */
+            var flags = 0b00000010;
+
+            if (s == 1)
+                flags = flags | 0b10000000;
+
+            if (z == 1)
+                flags = flags | 0b01000000;
+
+            if (ac == 1)
+                flags = flags | 0b00010000;
+
+            if (p == 1)
+                flags = flags | 0b00000100;
+
+            if (cy == 1)
+                flags = flags | 0b00000001;
+
+            return (byte)flags;
+        }
+
+        public void SetFromByte(byte flags)
+        {
+            s = (uint)(((flags & 0b10000000) == 0b10000000) ? 1 : 0);
+            z = (uint)(((flags & 0b01000000) == 0b01000000) ? 1 : 0);
+            ac = (uint)(((flags & 0b00010000) == 0b00010000) ? 1 : 0);
+            p = (uint)(((flags & 0b00000100) == 0b00000100) ? 1 : 0);
+            cy = (uint)(((flags & 0b00000001) == 0b00000001) ? 1 : 0);
+        }
+
     }
 }

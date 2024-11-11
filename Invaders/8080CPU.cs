@@ -68,8 +68,9 @@ namespace SpaceInvaders
                 CallOpcode(opcode);
                 registers.PC++;
                 Cnt++;
-                //if (registers.PC > 0x23FF)
-                //    paused = true;
+                if (opcode == 0x20)
+                { }
+            
                 prevOpcode = opcode;
                 if (Cnt == 33333)
                 {
@@ -356,7 +357,7 @@ namespace SpaceInvaders
             if (opcode == 0xFC) { OP_FC(); return; }
             //if (opcode == 0xFD) { OP_FD(); return; }
             if (opcode == 0xFE) { OP_FE(); return; }
-            if (opcode == 0xFF) { OP_FF(); return; }
+            //if (opcode == 0xFF) { OP_FF(); return; }
             Debug.WriteLine("INVALID OPCODE - " + opcode.ToString("X2"));
             //throw new Exception("INVALID OPCODE - " + opcode.ToString("X2"));
         }
@@ -1809,52 +1810,137 @@ namespace SpaceInvaders
         //{ } // NOP
 
         private void OP_F0()
-        { }
+        { 
+            if(registers.Flags.S == 0)
+            {
+                Ret();
+                registers.PC--;
+            }
+        }
 
         private void OP_F1()
-        { }
+        {
+            byte flags = registers.memory[registers.SP];
+            registers.Flags.SetFromByte(flags);
+            registers.A = registers.memory[registers.SP + 1];
+            registers.SP += 2;
+        }
 
         private void OP_F2()
-        { }
+        {
+            if (registers.Flags.S == 0)
+            {
+                ulong addr = ReadOpcodeWord();
+                registers.PC = (ushort)addr;
+                registers.PC--;
+            }
+            else
+            {
+                registers.PC += 2;
+            }
+        }
 
         private void OP_F3()
-        { }
+        {
+            registers.INT_ENABLE = false;
+        }
 
         private void OP_F4()
-        { }
+        {
+            if (registers.Flags.S == 0)
+            {
+                ushort addr = ReadOpcodeWord();
+                ushort retAddr = (ushort)(registers.PC + 3);
+                Call(addr, retAddr);
+                registers.PC--;
+            }
+            else
+            {
+                registers.PC += 2;
+            }
+        }
 
         private void OP_F5()
-        { }
+        {
+            registers.memory[registers.SP - 2] = registers.Flags.ToByte();
+            registers.memory[registers.SP - 1] = registers.A;
+            registers.SP -= 2;
+        }
 
         private void OP_F6()
-        { }
+        {
+            ulong data = registers.memory[registers.PC + 1];
+            ulong value = registers.A | data;
+            registers.Flags.UpdateByteCY(value);
+            registers.Flags.UpdateZSP((uint)value);
+            registers.A = (byte)value;
+            registers.PC++;
+        }
 
         //private void OP_F7()
         //{ } // NOP
 
         private void OP_F8()
-        { }
+        { 
+            if(registers.Flags.S == 1)
+            {
+                Ret();
+                registers.PC--;
+            }
+        }
 
         private void OP_F9()
-        { }
+        {
+            registers.SP = (ushort)registers.HL;
+        }
 
         private void OP_FA()
-        { }
+        {
+            if (registers.Flags.S == 1)
+            {
+                ulong ADDR = ReadOpcodeWord();
+                registers.PC = (ushort)ADDR;
+                registers.PC--;
+            }
+            else
+            {
+                registers.PC += 2;
+            }
+        }
 
         private void OP_FB()
-        { }
+        {
+            registers.INT_ENABLE = true;
+        }
 
         private void OP_FC()
-        { }
+        {
+            if (registers.Flags.S == 1)
+            {
+                ulong addr = ReadOpcodeWord();
+                ulong retAddr = (ulong)(registers.PC + 3);
+                Call((ushort)addr, (ushort)retAddr);
+                registers.PC--;
+            }
+            else
+            {
+                registers.PC += 2;
+            }
+        }
 
         //private void OP_FD()
         //{ } // NOP
 
         private void OP_FE()
-        { }
+        {
+            ulong addr = (ulong)(registers.A - registers.memory[registers.PC + 1]);
+            registers.Flags.UpdateZSP((uint)addr);
+            registers.Flags.UpdateByteCY(addr);
+            registers.PC++;
+        }
 
-        private void OP_FF()
-        { }
+        //private void OP_FF()
+        //{ } // NOP
 
         private void NOP()
         { }

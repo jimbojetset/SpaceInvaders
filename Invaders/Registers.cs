@@ -8,26 +8,23 @@ namespace SpaceInvaders
 {
     internal class Registers
     {
-        const int INTERRUPT_ENABLED = 1;
-        const int INTERRUPT_DISABLED = 0;
-        private byte a;
-        private byte b;
-        private byte c;
-        private byte d;
-        private byte e;
-        private byte h;
-        private byte l;
-        private ushort sp;
-        private ushort pc;
-        private byte int_enable;
-        private Flags ?flags;
-        public byte[] memory; //16K
+        //const int INTERRUPT_ENABLED = 1;
+        //const int INTERRUPT_DISABLED = 0;
+        private byte a = 0;
+        private byte b = 0;
+        private byte c = 0;
+        private byte d = 0;
+        private byte e = 0;
+        private byte h = 0;
+        private byte l = 0;
+        private ushort sp = 0;
+        private ushort pc = 0;
+        private bool int_enable = false;
+        private Flags ?flags = new Flags();
+        public byte[] memory = new byte[0x10000]; // = 8k bytes of memory = 65536 bits
 
         public Registers()
         {
-            this.Flags = new Flags();
-            this.memory = new byte[0x10000]; // = 8k bytes of memory = 65536 bits
-            this.INT_ENABLE = INTERRUPT_ENABLED;
         }
 
         public byte A
@@ -90,7 +87,7 @@ namespace SpaceInvaders
             set { flags = value; }
         }
 
-        public byte INT_ENABLE
+        public bool INT_ENABLE
         {
             get { return int_enable; }
             set { int_enable = value; }
