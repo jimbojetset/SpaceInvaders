@@ -362,7 +362,7 @@ namespace SpaceInvaders
         {
             registers.C = registers.memory[(byte)(registers.PC + 1)];
             registers.B = registers.memory[(byte)(registers.PC + 2)];
-            registers.PC += 3;
+            registers.PC += 2;
         }
 
         private void OP_02()
@@ -557,7 +557,6 @@ namespace SpaceInvaders
             registers.H = registers.memory[registers.PC + 2];
             registers.L = registers.memory[registers.PC + 1];
             registers.PC += 2;
-
         }
 
         private void OP_22()
@@ -565,6 +564,7 @@ namespace SpaceInvaders
             var addr = ReadOpcodeWord();
             registers.memory[addr] = registers.L;
             registers.memory[addr + 1] = registers.H;
+            registers.PC += 2;
         }
 
         private void OP_23()
@@ -997,30 +997,49 @@ namespace SpaceInvaders
         }
 
         private void OP_70()
-        { }
-
-        private void OP_71()
-        { }
-
-        private void OP_72()
-        { }
-
-        private void OP_73()
-        { }
-
-        private void OP_74()
-        { }
-
-        private void OP_75()
-        { }
-
-        private void OP_76()
         {
-            // HLT
+            ulong addr = registers.HL;
+            registers.memory[addr]= registers.B;
         }
 
+        private void OP_71()
+        {
+            ulong addr = registers.HL;
+            registers.memory[addr] = registers.C;
+        }
+
+        private void OP_72()
+        {
+            ulong addr = registers.HL;
+            registers.memory[addr] = registers.D;
+        }
+
+        private void OP_73()
+        {
+            ulong addr = registers.HL;
+            registers.memory[addr] = registers.E;
+        }
+
+        private void OP_74()
+        {
+            ulong addr = registers.HL;
+            registers.memory[addr] = registers.H;
+        }
+
+        private void OP_75()
+        {
+            ulong addr = registers.HL;
+            registers.memory[addr] = registers.L;
+        }
+
+        private void OP_76()
+        { } // nop
+
         private void OP_77()
-        { }
+        {
+            ulong addr = registers.HL;
+            registers.memory[addr] = registers.A;
+        }
 
         private void OP_78()
         {
