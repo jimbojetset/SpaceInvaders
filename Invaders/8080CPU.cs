@@ -68,16 +68,13 @@ namespace SpaceInvaders
                 CallOpcode(opcode);
                 registers.PC++;
                 Cnt++;
-                if (opcode == 0x20)
-                { }
-            
+                //if (opcode == 0x20)
+                //{ }
                 prevOpcode = opcode;
                 if (Cnt == 33333)
                 {
                     displayReady = true;
                     Cnt = 0;
-
-                    /// implement DEBUG output
                     while (displayReady)
                     {
                         var currentTime = (DateTime.Now - DateTime.MinValue).TotalMilliseconds;
