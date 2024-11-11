@@ -660,7 +660,7 @@ namespace SpaceInvaders
         private void OP_31()
         {
             registers.SP = ReadOpcodeWord();
-            registers.SP += 2;
+            registers.PC += 2;
         }
 
         private void OP_32()
