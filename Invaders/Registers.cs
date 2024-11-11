@@ -20,7 +20,7 @@ namespace SpaceInvaders
         private ushort sp;
         private ushort pc;
         private byte int_enable;
-        private Flags flags;
+        private Flags ?flags;
         public byte[] memory; //16K
 
         public Registers()
@@ -86,7 +86,7 @@ namespace SpaceInvaders
 
         public Flags Flags
         {
-            get { return flags; }
+            get { return flags!; }
             set { flags = value; }
         }
 
@@ -101,8 +101,8 @@ namespace SpaceInvaders
             get { return (ulong)this.H << 8 | (ulong)this.L; }
             set
             {
-                this.H = (byte)((value >> 8) & 0xFF);
-                this.L = (byte)(value & 0xFF);
+                this.h = (byte)((value & 0xFF00) >> 8);
+                this.l = (byte)(value & 0x00FF);
             }
         }
 
@@ -111,8 +111,8 @@ namespace SpaceInvaders
             get { return (ulong)this.D << 8 | (ulong)this.E; }
             set
             {
-                this.D = (byte)((value >> 8) & 0xFF);
-                this.E = (byte)(value & 0xFF);
+                this.d = (byte)((value & 0xFF00) >> 8);
+                this.e = (byte)(value & 0x00FF);
             }
         }
 
@@ -121,8 +121,8 @@ namespace SpaceInvaders
             get { return (ulong)this.B << 8 | (ulong)this.C; }
             set
             {
-                this.B = (byte)((value >> 8) & 0xFF);
-                this.C = (byte)(value & 0xFF);
+                this.b = (byte)((value & 0xFF00) >> 8);
+                this.c = (byte)(value & 0x00FF);
             }
         }
 

@@ -17,11 +17,11 @@ namespace SpaceInvaders
 
         public Flags()
         {
-            this.Z = 1;
-            this.S = 1;
-            this.P = 1;
-            this.cy = 1;
-            this.ac = 1;
+            this.Z = 0;
+            this.S = 0;
+            this.P = 0;
+            this.cy = 0;
+            this.ac = 0;
             this.pad = 3;
         }
 
