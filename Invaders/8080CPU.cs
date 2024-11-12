@@ -14,6 +14,8 @@ namespace SpaceInvaders
         public bool paused = false;
         public bool step = false;
         private bool running = false;
+        private int interruptNum = 1;
+
         public bool Running
         {
             get { return running; }
@@ -72,10 +74,10 @@ namespace SpaceInvaders
                 Cnt++;
                 loopy++;
                 if(loopy % 8080000 == 0)
-                { }
+                {
+                }
                  prevOpcode = opcode;
-                displayReady = true;
-                if (Cnt == -1)
+                if (Cnt == 33333)
                 {
                     displayReady = true;
                     Cnt = 0;
@@ -83,9 +85,10 @@ namespace SpaceInvaders
                     {
                         var currentTime = (DateTime.Now - DateTime.MinValue).TotalMilliseconds;
                         var milisecondsSinceLastUpdate = currentTime - timerCounter;
-                        if (milisecondsSinceLastUpdate > 4)
+                        if (milisecondsSinceLastUpdate > 15)
                         {
                             displayReady = false;
+                            Interrupt(interruptNum);
                             timerCounter = currentTime;
                         }
                     }
@@ -2153,5 +2156,15 @@ namespace SpaceInvaders
             registers.SP += 2;
         }
 
+        private void Interrupt(int num)
+        {
+            if (!registers.INT_ENABLE) return;
+            uint pclo = (uint)(registers.PC & 0xFF);
+            uint pchi = (uint)((registers.PC >> 8) & 0xFF);
+            registers.memory[registers.SP - 1] = (byte)pchi;
+            registers.memory[registers.SP - 2] = (byte)pclo;
+            registers.SP -= 2;
+            registers.PC = (ushort)(8 * num);
+        }
     }
 }
