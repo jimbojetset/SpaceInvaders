@@ -10,7 +10,7 @@ namespace SpaceInvaders
     {
         private Registers registers;
         public Registers Registers { get { return registers; } }
-        private int Cnt = 0;
+        private long Cnt = 0;
         public bool paused = false;
         public bool step = false;
         private bool running = false;
@@ -51,7 +51,7 @@ namespace SpaceInvaders
         public void RunEmulation()
         {
             Cnt = 0;
-            int loopy = 0;
+            long loopy = 0;
             running = true;
             double timerCounter = (DateTime.Now - DateTime.MinValue).TotalMilliseconds;
             byte prevOpcode;
@@ -71,10 +71,11 @@ namespace SpaceInvaders
                 registers.PC++;
                 Cnt++;
                 loopy++;
-                //if (loopy % 37416 == 0)
+                if(loopy % 8080000 == 0)
                 { }
                  prevOpcode = opcode;
-                if (Cnt == 33333)
+                displayReady = true;
+                if (Cnt == -1)
                 {
                     displayReady = true;
                     Cnt = 0;
@@ -82,7 +83,7 @@ namespace SpaceInvaders
                     {
                         var currentTime = (DateTime.Now - DateTime.MinValue).TotalMilliseconds;
                         var milisecondsSinceLastUpdate = currentTime - timerCounter;
-                        if (milisecondsSinceLastUpdate > 16)
+                        if (milisecondsSinceLastUpdate > 4)
                         {
                             displayReady = false;
                             timerCounter = currentTime;
@@ -1807,7 +1808,8 @@ namespace SpaceInvaders
         private void OP_DB()
         {
             ulong port = registers.memory[registers.PC + 1];
-// **** TO DO ****    IN D8 (special)
+            // **** TO DO ****    IN D8 (special)
+            registers.A = 0;
             registers.PC++;
         }
 
@@ -1843,7 +1845,13 @@ namespace SpaceInvaders
         //{ } // NOP
 
         private void OP_E0()
-        { }
+        {
+            if (registers.Flags.P == 0)
+            {
+                Ret();
+                registers.PC--;
+            }
+        }
 
         private void OP_E1()
         {
@@ -1853,13 +1861,43 @@ namespace SpaceInvaders
         }
 
         private void OP_E2()
-        { }
+        {
+            if (registers.Flags.P == 0)
+            {
+                ulong addr = ReadOpcodeWord();
+                registers.PC = (ushort)addr;
+                registers.PC--;
+            }
+            else
+            {
+                registers.PC += 2;
+            }
+        }
 
         private void OP_E3()
-        { }
+        {
+            uint l = registers.L;
+            uint h = registers.H;
+            registers.L = registers.memory[registers.SP];
+            registers.H = registers.memory[registers.SP + 1];
+            registers.memory[registers.SP] = (byte)l;
+            registers.memory[registers.SP + 1] = (byte)h;
+        }
 
         private void OP_E4()
-        { }
+        {
+            if (registers.Flags.P == 0)
+            {
+                ushort addr = ReadOpcodeWord();
+                ushort retAddr = (ushort)(registers.PC + 3);
+                Call(addr, retAddr);
+                registers.PC--;
+            }
+            else
+            {
+                registers.PC += 2;
+            }
+        }
 
         private void OP_E5()
         {
@@ -1881,13 +1919,34 @@ namespace SpaceInvaders
         //{ } // NOP
 
         private void OP_E8()
-        { }
+        {
+            if (registers.Flags.P == 1)
+            {
+                Ret();
+                registers.PC--;
+            }
+        }
+    
 
         private void OP_E9()
-        { }
+        {
+            registers.PC = MakeWord(registers.H, registers.L);
+            registers.PC--;
+        }
 
         private void OP_EA()
-        { }
+        { 
+            if(registers.Flags.P == 1)
+            {
+                ulong addr = ReadOpcodeWord();
+                registers.PC = (ushort)addr;
+                registers.PC--;
+            }
+            else
+            {
+                registers.PC += 2;
+            }
+        }
 
         private void OP_EB()
         {
@@ -1900,13 +1959,31 @@ namespace SpaceInvaders
         }
 
         private void OP_EC()
-        { }
+        {
+            if (registers.Flags.P == 1)
+            {
+                ushort addr = ReadOpcodeWord();
+                ushort retAddr = (ushort)(registers.PC + 3);
+                Call(addr, retAddr);
+                registers.PC--;
+            }
+            else
+            {
+                registers.PC += 2;
+            }
+
+        }
 
         //private void OP_ED()
         //{ } // NOP
 
         private void OP_EE()
-        { }
+        {
+            registers.A ^= registers.memory[registers.PC + 1];
+            registers.Flags.UpdateByteCY(registers.A);
+            registers.Flags.UpdateZSP(registers.A);
+            registers.PC++;
+        }
 
         //private void OP_EF()
         //{ } // NOP

@@ -1,3 +1,4 @@
+using Microsoft.Win32;
 using SpaceInvaders;
 using System.Diagnostics;
 using System.Security.Cryptography;
@@ -26,7 +27,8 @@ namespace Invaders
                 while (!cpu.DisplayReady)
                     if (!cpu.Running) { break; }
                 if (!cpu.Running) { break; }
-                byte[] video = cpu.GetVideoRam();
+                byte[] video = new byte[0x1C00];
+                Buffer.BlockCopy(cpu.Registers.memory, 0x2400, video, 0, video.Length);
                 //Debug.WriteLine(Convert.ToHexString(SHA1.HashData(video)));
                 Bitmap videoBitmap = new(224, 256);
                 int ptr = 0;
@@ -56,7 +58,7 @@ namespace Invaders
         {
             cpu = new _8080CPU();
             //cpu.paused = true;
-            //cpu.ReadROM(@"cpudiag.bin", 0x100);
+            //cpu.ReadROM(@"cpudiag.bin", 256);
             cpu.ReadROM(@"invaders.rom", 0x0);
             cpu_thread = new Thread(() => cpu.RunEmulation());
             cpu_thread.Start();
