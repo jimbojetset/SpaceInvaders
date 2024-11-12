@@ -1,4 +1,8 @@
 using SpaceInvaders;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Security.Policy;
+using System.Text;
 
 namespace Invaders
 {
@@ -7,6 +11,7 @@ namespace Invaders
         private _8080CPU? cpu;
         private Thread? cpu_thread;
         private Thread? display_thread;
+        private bool displayRunning = false;
 
         public Form1()
         {
@@ -15,12 +20,14 @@ namespace Invaders
 
         private void RunDisplay()
         {
-            while (cpu != null && cpu.Running)
+            displayRunning = true;
+            while (cpu != null && cpu.Running && displayRunning)
             {
                 while (!cpu.DisplayReady)
                     if (!cpu.Running) { break; }
                 if (!cpu.Running) { break; }
                 byte[] video = cpu.GetVideoRam();
+                //Debug.WriteLine(Convert.ToHexString(SHA1.HashData(video)));
                 Bitmap videoBitmap = new(224, 256);
                 int ptr = 0;
                 for (int x = 0; x < 224; x++)
@@ -37,7 +44,11 @@ namespace Invaders
                         }
                     }
                 }
-                pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.Image = videoBitmap; });
+                try
+                {
+                    pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.Image = videoBitmap; });
+                }
+                catch { }
             }
         }
 
@@ -45,7 +56,8 @@ namespace Invaders
         {
             cpu = new _8080CPU();
             //cpu.paused = true;
-            cpu.ReadROM(@"invaders.rom");
+            //cpu.ReadROM(@"cpudiag.bin", 0x100);
+            cpu.ReadROM(@"invaders.rom", 0x0);
             cpu_thread = new Thread(() => cpu.RunEmulation());
             cpu_thread.Start();
             while (!cpu.Running) { }
@@ -62,7 +74,7 @@ namespace Invaders
         {
             cpu!.Running = false;
             cpu!.paused = false;
-            display_thread = null;
+            displayRunning = false;
         }
 
         private void button3_Click(object sender, EventArgs e)

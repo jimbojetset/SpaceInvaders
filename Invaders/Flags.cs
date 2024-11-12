@@ -63,30 +63,33 @@ namespace SpaceInvaders
 
         public void UpdateByteCY(ulong value)
         {
-            this.CY = (uint)((value > 0xFF) ? 1 : 0);
+            this.cy = (uint)((value > 0xFF) ? 1 : 0);
         }
 
         public void UpdateWordCY(ulong value)
         {
-            this.CY = (uint)((value > 0xFFFF) ? 1 : 0);
+            this.cy = (uint)((value > 0xFFFF) ? 1 : 0);
         }
 
         public void UpdateZSP(uint value)
         {
-
-            this.Z = (uint)(((value & 0xFF) == 0) ? 1 : 0);
-            this.S = (uint)(((value & 0x80) == 0) ? 1 : 0);
-            this.P = CalculateParityFlag(value);
+            this.z = (uint)(((value & 0xFF) == 0) ? 1 : 0);
+            this.s = (uint)(((value & 0x80) == 0x80) ? 1 : 0);
+            this.p = (uint)CalculateParityFlag(value & 0xFF);
         }
 
-        private uint CalculateParityFlag(uint value)
+        int CalculateParityFlag(uint value)
         {
-            int x = 0;
-            for (int i = 0; i < 8; i++)
-                if ((value & (1 << i)) > 0)
-                    x++;
-            return (uint)(((x & 1) == 0) ? 1 : 0);
+            int count = 0;
+            for (int i = 0; i < 16; i++)
+            {
+                if ((value & 0x01) == 1)
+                    count += 1;
+                value >>= 1;
+            }
+            return (0 == (count & 0x1)) ? 1 : 0;
         }
+
 
         public byte ToByte()
         {

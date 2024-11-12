@@ -95,7 +95,7 @@ namespace SpaceInvaders
 
         public ulong HL
         {
-            get { return (ulong)this.H << 8 | (ulong)this.L; }
+            get { return (ulong)this.h << 8 | (ulong)this.l; }
             set
             {
                 this.h = (byte)((value & 0xFF00) >> 8);
@@ -105,7 +105,7 @@ namespace SpaceInvaders
 
         public ulong DE
         {
-            get { return (ulong)this.D << 8 | (ulong)this.E; }
+            get { return (ulong)this.d << 8 | (ulong)this.e; }
             set
             {
                 this.d = (byte)((value & 0xFF00) >> 8);
@@ -115,7 +115,7 @@ namespace SpaceInvaders
 
         public ulong BC
         {
-            get { return (ulong)this.B << 8 | (ulong)this.C; }
+            get { return (ulong)this.b << 8 | (ulong)this.c; }
             set
             {
                 this.b = (byte)((value & 0xFF00) >> 8);

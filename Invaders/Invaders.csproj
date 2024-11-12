@@ -9,6 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="cpudiag.bin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="invaders.rom">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
