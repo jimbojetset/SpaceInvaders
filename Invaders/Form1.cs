@@ -53,20 +53,28 @@ namespace Invaders
             while (cpu != null && cpu.Running && displayRunning)
             {
                 if (!cpu.Running) { break; }
-                Bitmap videoBitmap = new(224, 256);
+                Bitmap videoBitmap = new(448, 512);
                 int ptr = 0;
-                for (int x = 0; x < 224; x++)
+                for (int x = 0; x < 448; x+=2)
                 {
-                    for (int y = 255; y > 0; y -= 8)
+                    for (int y = 511; y > 0; y -= 16)
                     {
                         Color color = GetPixelColor(x, y);
                         byte value = cpu.Video[ptr++];
                         for (int b = 0; b < 8; b++)
                         {
-                            videoBitmap.SetPixel(x, y - b, Color.FromArgb(180, 0, 0, 0));
+                            videoBitmap.SetPixel(x, y - (b*2), Color.FromArgb(180, 0, 0, 0));
+                            videoBitmap.SetPixel(x, y - (b*2) -1, Color.FromArgb(180, 0, 0, 0));
+                            videoBitmap.SetPixel(x+1, y - (b*2) -1, Color.FromArgb(180, 0, 0, 0));
+                            videoBitmap.SetPixel(x+1, y - (b*2), Color.FromArgb(180, 0, 0, 0));
                             bool bit = (value & (1 << b)) != 0;
                             if ((value & (1 << b)) != 0)
-                                videoBitmap.SetPixel(x, y - b, color);
+                            {
+                                videoBitmap.SetPixel(x, y - (b*2), color);
+                                videoBitmap.SetPixel(x, y - (b*2) - 1, color);
+                                videoBitmap.SetPixel(x + 1, y - (b*2) - 1, color);
+                                videoBitmap.SetPixel(x + 1, y - (b*2), color);
+                            }
                         }
                     }
                 }
@@ -80,9 +88,9 @@ namespace Invaders
 
         private Color GetPixelColor(int x, int y)
         {
-            if (y < 240 && y > 183) return Color.Green;
-            if ((y < 256 && y > 239) && (x > 25 && x < 137)) return Color.Green;
-            if (y < 64 && y > 31) return Color.Red;
+            if (y < 480 && y > 368) return Color.Green;
+            if ((y < 512 && y > 480) && (x > 50 && x < 274)) return Color.Green;
+            if (y < 128 && y > 64) return Color.Red;
             return Color.White;
         }
 
