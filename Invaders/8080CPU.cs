@@ -31,6 +31,10 @@ namespace SpaceInvaders
         public byte[] Video
             { get { return video; } }
 
+        byte[] portIn = new byte[4];
+        public byte[] PortIn
+        { set { portIn = value; } }
+
         public _8080CPU()
         {
             registers = new Registers();
@@ -1829,6 +1833,9 @@ namespace SpaceInvaders
 
         private void OP_DB()
         {
+            uint port = registers.memory[registers.PC + 1];
+            if (portIn[port] > 0)
+                registers.A = portIn[port];
             registers.PC++;
         }
 

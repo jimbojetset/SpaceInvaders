@@ -54,6 +54,8 @@
             Name = "Form1";
             Text = "Form1";
             FormClosing += Form1_FormClosing;
+            KeyDown += Form1_KeyDown;
+            KeyUp += Form1_KeyUp;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
         }
