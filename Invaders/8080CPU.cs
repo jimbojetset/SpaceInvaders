@@ -14,7 +14,9 @@ namespace SpaceInvaders
         public bool paused = false;
         public bool step = false;
         private bool running = false;
-        private int interruptNum = 1;
+        private int beamPos = 1;
+        public int BeamPos
+            { get { return beamPos; } }
 
         public bool Running
         {
@@ -24,6 +26,10 @@ namespace SpaceInvaders
         private bool displayReady = false;
         public bool DisplayReady
             { get { return displayReady; } }
+
+        byte[] video = new byte[0x1C00];
+        public byte[] Video
+            { get { return video; } }
 
         public _8080CPU()
         {
@@ -52,56 +58,37 @@ namespace SpaceInvaders
 
         public void RunEmulation()
         {
-            Cnt = 0;
-            long loopy = 0;
             running = true;
-            double timerCounter = (DateTime.Now - DateTime.MinValue).TotalMilliseconds;
-            byte prevOpcode;
+            beamPos = 1;
             while (running)
             {
-                while (paused)
-                {
-                    if (step) 
-                    { 
-                        step = false; 
-                        break; 
-                    }
-                }
-                byte opcode = registers.memory[registers.PC];
-
-                CallOpcode(opcode);
-                registers.PC++;
-                Cnt++;
-                loopy++;
-                if(loopy % 8080000 == 0)
-                {
-                }
-                 prevOpcode = opcode;
-                if (Cnt == 33333)
-                {
-                    displayReady = true;
-                    Cnt = 0;
-                    while (displayReady)
-                    {
-                        var currentTime = (DateTime.Now - DateTime.MinValue).TotalMilliseconds;
-                        var milisecondsSinceLastUpdate = currentTime - timerCounter;
-                        if (milisecondsSinceLastUpdate > 15)
-                        {
-                            displayReady = false;
-                            Interrupt(interruptNum);
-                            timerCounter = currentTime;
-                        }
-                    }
-                }
-
+                DoFrame();
+                DoFrame();
+                CopyVideoBuffer();
             }
         }
 
-        public byte[] GetVideoRam()
+        private void DoFrame()
         {
-            byte[] videoRAM = new byte[0x1C00];
-            Buffer.BlockCopy(registers.memory, 0x2400, videoRAM, 0, 0x1C00);
-            return videoRAM;
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            bool isFrameComplete = false;
+            while (!isFrameComplete && running)
+            {
+                CallOpcode(registers.memory[registers.PC]);
+                registers.PC++;
+                if (stopwatch.ElapsedMilliseconds > 8.33 && running)
+                {
+                    Interrupt(beamPos);
+                    beamPos = (beamPos == 1) ? 2 : 1;
+                    isFrameComplete = true;
+                }
+            }
+        }
+
+        private void CopyVideoBuffer()
+        {
+            Buffer.BlockCopy(registers.memory, 0x2400, video, 0, video.Length);
         }
 
         private void CallOpcode(byte opcode)
@@ -363,6 +350,7 @@ namespace SpaceInvaders
             if (opcode == 0xFE) { OP_FE(); return; }
             //if (opcode == 0xFF) { OP_FF(); return; }
             Debug.WriteLine("INVALID OPCODE - " + opcode.ToString("X2"));
+            throw new NotImplementedException("INVALID OPCODE - " + opcode.ToString("X2"));
         }
 
         private void OP_01()
@@ -1707,7 +1695,7 @@ namespace SpaceInvaders
         }
 
         //private void OP_CF()
-        //{ } // NOP
+        //{ } // NOP               RST(0x8)
 
         private void OP_D0()
         { 
@@ -1779,7 +1767,7 @@ namespace SpaceInvaders
         }
 
         //private void OP_D7()
-        //{ } // NOP
+        //{ } // NOP              RST(0x10);
 
         private void OP_D8()
         {
@@ -2139,12 +2127,11 @@ namespace SpaceInvaders
 
         private void Call(ushort address, ushort retAddress)
         {
-            uint rethi = (uint)((retAddress >> 8) & 0xFF);
-            uint retlo = (uint)(retAddress & 0xFF);
-            registers.SP--;
-            registers.memory[registers.SP] = (byte)rethi;
-            registers.SP--;
-            registers.memory[registers.SP] = (byte)retlo;
+            byte rethi = (byte)((retAddress >> 8) & 0xFF);
+            byte retlo = (byte)(retAddress & 0xFF);
+            registers.memory[registers.SP - 1] = rethi;
+            registers.memory[registers.SP - 2] = retlo;
+            registers.SP -= 2;
             registers.PC = address;
         }
 
@@ -2159,12 +2146,13 @@ namespace SpaceInvaders
         private void Interrupt(int num)
         {
             if (!registers.INT_ENABLE) return;
-            uint pclo = (uint)(registers.PC & 0xFF);
-            uint pchi = (uint)((registers.PC >> 8) & 0xFF);
-            registers.memory[registers.SP - 1] = (byte)pchi;
-            registers.memory[registers.SP - 2] = (byte)pclo;
+            byte pchi = (byte)((registers.PC >> 8) & 0xFF);
+            byte pclo = (byte)(registers.PC & 0xFF);
+            registers.memory[registers.SP - 1] = pchi;
+            registers.memory[registers.SP - 2] = pclo;
             registers.SP -= 2;
-            registers.PC = (ushort)(8 * num);
+            if (num == 1) { registers.PC = 0x0008; }
+            if (num == 2) { registers.PC = 0x0010; }
         }
     }
 }

@@ -24,19 +24,14 @@ namespace Invaders
             displayRunning = true;
             while (cpu != null && cpu.Running && displayRunning)
             {
-                while (!cpu.DisplayReady)
-                    if (!cpu.Running) { break; }
                 if (!cpu.Running) { break; }
-                byte[] video = new byte[0x1C00];
-                Buffer.BlockCopy(cpu.Registers.memory, 0x2400, video, 0, video.Length);
-                //Debug.WriteLine(Convert.ToHexString(SHA1.HashData(video)));
                 Bitmap videoBitmap = new(224, 256);
                 int ptr = 0;
                 for (int x = 0; x < 224; x++)
                 {
                     for (int y = 255; y > 0; y -= 8)
                     {
-                        byte value = video[ptr++];
+                        byte value = cpu.Video[ptr++];
                         for (int b = 0; b < 8; b++)
                         {
                             videoBitmap.SetPixel(x, y - b, Color.DarkBlue);
