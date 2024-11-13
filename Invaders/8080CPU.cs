@@ -10,37 +10,33 @@ namespace SpaceInvaders
     {
         private Registers registers;
         public Registers Registers { get { return registers; } }
-        private long Cnt = 0;
-        public bool paused = false;
-        public bool step = false;
-        private bool running = false;
+
         private int beamPos = 1;
         public int BeamPos
             { get { return beamPos; } }
 
+        private bool running = false;
         public bool Running
         {
             get { return running; }
             set { running = value; }
         }
-        private bool displayReady = false;
-        public bool DisplayReady
-            { get { return displayReady; } }
 
-        byte[] video = new byte[0x1C00];
+        private byte[] video = new byte[0x1C00];
         public byte[] Video
             { get { return video; } }
 
-        byte[] portIn = new byte[4];
+        private byte[] portIn = new byte[4];
         public byte[] PortIn
         { set { portIn = value; } }
 
-        public _8080CPU()
+        public _8080CPU(string filePath)
         {
             registers = new Registers();
+            ReadROM(filePath, 0x00);
         }
 
-        public void ReadROM(string filePath, int addr)
+        private void ReadROM(string filePath, int addr)
         {
             FileStream romObj = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             romObj.Seek(0, SeekOrigin.Begin);
@@ -49,14 +45,8 @@ namespace SpaceInvaders
                 registers.memory[i] = (byte)romObj.ReadByte();
         }
 
-        public void PauseEmulation()
-        {
-            
-        }
-
         public void StopEmulation()
         {
-            displayReady = false;
             running = false;
         }
 

@@ -15,7 +15,7 @@ namespace Invaders
         private Thread? cpu_thread;
         private Thread? display_thread;
         private bool displayRunning = false;
-        private byte[] ports = new byte[4];
+        private byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
 
         public Form1()
         {
@@ -25,10 +25,8 @@ namespace Invaders
 
         private void Execute()
         {
-            cpu = new _8080CPU();
-            //cpu.paused = true;
-            //cpu.ReadROM(@"cpudiag.bin", 256);
-            cpu.ReadROM(@"invaders.rom", 0x0);
+            cpu = new _8080CPU(@"invaders.rom");
+
             emu_thread = new Thread(() => RunEmulation());
             emu_thread.Start();
 
@@ -40,14 +38,12 @@ namespace Invaders
         private void RunEmulation()
         {
             cpu_thread = new Thread(() => cpu!.RunEmulation());
-            cpu_thread.IsBackground = true;
             cpu_thread.Start();
             while (!cpu!.Running) { }
             while (cpu.Running)
             {
-                if (ports[1] > 0 || ports[2] > 0)
-                    cpu.PortIn = ports;
-                //Thread.Sleep(1);
+                if (inputPorts[1] > 0 || inputPorts[2] > 0)
+                    cpu.PortIn = inputPorts;
             }
         }
 
@@ -92,22 +88,21 @@ namespace Invaders
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            cpu!.Running = false;
-            cpu!.paused = false;
             displayRunning = false;
+            cpu!.Running = false;
         }
 
         private byte GetKeyValue(KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.C) return 1;
-            if (e.KeyCode == Keys.D1) return 2;
-            if (e.KeyCode == Keys.D2) return 3;
-            if (e.KeyCode == Keys.Left) return 4;
-            if (e.KeyCode == Keys.Right) return 5;
-            if (e.KeyCode == Keys.D) return 6;
-            if (e.KeyCode == Keys.Z) return 7;
-            if (e.KeyCode == Keys.X) return 8;
-            if (e.KeyCode == Keys.LShiftKey) return 9;
+            if (e.KeyCode == Keys.C) return 1;         // Coin
+            if (e.KeyCode == Keys.D1) return 2;        // 1P Start
+            if (e.KeyCode == Keys.D2) return 3;        // 2P Start
+            if (e.KeyCode == Keys.Left) return 4;      // 1P Left
+            if (e.KeyCode == Keys.Right) return 5;     // 1P Right
+            if (e.KeyCode == Keys.D) return 6;         // 1P Fire
+            if (e.KeyCode == Keys.Z) return 7;         // 2P Left
+            if (e.KeyCode == Keys.X) return 8;         // 2P Right
+            if (e.KeyCode == Keys.LShiftKey) return 9; // 2P Fire
             return 99;
         }
 
@@ -116,31 +111,31 @@ namespace Invaders
             switch (key)
             {
                 case 1: // Coin
-                    ports[1] |= 0x01;
+                    inputPorts[1] |= 0x01;
                     break;
                 case 2: // 1P Start
-                    ports[1] |= 0x04;
+                    inputPorts[1] |= 0x04;
                     break;
                 case 3: // 2P start
-                    ports[1] |= 0x02;
+                    inputPorts[1] |= 0x02;
                     break;
                 case 4: // 1P Left
-                    ports[1] |= 0x20;
+                    inputPorts[1] |= 0x20;
                     break;
                 case 5: // 1P Right
-                    ports[1] |= 0x40;
+                    inputPorts[1] |= 0x40;
                     break;
                 case 6: // 1P Fire
-                    ports[1] |= 0x10;
+                    inputPorts[1] |= 0x10;
                     break;
                 case 7: // 2P Left
-                    ports[2] |= 0x20;
+                    inputPorts[2] |= 0x20;
                     break;
                 case 8: // 2P Right
-                    ports[2] |= 0x40;
+                    inputPorts[2] |= 0x40;
                     break;
                 case 9: // 2P Fire
-                    ports[2] |= 0x10;
+                    inputPorts[2] |= 0x10;
                     break;
             }
         }
@@ -150,33 +145,32 @@ namespace Invaders
             switch (key)
             {
                 case 1: // Coin
-                    ports[1] &= 0xFE;
+                    inputPorts[1] &= 0xFE;
                     break;
                 case 2: // 1P Start
-                    ports[1] &= 0xFB;
+                    inputPorts[1] &= 0xFB;
                     break;
                 case 3: // 2P start
-                    ports[1] &= 0xFD;
+                    inputPorts[1] &= 0xFD;
                     break;
                 case 4: // 1P Left
-                    ports[1] &= 0xDF;
+                    inputPorts[1] &= 0xDF;
                     break;
                 case 5: // 1P Right
-                    ports[1] &= 0xBF;
+                    inputPorts[1] &= 0xBF;
                     break;
                 case 6: // 1P Fire
-                    ports[1] &= 0xEF;
+                    inputPorts[1] &= 0xEF;
                     break;
                 case 7: // 2P Left
-                    ports[2] &= 0xDF;
+                    inputPorts[2] &= 0xDF;
                     break;
                 case 8: // 2P Right
-                    ports[2] &= 0xBF;
+                    inputPorts[2] &= 0xBF;
                     break;
                 case 9: // 2P Fire
-                    ports[2] &= 0xEF;
+                    inputPorts[2] &= 0xEF;
                     break;
-
             }
         }
 
