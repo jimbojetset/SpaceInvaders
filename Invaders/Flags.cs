@@ -63,7 +63,7 @@ namespace SpaceInvaders
 
         public void UpdateByteCY(ulong value)
         {
-            this.cy = (uint)((value > 0xFF) ? 1 : 0);
+            this.cy = (uint)((value > 0x00FF) ? 1 : 0);
         }
 
         public void UpdateWordCY(ulong value)
@@ -78,7 +78,7 @@ namespace SpaceInvaders
             this.p = (uint)CalculateParityFlag(value & 0xFF);
         }
 
-        int CalculateParityFlag(uint value)
+        public int CalculateParityFlag(uint value)
         {
             int count = 0;
             for (int i = 0; i < 16; i++)
