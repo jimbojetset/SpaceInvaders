@@ -138,10 +138,10 @@ namespace Invaders
                     inputPorts[2] |= 0x10;
                     break;
                 case 10: // Easter Egg Part 1
-                    inputPorts[2] |= 0x72;
+                    inputPorts[1] += 0x72;
                     break;
                 case 11: // Easter Egg Part 2
-                    inputPorts[2] |= 0x34;
+                    inputPorts[1] += 0x34;
                     break;
             }
         }
@@ -178,10 +178,10 @@ namespace Invaders
                     inputPorts[2] &= 0xEF;
                     break;
                 case 10: // Easter Egg Part 1
-                    inputPorts[2] |= 0x8D;
+                    inputPorts[1] &= 0x8D;
                     break;
                 case 11: // Easter Egg Part 2
-                    inputPorts[2] |= 0xCB;
+                    inputPorts[1] &= 0xCB;
                     break;
             }
         }

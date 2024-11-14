@@ -347,7 +347,7 @@ namespace SpaceInvaders
                 case 0xFE: OP_FE(); break;
                 //case 0xFF: OP_FF(); break;
             }
-            throw new NotImplementedException("INVALID OPCODE - " + opcode.ToString("X2"));
+            //throw new NotImplementedException("INVALID OPCODE - " + opcode.ToString("X2"));
         }
 
         private void OP_01()
