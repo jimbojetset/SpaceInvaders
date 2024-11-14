@@ -1,6 +1,7 @@
 using Microsoft.Win32;
 using SpaceInvaders;
 using System.Diagnostics;
+using System.Media;
 using System.Reflection.Emit;
 using System.Security.Cryptography;
 using System.Security.Policy;
@@ -15,7 +16,7 @@ namespace Invaders
         private Thread? cpu_thread;
         private Thread? display_thread;
         private bool displayRunning = false;
-        private readonly byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
+        private byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
         private readonly SolidBrush semiBlack = new SolidBrush(Color.FromArgb(180, Color.Black));
         private readonly int SCREEN_WIDTH = 448;
         private readonly int SCREEN_HEIGHT = 512;
@@ -47,8 +48,30 @@ namespace Invaders
             while (!cpu!.Running) { }
 
             while (cpu.Running)
+            {
                 if (inputPorts[1] > 0 || inputPorts[2] > 0)
                     cpu.PortIn = inputPorts;
+                if (cpu.PortOut[3] <= 8)
+                    PortOut(3, cpu.PortOut[3]);
+            }
+        }
+
+        private void PortOut(int port, int sound)
+        {
+            if(port == 3)
+            {
+                if (sound == 1) { }
+                if (sound == 2) { }
+                if (sound == 4) { }
+                if (sound == 8) { }
+            }
+        }
+
+        private void PlaySound(string soundFile)
+        {
+            SoundPlayer player = new SoundPlayer();
+            player.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + soundFile;
+            player.PlaySync();
         }
 
         private void RunDisplay()

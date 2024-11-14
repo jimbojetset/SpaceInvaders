@@ -26,9 +26,13 @@ namespace SpaceInvaders
         public byte[] Video
             { get { return video; } }
 
-        private byte[] portIn = new byte[4];
+        private byte[] portIn = new byte[4]; // 0,1,2,3
         public byte[] PortIn
         { set { portIn = value; } }
+
+        private byte[] portOut = new byte[7]; // 2,3,5,6
+        public byte[] PortOut
+        { get { return portOut; } }
 
         public _8080CPU(string filePath)
         {
@@ -1745,8 +1749,9 @@ namespace SpaceInvaders
 
         private void OP_D3()
         {
-            ulong port = registers.memory[registers.PC + 1];
-// **** TO DO ****    OUT D8 (special)
+            uint port = registers.memory[registers.PC + 1];
+            if (registers.A > 0)
+                portOut[port] = registers.A;
             registers.PC++;
         }
 
