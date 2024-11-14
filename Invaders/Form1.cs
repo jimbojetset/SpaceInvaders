@@ -123,7 +123,7 @@ namespace Invaders
                     }
                     prevPort5 = cpu!.PortOut[5];
                 }
-                while (cpu!.V_Sync != 2) { Thread.Sleep(8); }
+                while (cpu!.V_Sync == 1 && cpu.Running) { }
             }
         }
 

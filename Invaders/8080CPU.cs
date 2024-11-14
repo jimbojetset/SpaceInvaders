@@ -60,6 +60,7 @@ namespace SpaceInvaders
             vSync = 1;
             while (running)
             {
+                vSync = 1;
                 Tick();
                 Tick();
                 CopyVideoBuffer();
@@ -1752,6 +1753,8 @@ namespace SpaceInvaders
             uint port = registers.memory[registers.PC + 1];
             if (registers.A > 0)
                 portOut[port] = registers.A;
+            else
+                portOut[port] = 0;
             registers.PC++;
         }
 
