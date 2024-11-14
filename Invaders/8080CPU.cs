@@ -98,7 +98,7 @@ namespace SpaceInvaders
                 case 0x05: OP_05(); break;
                 case 0x06: OP_06(); break;
                 case 0x07: OP_07(); break;
-                //case 0x08: OP_08(); break;
+                case 0x08: OP_08(); break;
                 case 0x09: OP_09(); break;
                 case 0x0A: OP_0A(); break;
                 case 0x0B: OP_0B(); break;
@@ -106,7 +106,7 @@ namespace SpaceInvaders
                 case 0x0D: OP_0D(); break;
                 case 0x0E: OP_0E(); break;
                 case 0x0F: OP_0F(); break;
-                //case 0x10: OP_10(); break;
+                case 0x10: OP_10(); break;
                 case 0x11: OP_11(); break;
                 case 0x12: OP_12(); break;
                 case 0x13: OP_13(); break;
@@ -114,7 +114,7 @@ namespace SpaceInvaders
                 case 0x15: OP_15(); break;
                 case 0x16: OP_16(); break;
                 case 0x17: OP_17(); break;
-                //case 0x18: OP_18(); break;
+                case 0x18: OP_18(); break;
                 case 0x19: OP_19(); break;
                 case 0x1A: OP_1A(); break;
                 case 0x1B: OP_1B(); break;
@@ -122,7 +122,7 @@ namespace SpaceInvaders
                 case 0x1D: OP_1D(); break;
                 case 0x1E: OP_1E(); break;
                 case 0x1F: OP_1F(); break;
-                //case 0x20: OP_20(); break;
+                case 0x20: OP_20(); break;
                 case 0x21: OP_21(); break;
                 case 0x22: OP_22(); break;
                 case 0x23: OP_23(); break;
@@ -130,7 +130,7 @@ namespace SpaceInvaders
                 case 0x25: OP_25(); break;
                 case 0x26: OP_26(); break;
                 case 0x27: OP_27(); break;
-                //case 0x28: OP_28(); break;
+                case 0x28: OP_28(); break;
                 case 0x29: OP_29(); break;
                 case 0x2A: OP_2A(); break;
                 case 0x2B: OP_2B(); break;
@@ -138,7 +138,7 @@ namespace SpaceInvaders
                 case 0x2D: OP_2D(); break;
                 case 0x2E: OP_2E(); break;
                 case 0x2F: OP_2F(); break;
-                //case 0x30: OP_30(); break;
+                case 0x30: OP_30(); break;
                 case 0x31: OP_31(); break;
                 case 0x32: OP_32(); break;
                 case 0x33: OP_33(); break;
@@ -146,7 +146,7 @@ namespace SpaceInvaders
                 case 0x35: OP_35(); break;
                 case 0x36: OP_36(); break;
                 case 0x37: OP_37(); break;
-                //case 0x38: OP_38(); break;
+                case 0x38: OP_38(); break;
                 case 0x39: OP_39(); break;
                 case 0x3A: OP_3A(); break;
                 case 0x3B: OP_3B(); break;
@@ -154,7 +154,7 @@ namespace SpaceInvaders
                 case 0x3D: OP_3D(); break;
                 case 0x3E: OP_3E(); break;
                 case 0x3F: OP_3F(); break;
-                //case 0x40: OP_40(); break;
+                case 0x40: OP_40(); break;
                 case 0x41: OP_41(); break;
                 case 0x42: OP_42(); break;
                 case 0x43: OP_43(); break;
@@ -199,7 +199,7 @@ namespace SpaceInvaders
                 case 0x6A: OP_6A(); break;
                 case 0x6B: OP_6B(); break;
                 case 0x6C: OP_6C(); break;
-                //case 0x6D: OP_6D(); break;
+                case 0x6D: OP_6D(); break;
                 case 0x6E: OP_6E(); break;
                 case 0x6F: OP_6F(); break;
                 case 0x70: OP_70(); break;
@@ -208,7 +208,7 @@ namespace SpaceInvaders
                 case 0x73: OP_73(); break;
                 case 0x74: OP_74(); break;
                 case 0x75: OP_75(); break;
-                //case 0x76: OP_76(); break;
+                case 0x76: OP_76(); break;
                 case 0x77: OP_77(); break;
                 case 0x78: OP_78(); break;
                 case 0x79: OP_79(); break;
@@ -217,7 +217,7 @@ namespace SpaceInvaders
                 case 0x7C: OP_7C(); break;
                 case 0x7D: OP_7D(); break;
                 case 0x7E: OP_7E(); break;
-                //case 0x7F: OP_7F(); break;
+                case 0x7F: OP_7F(); break;
                 case 0x80: OP_80(); break;
                 case 0x81: OP_81(); break;
                 case 0x82: OP_82(); break;
@@ -289,15 +289,15 @@ namespace SpaceInvaders
                 case 0xC4: OP_C4(); break;
                 case 0xC5: OP_C5(); break;
                 case 0xC6: OP_C6(); break;
-                //case 0xC7: OP_C7(); break;
+                case 0xC7: OP_C7(); break;
                 case 0xC8: OP_C8(); break;
                 case 0xC9: OP_C9(); break;
                 case 0xCA: OP_CA(); break;
-                //case 0xCB: OP_CB(); break;
+                case 0xCB: OP_CB(); break;
                 case 0xCC: OP_CC(); break;
                 case 0xCD: OP_CD(); break;
                 case 0xCE: OP_CE(); break;
-                //case 0xCF: OP_CF(); break;
+                case 0xCF: OP_CF(); break;
                 case 0xD0: OP_D0(); break;
                 case 0xD1: OP_D1(); break;
                 case 0xD2: OP_D2(); break;
@@ -305,15 +305,15 @@ namespace SpaceInvaders
                 case 0xD4: OP_D4(); break;
                 case 0xD5: OP_D5(); break;
                 case 0xD6: OP_D6(); break;
-                //case 0xD7: OP_D7(); break;
+                case 0xD7: OP_D7(); break;
                 case 0xD8: OP_D8(); break;
-                //case 0xD9: OP_D9(); break;
+                case 0xD9: OP_D9(); break;
                 case 0xDA: OP_DA(); break;
                 case 0xDB: OP_DB(); break;
                 case 0xDC: OP_DC(); break;
-                //case 0xDD: OP_DD(); break;
+                case 0xDD: OP_DD(); break;
                 case 0xDE: OP_DE(); break;
-                //case 0xDF: OP_DF(); break;
+                case 0xDF: OP_DF(); break;
                 case 0xE0: OP_E0(); break;
                 case 0xE1: OP_E1(); break;
                 case 0xE2: OP_E2(); break;
@@ -321,15 +321,15 @@ namespace SpaceInvaders
                 case 0xE4: OP_E4(); break;
                 case 0xE5: OP_E5(); break;
                 case 0xE6: OP_E6(); break;
-                //case 0xE7: OP_E7(); break;
+                case 0xE7: OP_E7(); break;
                 case 0xE8: OP_E8(); break;
                 case 0xE9: OP_E9(); break;
                 case 0xEA: OP_EA(); break;
                 case 0xEB: OP_EB(); break;
                 case 0xEC: OP_EC(); break;
-                //case 0xED: OP_ED(); break;
+                case 0xED: OP_ED(); break;
                 case 0xEE: OP_EE(); break;
-                //case 0xEF: OP_EF(); break;
+                case 0xEF: OP_EF(); break;
                 case 0xF0: OP_F0(); break;
                 case 0xF1: OP_F1(); break;
                 case 0xF2: OP_F2(); break;
@@ -337,17 +337,17 @@ namespace SpaceInvaders
                 case 0xF4: OP_F4(); break;
                 case 0xF5: OP_F5(); break;
                 case 0xF6: OP_F6(); break;
-                //case 0xF7: OP_F7(); break;
+                case 0xF7: OP_F7(); break;
                 case 0xF8: OP_F8(); break;
                 case 0xF9: OP_F9(); break;
                 case 0xFA: OP_FA(); break;
                 case 0xFB: OP_FB(); break;
                 case 0xFC: OP_FC(); break;
-                //case 0xFD: OP_FD(); break;
+                case 0xFD: OP_FD(); break;
                 case 0xFE: OP_FE(); break;
-                //case 0xFF: OP_FF(); break;
+                case 0xFF: OP_FF(); break;
+                default: throw new NotImplementedException("INVALID OPCODE - " + opcode.ToString("X2"));
             }
-            //throw new NotImplementedException("INVALID OPCODE - " + opcode.ToString("X2"));
         }
 
         private void OP_01()
