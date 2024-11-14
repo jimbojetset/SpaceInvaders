@@ -15,7 +15,10 @@ namespace Invaders
         private Thread? cpu_thread;
         private Thread? display_thread;
         private bool displayRunning = false;
-        private byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
+        private readonly byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
+        private readonly SolidBrush semiBlack = new SolidBrush(Color.FromArgb(180, Color.Black));
+        private readonly int SCREEN_WIDTH = 448;
+        private readonly int SCREEN_HEIGHT = 512;
 
         public Form1()
         {
@@ -31,6 +34,7 @@ namespace Invaders
             emu_thread.Start();
 
             while (!cpu.Running) { }
+
             display_thread = new Thread(() => RunDisplay());
             display_thread.Start();
         }
@@ -39,12 +43,12 @@ namespace Invaders
         {
             cpu_thread = new Thread(() => cpu!.RunEmulation());
             cpu_thread.Start();
+
             while (!cpu!.Running) { }
+
             while (cpu.Running)
-            {
                 if (inputPorts[1] > 0 || inputPorts[2] > 0)
                     cpu.PortIn = inputPorts;
-            }
         }
 
         private void RunDisplay()
@@ -53,45 +57,31 @@ namespace Invaders
             while (cpu != null && cpu.Running && displayRunning)
             {
                 if (!cpu.Running) { break; }
-                Bitmap videoBitmap = new(448, 512);
-                int ptr = 0;
-                for (int x = 0; x < 448; x+=2)
+                Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+                using (Graphics graphics = Graphics.FromImage(videoBitmap))
                 {
-                    for (int y = 511; y > 0; y -= 16)
-                    {
-                        Color color = GetPixelColor(x, y);
-                        byte value = cpu.Video[ptr++];
-                        for (int b = 0; b < 8; b++)
+                    graphics.FillRectangle(semiBlack, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+                    int ptr = 0;
+                    for (int x = 0; x < SCREEN_WIDTH; x += 2)
+                        for (int y = 511; y > 0; y -= 16)
                         {
-                            videoBitmap.SetPixel(x, y - (b*2), Color.FromArgb(180, 0, 0, 0));
-                            videoBitmap.SetPixel(x, y - (b*2) -1, Color.FromArgb(180, 0, 0, 0));
-                            videoBitmap.SetPixel(x+1, y - (b*2) -1, Color.FromArgb(180, 0, 0, 0));
-                            videoBitmap.SetPixel(x+1, y - (b*2), Color.FromArgb(180, 0, 0, 0));
-                            bool bit = (value & (1 << b)) != 0;
-                            if ((value & (1 << b)) != 0)
-                            {
-                                videoBitmap.SetPixel(x, y - (b*2), color);
-                                videoBitmap.SetPixel(x, y - (b*2) - 1, color);
-                                videoBitmap.SetPixel(x + 1, y - (b*2) - 1, color);
-                                videoBitmap.SetPixel(x + 1, y - (b*2), color);
-                            }
+                            Pen pen = GetPenColor(x, y);
+                            byte value = cpu.Video[ptr++];
+                            for (int b = 0; b < 8; b++)
+                                if ((value & (1 << b)) != 0)
+                                    try { graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1); } catch { }
                         }
-                    }
                 }
-                try
-                {
-                    pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.Image = videoBitmap; });
-                }
-                catch { }
+                try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.Image = videoBitmap; }); } catch { }
             }
         }
 
-        private Color GetPixelColor(int x, int y)
+        private Pen GetPenColor(int screenPos_X, int screenPos_Y)
         {
-            if (y < 480 && y > 368) return Color.Green;
-            if ((y < 512 && y > 480) && (x > 50 && x < 274)) return Color.Green;
-            if (y < 128 && y > 64) return Color.Red;
-            return Color.White;
+            if (screenPos_Y < 480 && screenPos_Y > 368) return new Pen(Color.Green);
+            if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 50 && screenPos_X < 274)) return new Pen(Color.Green);
+            if (screenPos_Y < 128 && screenPos_Y > 64) return new Pen(Color.Red);
+            return new Pen(Color.White);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -111,6 +101,8 @@ namespace Invaders
             if (e.KeyCode == Keys.Z) return 7;         // 2P Left
             if (e.KeyCode == Keys.X) return 8;         // 2P Right
             if (e.KeyCode == Keys.LShiftKey) return 9; // 2P Fire
+            if (e.KeyCode == Keys.O) return 10;        // Easter Egg Part 1
+            if (e.KeyCode == Keys.P) return 11;        // Easter Egg Part 2
             return 99;
         }
 
@@ -145,6 +137,12 @@ namespace Invaders
                 case 9: // 2P Fire
                     inputPorts[2] |= 0x10;
                     break;
+                case 10: // Easter Egg Part 1
+                    inputPorts[2] |= 0x72;
+                    break;
+                case 11: // Easter Egg Part 2
+                    inputPorts[2] |= 0x34;
+                    break;
             }
         }
 
@@ -178,6 +176,12 @@ namespace Invaders
                     break;
                 case 9: // 2P Fire
                     inputPorts[2] &= 0xEF;
+                    break;
+                case 10: // Easter Egg Part 1
+                    inputPorts[2] |= 0x8D;
+                    break;
+                case 11: // Easter Egg Part 2
+                    inputPorts[2] |= 0xCB;
                     break;
             }
         }

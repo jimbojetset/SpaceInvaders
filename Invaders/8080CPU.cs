@@ -8,12 +8,12 @@ namespace SpaceInvaders
 {
     internal class _8080CPU
     {
-        private Registers registers;
+        private readonly Registers registers;
         public Registers Registers { get { return registers; } }
 
-        private int beamPos = 1;
-        public int BeamPos
-            { get { return beamPos; } }
+        private int vSync = 1;
+        public int V_Sync
+            { get { return vSync; } }
 
         private bool running = false;
         public bool Running
@@ -22,7 +22,7 @@ namespace SpaceInvaders
             set { running = value; }
         }
 
-        private byte[] video = new byte[0x1C00];
+        private readonly byte[] video = new byte[0x1C00];
         public byte[] Video
             { get { return video; } }
 
@@ -53,29 +53,29 @@ namespace SpaceInvaders
         public void RunEmulation()
         {
             running = true;
-            beamPos = 1;
+            vSync = 1;
             while (running)
             {
-                DoFrame();
-                DoFrame();
+                Tick();
+                Tick();
                 CopyVideoBuffer();
             }
         }
 
-        private void DoFrame()
+        private void Tick()
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            bool isFrameComplete = false;
-            while (!isFrameComplete && running)
+            bool hit_v_sync = false;
+            while (!hit_v_sync && running)
             {
                 CallOpcode(registers.memory[registers.PC]);
                 registers.PC++;
                 if (stopwatch.ElapsedMilliseconds > 8.33 && running)
                 {
-                    Interrupt(beamPos);
-                    beamPos = (beamPos == 1) ? 2 : 1;
-                    isFrameComplete = true;
+                    Interrupt(vSync);
+                    vSync = (vSync == 1) ? 2 : 1;
+                    hit_v_sync = true;
                 }
             }
         }
@@ -87,263 +87,266 @@ namespace SpaceInvaders
 
         private void CallOpcode(byte opcode)
         {
-            if (opcode == 0x00) { NOP(); return; }
-            if (opcode == 0x01) { OP_01(); return; }
-            if (opcode == 0x02) { OP_02(); return; }
-            if (opcode == 0x03) { OP_03(); return; }
-            if (opcode == 0x04) { OP_04(); return; }
-            if (opcode == 0x05) { OP_05(); return; }
-            if (opcode == 0x06) { OP_06(); return; }
-            if (opcode == 0x07) { OP_07(); return; }
-            //if (opcode == 0x08) { OP_08(); return; }
-            if (opcode == 0x09) { OP_09(); return; }
-            if (opcode == 0x0A) { OP_0A(); return; }
-            if (opcode == 0x0B) { OP_0B(); return; }
-            if (opcode == 0x0C) { OP_0C(); return; }
-            if (opcode == 0x0D) { OP_0D(); return; }
-            if (opcode == 0x0E) { OP_0E(); return; }
-            if (opcode == 0x0F) { OP_0F(); return; }
-            //if (opcode == 0x10) { OP_10(); return; }
-            if (opcode == 0x11) { OP_11(); return; }
-            if (opcode == 0x12) { OP_12(); return; }
-            if (opcode == 0x13) { OP_13(); return; }
-            if (opcode == 0x14) { OP_14(); return; }
-            if (opcode == 0x15) { OP_15(); return; }
-            if (opcode == 0x16) { OP_16(); return; }
-            if (opcode == 0x17) { OP_17(); return; }
-            //if (opcode == 0x18) { OP_18(); return; }
-            if (opcode == 0x19) { OP_19(); return; }
-            if (opcode == 0x1A) { OP_1A(); return; }
-            if (opcode == 0x1B) { OP_1B(); return; }
-            if (opcode == 0x1C) { OP_1C(); return; }
-            if (opcode == 0x1D) { OP_1D(); return; }
-            if (opcode == 0x1E) { OP_1E(); return; }
-            if (opcode == 0x1F) { OP_1F(); return; }
-            //if (opcode == 0x20) { OP_20(); return; }
-            if (opcode == 0x21) { OP_21(); return; }
-            if (opcode == 0x22) { OP_22(); return; }
-            if (opcode == 0x23) { OP_23(); return; }
-            if (opcode == 0x24) { OP_24(); return; }
-            if (opcode == 0x25) { OP_25(); return; }
-            if (opcode == 0x26) { OP_26(); return; }
-            if (opcode == 0x27) { OP_27(); return; }
-            //if (opcode == 0x28) { OP_28(); return; }
-            if (opcode == 0x29) { OP_29(); return; }
-            if (opcode == 0x2A) { OP_2A(); return; }
-            if (opcode == 0x2B) { OP_2B(); return; }
-            if (opcode == 0x2C) { OP_2C(); return; }
-            if (opcode == 0x2D) { OP_2D(); return; }
-            if (opcode == 0x2E) { OP_2E(); return; }
-            if (opcode == 0x2F) { OP_2F(); return; }
-            //if (opcode == 0x30) { OP_30(); return; }
-            if (opcode == 0x31) { OP_31(); return; }
-            if (opcode == 0x32) { OP_32(); return; }
-            if (opcode == 0x33) { OP_33(); return; }
-            if (opcode == 0x34) { OP_34(); return; }
-            if (opcode == 0x35) { OP_35(); return; }
-            if (opcode == 0x36) { OP_36(); return; }
-            if (opcode == 0x37) { OP_37(); return; }
-            //if (opcode == 0x38) { OP_38(); return; }
-            if (opcode == 0x39) { OP_39(); return; }
-            if (opcode == 0x3A) { OP_3A(); return; }
-            if (opcode == 0x3B) { OP_3B(); return; }
-            if (opcode == 0x3C) { OP_3C(); return; }
-            if (opcode == 0x3D) { OP_3D(); return; }
-            if (opcode == 0x3E) { OP_3E(); return; }
-            if (opcode == 0x3F) { OP_3F(); return; }
-            //if (opcode == 0x40) { OP_40(); return; }
-            if (opcode == 0x41) { OP_41(); return; }
-            if (opcode == 0x42) { OP_42(); return; }
-            if (opcode == 0x43) { OP_43(); return; }
-            if (opcode == 0x44) { OP_44(); return; }
-            if (opcode == 0x45) { OP_45(); return; }
-            if (opcode == 0x46) { OP_46(); return; }
-            if (opcode == 0x47) { OP_47(); return; }
-            if (opcode == 0x48) { OP_48(); return; }
-            if (opcode == 0x49) { OP_49(); return; }
-            if (opcode == 0x4A) { OP_4A(); return; }
-            if (opcode == 0x4B) { OP_4B(); return; }
-            if (opcode == 0x4C) { OP_4C(); return; }
-            if (opcode == 0x4D) { OP_4D(); return; }
-            if (opcode == 0x4E) { OP_4E(); return; }
-            if (opcode == 0x4F) { OP_4F(); return; }
-            if (opcode == 0x50) { OP_50(); return; }
-            if (opcode == 0x51) { OP_51(); return; }
-            if (opcode == 0x52) { OP_52(); return; }
-            if (opcode == 0x53) { OP_53(); return; }
-            if (opcode == 0x54) { OP_54(); return; }
-            if (opcode == 0x55) { OP_55(); return; }
-            if (opcode == 0x56) { OP_56(); return; }
-            if (opcode == 0x57) { OP_57(); return; }
-            if (opcode == 0x58) { OP_58(); return; }
-            if (opcode == 0x59) { OP_59(); return; }
-            if (opcode == 0x5A) { OP_5A(); return; }
-            if (opcode == 0x5B) { OP_5B(); return; }
-            if (opcode == 0x5C) { OP_5C(); return; }
-            if (opcode == 0x5D) { OP_5D(); return; }
-            if (opcode == 0x5E) { OP_5E(); return; }
-            if (opcode == 0x5F) { OP_5F(); return; }
-            if (opcode == 0x60) { OP_60(); return; }
-            if (opcode == 0x61) { OP_61(); return; }
-            if (opcode == 0x62) { OP_62(); return; }
-            if (opcode == 0x63) { OP_63(); return; }
-            if (opcode == 0x64) { OP_64(); return; }
-            if (opcode == 0x65) { OP_65(); return; }
-            if (opcode == 0x66) { OP_66(); return; }
-            if (opcode == 0x67) { OP_67(); return; }
-            if (opcode == 0x68) { OP_68(); return; }
-            if (opcode == 0x69) { OP_69(); return; }
-            if (opcode == 0x6A) { OP_6A(); return; }
-            if (opcode == 0x6B) { OP_6B(); return; }
-            if (opcode == 0x6C) { OP_6C(); return; }
-//            if (opcode == 0x6D) { OP_6D(); return; }
-            if (opcode == 0x6E) { OP_6E(); return; }
-            if (opcode == 0x6F) { OP_6F(); return; }
-            if (opcode == 0x70) { OP_70(); return; }
-            if (opcode == 0x71) { OP_71(); return; }
-            if (opcode == 0x72) { OP_72(); return; }
-            if (opcode == 0x73) { OP_73(); return; }
-            if (opcode == 0x74) { OP_74(); return; }
-            if (opcode == 0x75) { OP_75(); return; }
-            //if (opcode == 0x76) { OP_76(); return; }
-            if (opcode == 0x77) { OP_77(); return; }
-            if (opcode == 0x78) { OP_78(); return; }
-            if (opcode == 0x79) { OP_79(); return; }
-            if (opcode == 0x7A) { OP_7A(); return; }
-            if (opcode == 0x7B) { OP_7B(); return; }
-            if (opcode == 0x7C) { OP_7C(); return; }
-            if (opcode == 0x7D) { OP_7D(); return; }
-            if (opcode == 0x7E) { OP_7E(); return; }
-//            if (opcode == 0x7F) { OP_7F(); return; }
-            if (opcode == 0x80) { OP_80(); return; }
-            if (opcode == 0x81) { OP_81(); return; }
-            if (opcode == 0x82) { OP_82(); return; }
-            if (opcode == 0x83) { OP_83(); return; }
-            if (opcode == 0x84) { OP_84(); return; }
-            if (opcode == 0x85) { OP_85(); return; }
-            if (opcode == 0x86) { OP_86(); return; }
-            if (opcode == 0x87) { OP_87(); return; }
-            if (opcode == 0x88) { OP_88(); return; }
-            if (opcode == 0x89) { OP_89(); return; }
-            if (opcode == 0x8A) { OP_8A(); return; }
-            if (opcode == 0x8B) { OP_8B(); return; }
-            if (opcode == 0x8C) { OP_8C(); return; }
-            if (opcode == 0x8D) { OP_8D(); return; }
-            if (opcode == 0x8E) { OP_8E(); return; }
-            if (opcode == 0x8F) { OP_8F(); return; }
-            if (opcode == 0x90) { OP_90(); return; }
-            if (opcode == 0x91) { OP_91(); return; }
-            if (opcode == 0x92) { OP_92(); return; }
-            if (opcode == 0x93) { OP_93(); return; }
-            if (opcode == 0x94) { OP_94(); return; }
-            if (opcode == 0x95) { OP_95(); return; }
-            if (opcode == 0x96) { OP_96(); return; }
-            if (opcode == 0x97) { OP_97(); return; }
-            if (opcode == 0x98) { OP_98(); return; }
-            if (opcode == 0x99) { OP_99(); return; }
-            if (opcode == 0x9A) { OP_9A(); return; }
-            if (opcode == 0x9B) { OP_9B(); return; }
-            if (opcode == 0x9C) { OP_9C(); return; }
-            if (opcode == 0x9D) { OP_9D(); return; }
-            if (opcode == 0x9E) { OP_9E(); return; }
-            if (opcode == 0x9F) { OP_9F(); return; }
-            if (opcode == 0xA0) { OP_A0(); return; }
-            if (opcode == 0xA1) { OP_A1(); return; }
-            if (opcode == 0xA2) { OP_A2(); return; }
-            if (opcode == 0xA3) { OP_A3(); return; }
-            if (opcode == 0xA4) { OP_A4(); return; }
-            if (opcode == 0xA5) { OP_A5(); return; }
-            if (opcode == 0xA6) { OP_A6(); return; }
-            if (opcode == 0xA7) { OP_A7(); return; }
-            if (opcode == 0xA8) { OP_A8(); return; }
-            if (opcode == 0xA9) { OP_A9(); return; }
-            if (opcode == 0xAA) { OP_AA(); return; }
-            if (opcode == 0xAB) { OP_AB(); return; }
-            if (opcode == 0xAC) { OP_AC(); return; }
-            if (opcode == 0xAD) { OP_AD(); return; }
-            if (opcode == 0xAE) { OP_AE(); return; }
-            if (opcode == 0xAF) { OP_AF(); return; }
-            if (opcode == 0xB0) { OP_B0(); return; }
-            if (opcode == 0xB1) { OP_B1(); return; }
-            if (opcode == 0xB2) { OP_B2(); return; }
-            if (opcode == 0xB3) { OP_B3(); return; }
-            if (opcode == 0xB4) { OP_B4(); return; }
-            if (opcode == 0xB5) { OP_B5(); return; }
-            if (opcode == 0xB6) { OP_B6(); return; }
-            if (opcode == 0xB7) { OP_B7(); return; }
-            if (opcode == 0xB8) { OP_B8(); return; }
-            if (opcode == 0xB9) { OP_B9(); return; }
-            if (opcode == 0xBA) { OP_BA(); return; }
-            if (opcode == 0xBB) { OP_BB(); return; }
-            if (opcode == 0xBC) { OP_BC(); return; }
-            if (opcode == 0xBD) { OP_BD(); return; }
-            if (opcode == 0xBE) { OP_BE(); return; }
-            if (opcode == 0xBF) { OP_BF(); return; }
-            if (opcode == 0xC0) { OP_C0(); return; }
-            if (opcode == 0xC1) { OP_C1(); return; }
-            if (opcode == 0xC2) { OP_C2(); return; }
-            if (opcode == 0xC3) { OP_C3(); return; }
-            if (opcode == 0xC4) { OP_C4(); return; }
-            if (opcode == 0xC5) { OP_C5(); return; }
-            if (opcode == 0xC6) { OP_C6(); return; }
-            //if (opcode == 0xC7) { OP_C7(); return; }
-            if (opcode == 0xC8) { OP_C8(); return; }
-            if (opcode == 0xC9) { OP_C9(); return; }
-            if (opcode == 0xCA) { OP_CA(); return; }
-            //if (opcode == 0xCB) { OP_CB(); return; }
-            if (opcode == 0xCC) { OP_CC(); return; }
-            if (opcode == 0xCD) { OP_CD(); return; }
-            if (opcode == 0xCE) { OP_CE(); return; }
-            //if (opcode == 0xCF) { OP_CF(); return; }
-            if (opcode == 0xD0) { OP_D0(); return; }
-            if (opcode == 0xD1) { OP_D1(); return; }
-            if (opcode == 0xD2) { OP_D2(); return; }
-            if (opcode == 0xD3) { OP_D3(); return; }
-            if (opcode == 0xD4) { OP_D4(); return; }
-            if (opcode == 0xD5) { OP_D5(); return; }
-            if (opcode == 0xD6) { OP_D6(); return; }
-            //if (opcode == 0xD7) { OP_D7(); return; }
-            if (opcode == 0xD8) { OP_D8(); return; }
-            //if (opcode == 0xD9) { OP_D9(); return; }
-            if (opcode == 0xDA) { OP_DA(); return; }
-            if (opcode == 0xDB) { OP_DB(); return; }
-            if (opcode == 0xDC) { OP_DC(); return; }
-            //if (opcode == 0xDD) { OP_DD(); return; }
-            if (opcode == 0xDE) { OP_DE(); return; }
-            //if (opcode == 0xDF) { OP_DF(); return; }
-            if (opcode == 0xE0) { OP_E0(); return; }
-            if (opcode == 0xE1) { OP_E1(); return; }
-            if (opcode == 0xE2) { OP_E2(); return; }
-            if (opcode == 0xE3) { OP_E3(); return; }
-            if (opcode == 0xE4) { OP_E4(); return; }
-            if (opcode == 0xE5) { OP_E5(); return; }
-            if (opcode == 0xE6) { OP_E6(); return; }
-            //if (opcode == 0xE7) { OP_E7(); return; }
-            if (opcode == 0xE8) { OP_E8(); return; }
-            if (opcode == 0xE9) { OP_E9(); return; }
-            if (opcode == 0xEA) { OP_EA(); return; }
-            if (opcode == 0xEB) { OP_EB(); return; }
-            if (opcode == 0xEC) { OP_EC(); return; }
-            //if (opcode == 0xED) { OP_ED(); return; }
-            if (opcode == 0xEE) { OP_EE(); return; }
-            //if (opcode == 0xEF) { OP_EF(); return; }
-            if (opcode == 0xF0) { OP_F0(); return; }
-            if (opcode == 0xF1) { OP_F1(); return; }
-            if (opcode == 0xF2) { OP_F2(); return; }
-            if (opcode == 0xF3) { OP_F3(); return; }
-            if (opcode == 0xF4) { OP_F4(); return; }
-            if (opcode == 0xF5) { OP_F5(); return; }
-            if (opcode == 0xF6) { OP_F6(); return; }
-            //if (opcode == 0xF7) { OP_F7(); return; }
-            if (opcode == 0xF8) { OP_F8(); return; }
-            if (opcode == 0xF9) { OP_F9(); return; }
-            if (opcode == 0xFA) { OP_FA(); return; }
-            if (opcode == 0xFB) { OP_FB(); return; }
-            if (opcode == 0xFC) { OP_FC(); return; }
-            //if (opcode == 0xFD) { OP_FD(); return; }
-            if (opcode == 0xFE) { OP_FE(); return; }
-            //if (opcode == 0xFF) { OP_FF(); return; }
-            Debug.WriteLine("INVALID OPCODE - " + opcode.ToString("X2"));
+
+            switch (opcode)
+            {
+                case 0x00: NOP(); break;
+                case 0x01: OP_01(); break;
+                case 0x02: OP_02(); break;
+                case 0x03: OP_03(); break;
+                case 0x04: OP_04(); break;
+                case 0x05: OP_05(); break;
+                case 0x06: OP_06(); break;
+                case 0x07: OP_07(); break;
+                //case 0x08: OP_08(); break;
+                case 0x09: OP_09(); break;
+                case 0x0A: OP_0A(); break;
+                case 0x0B: OP_0B(); break;
+                case 0x0C: OP_0C(); break;
+                case 0x0D: OP_0D(); break;
+                case 0x0E: OP_0E(); break;
+                case 0x0F: OP_0F(); break;
+                //case 0x10: OP_10(); break;
+                case 0x11: OP_11(); break;
+                case 0x12: OP_12(); break;
+                case 0x13: OP_13(); break;
+                case 0x14: OP_14(); break;
+                case 0x15: OP_15(); break;
+                case 0x16: OP_16(); break;
+                case 0x17: OP_17(); break;
+                //case 0x18: OP_18(); break;
+                case 0x19: OP_19(); break;
+                case 0x1A: OP_1A(); break;
+                case 0x1B: OP_1B(); break;
+                case 0x1C: OP_1C(); break;
+                case 0x1D: OP_1D(); break;
+                case 0x1E: OP_1E(); break;
+                case 0x1F: OP_1F(); break;
+                //case 0x20: OP_20(); break;
+                case 0x21: OP_21(); break;
+                case 0x22: OP_22(); break;
+                case 0x23: OP_23(); break;
+                case 0x24: OP_24(); break;
+                case 0x25: OP_25(); break;
+                case 0x26: OP_26(); break;
+                case 0x27: OP_27(); break;
+                //case 0x28: OP_28(); break;
+                case 0x29: OP_29(); break;
+                case 0x2A: OP_2A(); break;
+                case 0x2B: OP_2B(); break;
+                case 0x2C: OP_2C(); break;
+                case 0x2D: OP_2D(); break;
+                case 0x2E: OP_2E(); break;
+                case 0x2F: OP_2F(); break;
+                //case 0x30: OP_30(); break;
+                case 0x31: OP_31(); break;
+                case 0x32: OP_32(); break;
+                case 0x33: OP_33(); break;
+                case 0x34: OP_34(); break;
+                case 0x35: OP_35(); break;
+                case 0x36: OP_36(); break;
+                case 0x37: OP_37(); break;
+                //case 0x38: OP_38(); break;
+                case 0x39: OP_39(); break;
+                case 0x3A: OP_3A(); break;
+                case 0x3B: OP_3B(); break;
+                case 0x3C: OP_3C(); break;
+                case 0x3D: OP_3D(); break;
+                case 0x3E: OP_3E(); break;
+                case 0x3F: OP_3F(); break;
+                //case 0x40: OP_40(); break;
+                case 0x41: OP_41(); break;
+                case 0x42: OP_42(); break;
+                case 0x43: OP_43(); break;
+                case 0x44: OP_44(); break;
+                case 0x45: OP_45(); break;
+                case 0x46: OP_46(); break;
+                case 0x47: OP_47(); break;
+                case 0x48: OP_48(); break;
+                case 0x49: OP_49(); break;
+                case 0x4A: OP_4A(); break;
+                case 0x4B: OP_4B(); break;
+                case 0x4C: OP_4C(); break;
+                case 0x4D: OP_4D(); break;
+                case 0x4E: OP_4E(); break;
+                case 0x4F: OP_4F(); break;
+                case 0x50: OP_50(); break;
+                case 0x51: OP_51(); break;
+                case 0x52: OP_52(); break;
+                case 0x53: OP_53(); break;
+                case 0x54: OP_54(); break;
+                case 0x55: OP_55(); break;
+                case 0x56: OP_56(); break;
+                case 0x57: OP_57(); break;
+                case 0x58: OP_58(); break;
+                case 0x59: OP_59(); break;
+                case 0x5A: OP_5A(); break;
+                case 0x5B: OP_5B(); break;
+                case 0x5C: OP_5C(); break;
+                case 0x5D: OP_5D(); break;
+                case 0x5E: OP_5E(); break;
+                case 0x5F: OP_5F(); break;
+                case 0x60: OP_60(); break;
+                case 0x61: OP_61(); break;
+                case 0x62: OP_62(); break;
+                case 0x63: OP_63(); break;
+                case 0x64: OP_64(); break;
+                case 0x65: OP_65(); break;
+                case 0x66: OP_66(); break;
+                case 0x67: OP_67(); break;
+                case 0x68: OP_68(); break;
+                case 0x69: OP_69(); break;
+                case 0x6A: OP_6A(); break;
+                case 0x6B: OP_6B(); break;
+                case 0x6C: OP_6C(); break;
+                //case 0x6D: OP_6D(); break;
+                case 0x6E: OP_6E(); break;
+                case 0x6F: OP_6F(); break;
+                case 0x70: OP_70(); break;
+                case 0x71: OP_71(); break;
+                case 0x72: OP_72(); break;
+                case 0x73: OP_73(); break;
+                case 0x74: OP_74(); break;
+                case 0x75: OP_75(); break;
+                //case 0x76: OP_76(); break;
+                case 0x77: OP_77(); break;
+                case 0x78: OP_78(); break;
+                case 0x79: OP_79(); break;
+                case 0x7A: OP_7A(); break;
+                case 0x7B: OP_7B(); break;
+                case 0x7C: OP_7C(); break;
+                case 0x7D: OP_7D(); break;
+                case 0x7E: OP_7E(); break;
+                //case 0x7F: OP_7F(); break;
+                case 0x80: OP_80(); break;
+                case 0x81: OP_81(); break;
+                case 0x82: OP_82(); break;
+                case 0x83: OP_83(); break;
+                case 0x84: OP_84(); break;
+                case 0x85: OP_85(); break;
+                case 0x86: OP_86(); break;
+                case 0x87: OP_87(); break;
+                case 0x88: OP_88(); break;
+                case 0x89: OP_89(); break;
+                case 0x8A: OP_8A(); break;
+                case 0x8B: OP_8B(); break;
+                case 0x8C: OP_8C(); break;
+                case 0x8D: OP_8D(); break;
+                case 0x8E: OP_8E(); break;
+                case 0x8F: OP_8F(); break;
+                case 0x90: OP_90(); break;
+                case 0x91: OP_91(); break;
+                case 0x92: OP_92(); break;
+                case 0x93: OP_93(); break;
+                case 0x94: OP_94(); break;
+                case 0x95: OP_95(); break;
+                case 0x96: OP_96(); break;
+                case 0x97: OP_97(); break;
+                case 0x98: OP_98(); break;
+                case 0x99: OP_99(); break;
+                case 0x9A: OP_9A(); break;
+                case 0x9B: OP_9B(); break;
+                case 0x9C: OP_9C(); break;
+                case 0x9D: OP_9D(); break;
+                case 0x9E: OP_9E(); break;
+                case 0x9F: OP_9F(); break;
+                case 0xA0: OP_A0(); break;
+                case 0xA1: OP_A1(); break;
+                case 0xA2: OP_A2(); break;
+                case 0xA3: OP_A3(); break;
+                case 0xA4: OP_A4(); break;
+                case 0xA5: OP_A5(); break;
+                case 0xA6: OP_A6(); break;
+                case 0xA7: OP_A7(); break;
+                case 0xA8: OP_A8(); break;
+                case 0xA9: OP_A9(); break;
+                case 0xAA: OP_AA(); break;
+                case 0xAB: OP_AB(); break;
+                case 0xAC: OP_AC(); break;
+                case 0xAD: OP_AD(); break;
+                case 0xAE: OP_AE(); break;
+                case 0xAF: OP_AF(); break;
+                case 0xB0: OP_B0(); break;
+                case 0xB1: OP_B1(); break;
+                case 0xB2: OP_B2(); break;
+                case 0xB3: OP_B3(); break;
+                case 0xB4: OP_B4(); break;
+                case 0xB5: OP_B5(); break;
+                case 0xB6: OP_B6(); break;
+                case 0xB7: OP_B7(); break;
+                case 0xB8: OP_B8(); break;
+                case 0xB9: OP_B9(); break;
+                case 0xBA: OP_BA(); break;
+                case 0xBB: OP_BB(); break;
+                case 0xBC: OP_BC(); break;
+                case 0xBD: OP_BD(); break;
+                case 0xBE: OP_BE(); break;
+                case 0xBF: OP_BF(); break;
+                case 0xC0: OP_C0(); break;
+                case 0xC1: OP_C1(); break;
+                case 0xC2: OP_C2(); break;
+                case 0xC3: OP_C3(); break;
+                case 0xC4: OP_C4(); break;
+                case 0xC5: OP_C5(); break;
+                case 0xC6: OP_C6(); break;
+                //case 0xC7: OP_C7(); break;
+                case 0xC8: OP_C8(); break;
+                case 0xC9: OP_C9(); break;
+                case 0xCA: OP_CA(); break;
+                //case 0xCB: OP_CB(); break;
+                case 0xCC: OP_CC(); break;
+                case 0xCD: OP_CD(); break;
+                case 0xCE: OP_CE(); break;
+                //case 0xCF: OP_CF(); break;
+                case 0xD0: OP_D0(); break;
+                case 0xD1: OP_D1(); break;
+                case 0xD2: OP_D2(); break;
+                case 0xD3: OP_D3(); break;
+                case 0xD4: OP_D4(); break;
+                case 0xD5: OP_D5(); break;
+                case 0xD6: OP_D6(); break;
+                //case 0xD7: OP_D7(); break;
+                case 0xD8: OP_D8(); break;
+                //case 0xD9: OP_D9(); break;
+                case 0xDA: OP_DA(); break;
+                case 0xDB: OP_DB(); break;
+                case 0xDC: OP_DC(); break;
+                //case 0xDD: OP_DD(); break;
+                case 0xDE: OP_DE(); break;
+                //case 0xDF: OP_DF(); break;
+                case 0xE0: OP_E0(); break;
+                case 0xE1: OP_E1(); break;
+                case 0xE2: OP_E2(); break;
+                case 0xE3: OP_E3(); break;
+                case 0xE4: OP_E4(); break;
+                case 0xE5: OP_E5(); break;
+                case 0xE6: OP_E6(); break;
+                //case 0xE7: OP_E7(); break;
+                case 0xE8: OP_E8(); break;
+                case 0xE9: OP_E9(); break;
+                case 0xEA: OP_EA(); break;
+                case 0xEB: OP_EB(); break;
+                case 0xEC: OP_EC(); break;
+                //case 0xED: OP_ED(); break;
+                case 0xEE: OP_EE(); break;
+                //case 0xEF: OP_EF(); break;
+                case 0xF0: OP_F0(); break;
+                case 0xF1: OP_F1(); break;
+                case 0xF2: OP_F2(); break;
+                case 0xF3: OP_F3(); break;
+                case 0xF4: OP_F4(); break;
+                case 0xF5: OP_F5(); break;
+                case 0xF6: OP_F6(); break;
+                //case 0xF7: OP_F7(); break;
+                case 0xF8: OP_F8(); break;
+                case 0xF9: OP_F9(); break;
+                case 0xFA: OP_FA(); break;
+                case 0xFB: OP_FB(); break;
+                case 0xFC: OP_FC(); break;
+                //case 0xFD: OP_FD(); break;
+                case 0xFE: OP_FE(); break;
+                //case 0xFF: OP_FF(); break;
+            }
             throw new NotImplementedException("INVALID OPCODE - " + opcode.ToString("X2"));
         }
 
@@ -392,8 +395,8 @@ namespace SpaceInvaders
             registers.Flags.CY = (byte)bit7;
         }
 
-        //private void OP_08()
-        //{ } // NOP
+        private void OP_08()
+        { } // NOP
 
         private void OP_09()
         {
@@ -441,8 +444,8 @@ namespace SpaceInvaders
             registers.Flags.CY = (byte)bit0;
         }
 
-        //private void OP_10()
-        //{ } // NOP
+        private void OP_10()
+        { } // NOP
 
         private void OP_11()
         {
@@ -490,8 +493,8 @@ namespace SpaceInvaders
             registers.Flags.CY = bit7;
         }
 
-        //private void OP_18()
-        //{ } // NOP
+        private void OP_18()
+        { } // NOP
 
         private void OP_19()
         {
@@ -539,8 +542,8 @@ namespace SpaceInvaders
             registers.Flags.CY = (byte)bit0;
         }
 
-        //private void OP_20()
-        //{ } // NOP
+        private void OP_20()
+        { } // NOP
 
         private void OP_21()
         {
@@ -596,8 +599,8 @@ namespace SpaceInvaders
             }
         }
 
-        //private void OP_28()
-        //{ } // NOP
+        private void OP_28()
+        { } // NOP
 
         private void OP_29()
         {
@@ -644,8 +647,8 @@ namespace SpaceInvaders
             registers.A = (byte)~registers.A;
         }
 
-        //private void OP_30()
-        //{ } // NOP
+        private void OP_30()
+        { } // NOP
 
         private void OP_31()
         {
@@ -696,8 +699,8 @@ namespace SpaceInvaders
             registers.Flags.CY = 1;
         }
 
-        //private void OP_38()
-        //{ } // NOP
+        private void OP_38()
+        { } // NOP
 
         private void OP_39()
         {
@@ -742,8 +745,8 @@ namespace SpaceInvaders
             registers.Flags.CY = (byte)~registers.Flags.CY;
         }
 
-        //private void OP_40()
-        //{ } // NOP
+        private void OP_40()
+        { } // NOP
 
         private void OP_41()
         {
@@ -970,8 +973,8 @@ namespace SpaceInvaders
             registers.L = registers.H;
         }
 
-        //private void OP_6D()
-        //{ } // NOP
+        private void OP_6D()
+        { } // NOP
 
         private void OP_6E()
         {
@@ -1020,8 +1023,8 @@ namespace SpaceInvaders
             registers.memory[addr] = registers.L;
         }
 
-        //private void OP_76()
-        //{ } // NOP
+        private void OP_76()
+        { } // NOP
 
         private void OP_77()
         {
@@ -1065,8 +1068,8 @@ namespace SpaceInvaders
             registers.A = registers.memory[addr];
         }
 
-        //private void OP_7F()
-        //{ } // NOP
+        private void OP_7F()
+        { } // NOP
 
         private void OP_80()
         {
@@ -1502,7 +1505,6 @@ namespace SpaceInvaders
                 registers.Flags.CY = 1;
             else 
                 registers.Flags.CY = 0;
-            //registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_B9()
@@ -1513,7 +1515,6 @@ namespace SpaceInvaders
                 registers.Flags.CY = 1;
             else
                 registers.Flags.CY = 0;
-            //registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_BA()
@@ -1524,7 +1525,6 @@ namespace SpaceInvaders
                 registers.Flags.CY = 1;
             else
                 registers.Flags.CY = 0;
-            //registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_BB()
@@ -1535,7 +1535,6 @@ namespace SpaceInvaders
                 registers.Flags.CY = 1;
             else
                 registers.Flags.CY = 0;
-            //registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_BC()
@@ -1546,7 +1545,6 @@ namespace SpaceInvaders
                 registers.Flags.CY = 1;
             else
                 registers.Flags.CY = 0;
-            //registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_BD()
@@ -1557,7 +1555,6 @@ namespace SpaceInvaders
                 registers.Flags.CY = 1;
             else
                 registers.Flags.CY = 0;
-            //registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_BE()
@@ -1568,7 +1565,6 @@ namespace SpaceInvaders
                 registers.Flags.CY = 1;
             else
                 registers.Flags.CY = 0;
-            //registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_BF()
@@ -1577,11 +1573,6 @@ namespace SpaceInvaders
             registers.Flags.S = 0;
             registers.Flags.P = (uint)registers.Flags.CalculateParityFlag(registers.A);
             registers.Flags.CY = 0;
-
-
-            //var addr = (byte)(registers.A - registers.A);
-            //registers.Flags.UpdateZSP(addr);
-            //registers.Flags.UpdateByteCY(addr);
         }
 
         private void OP_C0()
@@ -1651,8 +1642,8 @@ namespace SpaceInvaders
             registers.PC++;
         }
 
-        //private void OP_C7()
-        //{ } // NOP
+        private void OP_C7()
+        { } // NOP
 
         private void OP_C8()
         { 
@@ -1682,8 +1673,8 @@ namespace SpaceInvaders
             }
         }
 
-        //private void OP_CB()
-        //{ } // NOP
+        private void OP_CB()
+        { } // NOP
 
         private void OP_CC()
         {
@@ -1719,8 +1710,8 @@ namespace SpaceInvaders
             registers.PC++;
         }
 
-        //private void OP_CF()
-        //{ } // NOP               RST(0x8)
+        private void OP_CF()
+        { } // NOP               RST(0x8)
 
         private void OP_D0()
         { 
@@ -1791,8 +1782,8 @@ namespace SpaceInvaders
             registers.PC++;
         }
 
-        //private void OP_D7()
-        //{ } // NOP              RST(0x10);
+        private void OP_D7()
+        { } // NOP              RST(0x10);
 
         private void OP_D8()
         {
@@ -1803,8 +1794,8 @@ namespace SpaceInvaders
             }
         }
 
-        //private void OP_D9()
-        //{ } // NOP
+        private void OP_D9()
+        { } // NOP
 
         private void OP_DA()
         {
@@ -1844,8 +1835,8 @@ namespace SpaceInvaders
             }
         }
 
-        //private void OP_DD()
-        //{ } // NOP
+        private void OP_DD()
+        { } // NOP
 
         private void OP_DE()
         {
@@ -1857,8 +1848,8 @@ namespace SpaceInvaders
             registers.PC++;
         }
 
-        //private void OP_DF()
-        //{ } // NOP
+        private void OP_DF()
+        { } // NOP
 
         private void OP_E0()
         {
@@ -1931,8 +1922,8 @@ namespace SpaceInvaders
             registers.PC++;
         }
 
-        //private void OP_E7()
-        //{ } // NOP
+        private void OP_E7()
+        { } // NOP
 
         private void OP_E8()
         {
@@ -1990,8 +1981,8 @@ namespace SpaceInvaders
 
         }
 
-        //private void OP_ED()
-        //{ } // NOP
+        private void OP_ED()
+        { } // NOP
 
         private void OP_EE()
         {
@@ -2001,8 +1992,8 @@ namespace SpaceInvaders
             registers.PC++;
         }
 
-        //private void OP_EF()
-        //{ } // NOP
+        private void OP_EF()
+        { } // NOP
 
         private void OP_F0()
         { 
@@ -2072,8 +2063,8 @@ namespace SpaceInvaders
             registers.PC++;
         }
 
-        //private void OP_F7()
-        //{ } // NOP
+        private void OP_F7()
+        { } // NOP
 
         private void OP_F8()
         { 
@@ -2123,8 +2114,8 @@ namespace SpaceInvaders
             }
         }
 
-        //private void OP_FD()
-        //{ } // NOP
+        private void OP_FD()
+        { } // NOP
 
         private void OP_FE()
         {
@@ -2134,8 +2125,8 @@ namespace SpaceInvaders
             registers.PC++;
         }
 
-        //private void OP_FF()
-        //{ } // NOP
+        private void OP_FF()
+        { } // NOP
 
         private void NOP()
         { }
