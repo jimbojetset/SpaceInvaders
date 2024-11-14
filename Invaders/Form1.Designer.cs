@@ -48,7 +48,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(786, 607);
+            ClientSize = new Size(784, 607);
             Controls.Add(pictureBox1);
             DoubleBuffered = true;
             Name = "Form1";

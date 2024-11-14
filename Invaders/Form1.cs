@@ -1,4 +1,5 @@
 using Microsoft.Win32;
+using NAudio.Wave;
 using SpaceInvaders;
 using System.Diagnostics;
 using System.Media;
@@ -15,6 +16,7 @@ namespace Invaders
         private Thread? emu_thread;
         private Thread? cpu_thread;
         private Thread? display_thread;
+        private Thread? sound_thread;
         private bool displayRunning = false;
         private byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
         private readonly SolidBrush semiBlack = new SolidBrush(Color.FromArgb(180, Color.Black));
@@ -36,8 +38,11 @@ namespace Invaders
 
             while (!cpu.Running) { }
 
-            display_thread = new Thread(() => RunDisplay());
+            display_thread = new Thread(() => DisplayThread());
             display_thread.Start();
+
+            sound_thread = new Thread(() => SoundThread());
+            sound_thread.Start();
         }
 
         private void RunEmulation()
@@ -51,30 +56,73 @@ namespace Invaders
             {
                 if (inputPorts[1] > 0 || inputPorts[2] > 0)
                     cpu.PortIn = inputPorts;
-                if (cpu.PortOut[3] <= 8)
-                    PortOut(3, cpu.PortOut[3]);
             }
         }
 
-        private void PortOut(int port, int sound)
-        {
-            if(port == 3)
-            {
-                if (sound == 1) { }
-                if (sound == 2) { }
-                if (sound == 4) { }
-                if (sound == 8) { }
-            }
-        }
-
-        private void PlaySound(string soundFile)
+        private void SoundThread()
         {
             SoundPlayer player = new SoundPlayer();
-            player.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + soundFile;
-            player.PlaySync();
+            byte prevPort3 = new byte();
+            byte prevPort5 = new byte();
+
+            while (cpu != null && cpu.Running)
+            {
+                if (prevPort3 != cpu.PortOut[3])
+                {
+                    switch (cpu!.PortOut[3])
+                    {
+                        case 0x01:
+                            player.SoundLocation = Application.StartupPath + @"\Sound\ufo_lowpitch.wav";
+                            player.PlaySync();
+                            break;
+                        case 0x02:
+                            player.SoundLocation = Application.StartupPath + @"\Sound\shoot.wav";
+                            player.PlaySync();
+                            break;
+                        case 0x04:
+                            player.SoundLocation = Application.StartupPath + @"\Sound\explosion.wav";
+                            player.PlaySync();
+                            break;
+                        case 0x08:
+                            player.SoundLocation = Application.StartupPath + @"\Sound\invaderkilled.wav";
+                            player.PlaySync();
+                            break;
+                    }
+                    prevPort3 = cpu!.PortOut[3];
+                }
+
+                if (prevPort5 != cpu.PortOut[5])
+                {
+                    switch (cpu!.PortOut[5])
+                    {
+                        case 0x01:
+                            player.SoundLocation = Application.StartupPath + @"\Sound\fastinvader1.wav";
+                            player.PlaySync();
+                            break;
+                        case 0x02:
+                            player.SoundLocation = Application.StartupPath + @"\Sound\fastinvader2.wav";
+                            player.PlaySync();
+                            break;
+                        case 0x04:
+                            player.SoundLocation = Application.StartupPath + @"\Sound\fastinvader3.wav";
+                            player.PlaySync();
+                            break;
+                        case 0x08:
+                            player.SoundLocation = Application.StartupPath + @"\Sound\fastinvader4.wav";
+                            player.PlaySync();
+                            break;
+                        case 0x16:
+                            player.SoundLocation = Application.StartupPath + @"\Sound\invaderkilled.wav";
+                            player.PlaySync();
+                            break;
+                    }
+                    prevPort5 = cpu!.PortOut[5];
+                }
+                while (cpu!.V_Sync != 2) { }
+            }
         }
 
-        private void RunDisplay()
+        private void DisplayThread()
         {
             displayRunning = true;
             while (cpu != null && cpu.Running && displayRunning)
@@ -221,6 +269,11 @@ namespace Invaders
             uint k = GetKeyValue(e);
             if (k != 99)
                 KeyLifted(k);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
