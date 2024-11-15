@@ -1,4 +1,4 @@
-An 8080 CPU based Space Invader Emulator written in c# .NET8 + Windows Forms with sound.
+An 8080 CPU based Space Invader Emulator written in c# .NET8 + Windows Forms + sound.
 
 ![Screenshot 2024-11-15 222214](https://github.com/user-attachments/assets/a513f3f7-be8d-46b3-b631-90b739214b70)
 
