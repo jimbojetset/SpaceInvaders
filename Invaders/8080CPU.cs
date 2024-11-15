@@ -1821,7 +1821,7 @@ namespace SpaceInvaders
         {
             uint port = registers.memory[registers.PC + 1];
             if (portIn[port] > 0)
-                registers.A = portIn[port];
+                registers.A = (byte)portIn[port];
             registers.PC++;
         }
 

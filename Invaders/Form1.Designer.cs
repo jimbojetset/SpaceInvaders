@@ -36,7 +36,7 @@
             // pictureBox1
             // 
             pictureBox1.BackColor = Color.Transparent;
-            pictureBox1.Location = new Point(166, 22);
+            pictureBox1.Location = new Point(76, 150);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(448, 512);
             pictureBox1.TabIndex = 0;
@@ -48,7 +48,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(784, 607);
+            ClientSize = new Size(594, 797);
             Controls.Add(pictureBox1);
             DoubleBuffered = true;
             Name = "Form1";
