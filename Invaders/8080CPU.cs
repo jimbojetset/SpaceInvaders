@@ -31,6 +31,10 @@ namespace SpaceInvaders
         public byte[] PortOut
         { get { return portOut; } }
 
+        private byte[] memory = new byte[0x10000];
+        public byte[] Memory
+        { get { return memory; } }
+
         public _8080CPU(string filePath)
         {
             registers = new Registers();
@@ -43,7 +47,7 @@ namespace SpaceInvaders
             romObj.Seek(0, SeekOrigin.Begin);
             registers.PC = (ushort)addr;
             for (int i = addr; i < addr + romObj.Length; i++)
-                registers.memory[i] = (byte)romObj.ReadByte();
+                memory[i] = (byte)romObj.ReadByte();
         }
 
         public void StopEmulation()
@@ -71,7 +75,7 @@ namespace SpaceInvaders
             bool hit_v_sync = false;
             while (!hit_v_sync && running)
             {
-                CallOpcode(registers.memory[registers.PC]);
+                CallOpcode(memory[registers.PC]);
                 registers.PC++;
                 if (stopwatch.ElapsedMilliseconds > 8.33 && running)
                 {
@@ -84,7 +88,7 @@ namespace SpaceInvaders
 
         private void CopyVideoBuffer()
         {
-            Buffer.BlockCopy(registers.memory, 0x2400, video, 0, video.Length);
+            Buffer.BlockCopy(memory, 0x2400, video, 0, video.Length);
         }
 
         private void CallOpcode(byte opcode)
@@ -354,15 +358,15 @@ namespace SpaceInvaders
 
         private void OP_01()
         {
-            registers.C = registers.memory[(uint)(registers.PC + 1)];
-            registers.B = registers.memory[(uint)(registers.PC + 2)];
+            registers.C = memory[(uint)(registers.PC + 1)];
+            registers.B = memory[(uint)(registers.PC + 2)];
             registers.PC += 2;
         }
 
         private void OP_02()
         {
             var addr = registers.BC;
-            registers.memory[addr] = registers.A;
+            memory[addr] = registers.A;
         }
 
         private void OP_03()
@@ -386,7 +390,7 @@ namespace SpaceInvaders
 
         private void OP_06()
         {
-            registers.B = registers.memory[registers.PC + 1];
+            registers.B = memory[registers.PC + 1];
             registers.PC++;
         }
 
@@ -410,7 +414,7 @@ namespace SpaceInvaders
         private void OP_0A()
         {
             var addr = registers.BC;
-            registers.A = registers.memory[addr];
+            registers.A = memory[addr];
         }
 
         private void OP_0B()
@@ -434,7 +438,7 @@ namespace SpaceInvaders
 
         private void OP_0E()
         {
-            registers.C = registers.memory[registers.PC + 1];
+            registers.C = memory[registers.PC + 1];
             registers.PC++;
         }
 
@@ -451,15 +455,15 @@ namespace SpaceInvaders
 
         private void OP_11()
         {
-            registers.D = registers.memory[registers.PC + 2];
-            registers.E = registers.memory[registers.PC + 1];
+            registers.D = memory[registers.PC + 2];
+            registers.E = memory[registers.PC + 1];
             registers.PC += 2;
         }
 
         private void OP_12()
         {
             var addr = registers.DE;
-            registers.memory[addr] = registers.A;
+            memory[addr] = registers.A;
         }
 
         private void OP_13()
@@ -483,7 +487,7 @@ namespace SpaceInvaders
 
         private void OP_16()
         {
-            registers.D = registers.memory[registers.PC + 1];
+            registers.D = memory[registers.PC + 1];
             registers.PC++;
         }
 
@@ -508,7 +512,7 @@ namespace SpaceInvaders
         private void OP_1A()
         {
             var addr = registers.DE;
-            registers.A = registers.memory[addr];
+            registers.A = memory[addr];
         }
 
         private void OP_1B()
@@ -532,7 +536,7 @@ namespace SpaceInvaders
 
         private void OP_1E()
         {
-            registers.E = registers.memory[registers.PC + 1];
+            registers.E = memory[registers.PC + 1];
             registers.PC++;
         }
 
@@ -549,16 +553,16 @@ namespace SpaceInvaders
 
         private void OP_21()
         {
-            registers.H = registers.memory[registers.PC + 2];
-            registers.L = registers.memory[registers.PC + 1];
+            registers.H = memory[registers.PC + 2];
+            registers.L = memory[registers.PC + 1];
             registers.PC += 2;
         }
 
         private void OP_22()
         {
             var addr = ReadOpcodeWord();
-            registers.memory[addr] = registers.L;
-            registers.memory[addr + 1] = registers.H;
+            memory[addr] = registers.L;
+            memory[addr + 1] = registers.H;
             registers.PC += 2;
         }
 
@@ -583,7 +587,7 @@ namespace SpaceInvaders
 
         private void OP_26()
         {
-            registers.H = registers.memory[registers.PC + 1];
+            registers.H = memory[registers.PC + 1];
             registers.PC ++;
         }
 
@@ -614,8 +618,8 @@ namespace SpaceInvaders
         private void OP_2A()
         {
             var addr = ReadOpcodeWord();
-            registers.L = registers.memory[addr];
-            registers.H = registers.memory[addr + 1];
+            registers.L = memory[addr];
+            registers.H = memory[addr + 1];
             registers.PC += 2;
         }
 
@@ -640,7 +644,7 @@ namespace SpaceInvaders
 
         private void OP_2E()
         {
-            registers.L = registers.memory[registers.PC + 1];
+            registers.L = memory[registers.PC + 1];
             registers.PC ++;
         }
 
@@ -661,7 +665,7 @@ namespace SpaceInvaders
         private void OP_32()
         { 
             ushort addr = ReadOpcodeWord();
-            registers.memory[addr] = registers.A;
+            memory[addr] = registers.A;
             registers.PC += 2;
         }
 
@@ -673,26 +677,26 @@ namespace SpaceInvaders
         private void OP_34()
         { 
             var addr = registers.HL;
-            var value = registers.memory[addr];
+            var value = memory[addr];
             value ++;
             registers.Flags.UpdateZSP(value);
-            registers.memory[addr] = (byte)(value & 0xFF);
+            memory[addr] = (byte)(value & 0xFF);
         }
 
         private void OP_35()
         {
             var addr = registers.HL;
-            var value = registers.memory[addr];
+            var value = memory[addr];
             value --;
             registers.Flags.UpdateZSP(value);
-            registers.memory[addr] = (byte)(value & 0xFF);
+            memory[addr] = (byte)(value & 0xFF);
         }
 
         private void OP_36()
         {
             var addr = registers.HL;
-            var value = registers.memory[registers.PC + 1];
-            registers.memory[addr] = value;
+            var value = memory[registers.PC + 1];
+            memory[addr] = value;
             registers.PC ++;
         }
 
@@ -714,7 +718,7 @@ namespace SpaceInvaders
         private void OP_3A()
         {
             ushort addr = ReadOpcodeWord();
-            registers.A = registers.memory[addr];
+            registers.A = memory[addr];
             registers.PC += 2;
         }
 
@@ -737,7 +741,7 @@ namespace SpaceInvaders
 
         private void OP_3E()
         { 
-            var addr = registers.memory[registers.PC + 1];
+            var addr = memory[registers.PC + 1];
             registers.A = addr;
             registers.PC ++;
         }
@@ -778,7 +782,7 @@ namespace SpaceInvaders
         private void OP_46()
         {
             var addr = registers.HL;
-            registers.B = registers.memory[addr];
+            registers.B = memory[addr];
         }
 
         private void OP_47()
@@ -819,7 +823,7 @@ namespace SpaceInvaders
         private void OP_4E()
         {
             var addr = registers.HL;
-            registers.C = registers.memory[addr];
+            registers.C = memory[addr];
         }
 
         private void OP_4F()
@@ -860,7 +864,7 @@ namespace SpaceInvaders
         private void OP_56()
         {
             var addr = registers.HL;
-            registers.D = registers.memory[addr];
+            registers.D = memory[addr];
         }
 
         private void OP_57()
@@ -901,7 +905,7 @@ namespace SpaceInvaders
         private void OP_5E()
         {
             var addr = registers.HL;
-            registers.E = registers.memory[addr];
+            registers.E = memory[addr];
         }
 
         private void OP_5F()
@@ -942,7 +946,7 @@ namespace SpaceInvaders
         private void OP_66()
         {
             var addr = registers.HL;
-            registers.H = registers.memory[addr];
+            registers.H = memory[addr];
         }
 
         private void OP_67()
@@ -981,7 +985,7 @@ namespace SpaceInvaders
         private void OP_6E()
         {
             var addr = registers.HL;
-            registers.L = registers.memory[addr];
+            registers.L = memory[addr];
         }
 
         private void OP_6F()
@@ -992,37 +996,37 @@ namespace SpaceInvaders
         private void OP_70()
         {
             ulong addr = registers.HL;
-            registers.memory[addr]= registers.B;
+            memory[addr]= registers.B;
         }
 
         private void OP_71()
         {
             ulong addr = registers.HL;
-            registers.memory[addr] = registers.C;
+            memory[addr] = registers.C;
         }
 
         private void OP_72()
         {
             ulong addr = registers.HL;
-            registers.memory[addr] = registers.D;
+            memory[addr] = registers.D;
         }
 
         private void OP_73()
         {
             ulong addr = registers.HL;
-            registers.memory[addr] = registers.E;
+            memory[addr] = registers.E;
         }
 
         private void OP_74()
         {
             ulong addr = registers.HL;
-            registers.memory[addr] = registers.H;
+            memory[addr] = registers.H;
         }
 
         private void OP_75()
         {
             ulong addr = registers.HL;
-            registers.memory[addr] = registers.L;
+            memory[addr] = registers.L;
         }
 
         private void OP_76()
@@ -1031,7 +1035,7 @@ namespace SpaceInvaders
         private void OP_77()
         {
             ulong addr = registers.HL;
-            registers.memory[addr] = registers.A;
+            memory[addr] = registers.A;
         }
 
         private void OP_78()
@@ -1067,7 +1071,7 @@ namespace SpaceInvaders
         private void OP_7E()
         {
             var addr = registers.HL;
-            registers.A = registers.memory[addr];
+            registers.A = memory[addr];
         }
 
         private void OP_7F()
@@ -1123,7 +1127,7 @@ namespace SpaceInvaders
 
         private void OP_86()
         {
-            var addr = (uint)registers.A + (uint)registers.memory[registers.HL];
+            var addr = (uint)registers.A + (uint)memory[registers.HL];
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1187,7 +1191,7 @@ namespace SpaceInvaders
 
         private void OP_8E()
         {
-            var addr = (uint)registers.A + (uint)registers.memory[registers.HL] + (uint)registers.Flags.CY;
+            var addr = (uint)registers.A + (uint)memory[registers.HL] + (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1251,7 +1255,7 @@ namespace SpaceInvaders
 
         private void OP_96()
         {
-            var addr = (uint)registers.A - (uint)registers.memory[registers.HL];
+            var addr = (uint)registers.A - (uint)memory[registers.HL];
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1316,7 +1320,7 @@ namespace SpaceInvaders
         private void OP_9E()
         {
             var addr2 = registers.HL;
-            var addr = (uint)registers.A - (uint)registers.memory[addr2] - (uint)registers.Flags.CY;
+            var addr = (uint)registers.A - (uint)memory[addr2] - (uint)registers.Flags.CY;
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1374,7 +1378,7 @@ namespace SpaceInvaders
 
         private void OP_A6()
         {
-            registers.A = (byte)(registers.A & registers.memory[registers.HL]);
+            registers.A = (byte)(registers.A & memory[registers.HL]);
             registers.Flags.UpdateZSP(registers.A);
             registers.Flags.UpdateByteCY(registers.A);
 
@@ -1431,7 +1435,7 @@ namespace SpaceInvaders
 
         private void OP_AE()
         {
-            registers.A = (byte)(registers.A ^ registers.memory[registers.HL]);
+            registers.A = (byte)(registers.A ^ memory[registers.HL]);
             registers.Flags.UpdateZSP(registers.A);
             registers.Flags.UpdateByteCY(registers.A);
         }
@@ -1487,7 +1491,7 @@ namespace SpaceInvaders
 
         private void OP_B6()
         {
-            registers.A = (byte)(registers.A | registers.memory[registers.HL]);
+            registers.A = (byte)(registers.A | memory[registers.HL]);
             registers.Flags.UpdateZSP(registers.A);
             registers.Flags.UpdateByteCY(registers.A);
         }
@@ -1561,9 +1565,9 @@ namespace SpaceInvaders
 
         private void OP_BE()
         {
-            var addr = (byte)(registers.A - registers.memory[registers.HL]);
+            var addr = (byte)(registers.A - memory[registers.HL]);
             registers.Flags.UpdateZSP(addr);
-            if (registers.A < registers.memory[registers.HL])
+            if (registers.A < memory[registers.HL])
                 registers.Flags.CY = 1;
             else
                 registers.Flags.CY = 0;
@@ -1588,8 +1592,8 @@ namespace SpaceInvaders
 
         private void OP_C1()
         {
-            registers.C = registers.memory[registers.SP];
-            registers.B = registers.memory[registers.SP + 1];
+            registers.C = memory[registers.SP];
+            registers.B = memory[registers.SP + 1];
             registers.SP += 2;
         }
 
@@ -1630,14 +1634,14 @@ namespace SpaceInvaders
 
         private void OP_C5()
         {
-            registers.memory[registers.SP - 2] = registers.C;
-            registers.memory[registers.SP - 1] = registers.B;
+            memory[registers.SP - 2] = registers.C;
+            memory[registers.SP - 1] = registers.B;
             registers.SP -= 2;
         }
 
         private void OP_C6()
         {
-            ulong addr = (ulong)registers.A + registers.memory[registers.PC + 1];
+            ulong addr = (ulong)registers.A + memory[registers.PC + 1];
             registers.Flags.UpdateZSP((uint)addr);
             registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1704,7 +1708,7 @@ namespace SpaceInvaders
         private void OP_CE()
         {
             ulong addr = registers.A;
-            addr += registers.memory[registers.PC + 1];
+            addr += memory[registers.PC + 1];
             addr += registers.Flags.CY;
             registers.Flags.UpdateByteCY(addr);
             registers.Flags.UpdateZSP((uint)addr);
@@ -1726,8 +1730,8 @@ namespace SpaceInvaders
 
         private void OP_D1()
         {
-            registers.E = registers.memory[registers.SP];
-            registers.D = registers.memory[registers.SP + 1];
+            registers.E = memory[registers.SP];
+            registers.D = memory[registers.SP + 1];
             registers.SP += 2;
         }
 
@@ -1747,7 +1751,7 @@ namespace SpaceInvaders
 
         private void OP_D3()
         {
-            uint port = registers.memory[registers.PC + 1];
+            uint port = memory[registers.PC + 1];
             if (registers.A > 0)
                 portOut[port] = registers.A;
             else
@@ -1772,14 +1776,14 @@ namespace SpaceInvaders
 
         private void OP_D5()
         {
-            registers.memory[registers.SP - 2] = registers.E;
-            registers.memory[registers.SP - 1] = registers.D;
+            memory[registers.SP - 2] = registers.E;
+            memory[registers.SP - 1] = registers.D;
             registers.SP -= 2;
         }
 
         private void OP_D6()
         {
-            ulong data = registers.memory[registers.PC + 1];
+            ulong data = memory[registers.PC + 1];
             ulong addr = registers.A - data;
             registers.Flags.UpdateByteCY(addr);
             registers.Flags.UpdateZSP((uint)addr);
@@ -1819,7 +1823,7 @@ namespace SpaceInvaders
 
         private void OP_DB()
         {
-            uint port = registers.memory[registers.PC + 1];
+            uint port = memory[registers.PC + 1];
             if (portIn[port] > 0)
                 registers.A = (byte)portIn[port];
             registers.PC++;
@@ -1845,7 +1849,7 @@ namespace SpaceInvaders
 
         private void OP_DE()
         {
-            ulong data = registers.memory[registers.PC + 1];
+            ulong data = memory[registers.PC + 1];
             ulong addr = registers.A - data - registers.Flags.CY;
             registers.Flags.UpdateByteCY(addr);
             registers.Flags.UpdateZSP((uint)addr);
@@ -1867,8 +1871,8 @@ namespace SpaceInvaders
 
         private void OP_E1()
         {
-            registers.L = registers.memory[registers.SP];
-            registers.H = registers.memory[registers.SP + 1];
+            registers.L = memory[registers.SP];
+            registers.H = memory[registers.SP + 1];
             registers.SP += 2;
         }
 
@@ -1890,10 +1894,10 @@ namespace SpaceInvaders
         {
             uint l = registers.L;
             uint h = registers.H;
-            registers.L = registers.memory[registers.SP];
-            registers.H = registers.memory[registers.SP + 1];
-            registers.memory[registers.SP] = (byte)l;
-            registers.memory[registers.SP + 1] = (byte)h;
+            registers.L = memory[registers.SP];
+            registers.H = memory[registers.SP + 1];
+            memory[registers.SP] = (byte)l;
+            memory[registers.SP + 1] = (byte)h;
         }
 
         private void OP_E4()
@@ -1913,14 +1917,14 @@ namespace SpaceInvaders
 
         private void OP_E5()
         {
-            registers.memory[registers.SP - 2] = registers.L;
-            registers.memory[registers.SP - 1] = registers.H;
+            memory[registers.SP - 2] = registers.L;
+            memory[registers.SP - 1] = registers.H;
             registers.SP -= 2;
         }
 
         private void OP_E6()
         {
-            ulong addr = (ulong)(registers.A & registers.memory[registers.PC + 1]);
+            ulong addr = (ulong)(registers.A & memory[registers.PC + 1]);
             registers.Flags.UpdateZSP((uint)addr);
             registers.Flags.UpdateByteCY(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1991,7 +1995,7 @@ namespace SpaceInvaders
 
         private void OP_EE()
         {
-            registers.A ^= registers.memory[registers.PC + 1];
+            registers.A ^= memory[registers.PC + 1];
             registers.Flags.UpdateByteCY(registers.A);
             registers.Flags.UpdateZSP(registers.A);
             registers.PC++;
@@ -2011,9 +2015,9 @@ namespace SpaceInvaders
 
         private void OP_F1()
         {
-            byte flags = registers.memory[registers.SP];
+            byte flags = memory[registers.SP];
             registers.Flags.SetFromByte(flags);
-            registers.A = registers.memory[registers.SP + 1];
+            registers.A = memory[registers.SP + 1];
             registers.SP += 2;
         }
 
@@ -2053,14 +2057,14 @@ namespace SpaceInvaders
 
         private void OP_F5()
         {
-            registers.memory[registers.SP - 2] = registers.Flags.ToByte();
-            registers.memory[registers.SP - 1] = registers.A;
+            memory[registers.SP - 2] = registers.Flags.ToByte();
+            memory[registers.SP - 1] = registers.A;
             registers.SP -= 2;
         }
 
         private void OP_F6()
         {
-            ulong data = registers.memory[registers.PC + 1];
+            ulong data = memory[registers.PC + 1];
             ulong value = registers.A | data;
             registers.Flags.UpdateByteCY(value);
             registers.Flags.UpdateZSP((uint)value);
@@ -2124,7 +2128,7 @@ namespace SpaceInvaders
 
         private void OP_FE()
         {
-            ulong addr = (ulong)(registers.A - registers.memory[registers.PC + 1]);
+            ulong addr = (ulong)(registers.A - memory[registers.PC + 1]);
             registers.Flags.UpdateZSP((uint)addr);
             registers.Flags.UpdateByteCY(addr);
             registers.PC++;
@@ -2138,7 +2142,7 @@ namespace SpaceInvaders
 
         private ushort ReadOpcodeWord()
         {
-            return MakeWord(registers.memory[registers.PC + 2], registers.memory[registers.PC + 1]);
+            return MakeWord(memory[registers.PC + 2], memory[registers.PC + 1]);
         }
 
         private ushort MakeWord(uint hi, uint lo)
@@ -2150,16 +2154,16 @@ namespace SpaceInvaders
         {
             byte rethi = (byte)((retAddress >> 8) & 0xFF);
             byte retlo = (byte)(retAddress & 0xFF);
-            registers.memory[registers.SP - 1] = rethi;
-            registers.memory[registers.SP - 2] = retlo;
+            memory[registers.SP - 1] = rethi;
+            memory[registers.SP - 2] = retlo;
             registers.SP -= 2;
             registers.PC = address;
         }
 
         private void Ret()
         {
-            uint pclo = registers.memory[registers.SP];
-            uint pchi = registers.memory[registers.SP + 1];
+            uint pclo = memory[registers.SP];
+            uint pchi = memory[registers.SP + 1];
             registers.PC = MakeWord(pchi, pclo);
             registers.SP += 2;
         }
@@ -2169,8 +2173,8 @@ namespace SpaceInvaders
             if (!registers.INT_ENABLE) return;
             byte pchi = (byte)((registers.PC >> 8) & 0xFF);
             byte pclo = (byte)(registers.PC & 0xFF);
-            registers.memory[registers.SP - 1] = pchi;
-            registers.memory[registers.SP - 2] = pclo;
+            memory[registers.SP - 1] = pchi;
+            memory[registers.SP - 2] = pclo;
             registers.SP -= 2;
             if (num == 1) { registers.PC = 0x0008; }
             if (num == 2) { registers.PC = 0x0010; }

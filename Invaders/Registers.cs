@@ -15,13 +15,23 @@
         private ushort pc = 0;
         private bool int_enable = false;
         private Flags ?flags = new Flags();
-        public byte[] memory = new byte[0x10000]; // = 8k bytes of memory = 65536 bits
 
         public Registers()
         {
+            a = 0;
+            b = 0;
+            c = 0;
+            d = 0;
+            e = 0;
+            h = 0;
+            l = 0;
+            sp = 0;
+            pc = 0;
+            int_enable = false;
+            Flags? flags = new Flags();
         }
 
-        public byte A
+    public byte A
         {
             get { return this.a; }
             set { this.a = value; }
