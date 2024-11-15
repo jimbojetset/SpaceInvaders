@@ -182,33 +182,43 @@ namespace Invaders
                 case 1: // Coin
                     inputPorts[1] |= 0x01;
                     break;
+
                 case 2: // 1P Start
                     inputPorts[1] |= 0x04;
                     break;
+
                 case 3: // 2P start
                     inputPorts[1] |= 0x02;
                     break;
+
                 case 4: // 1P Left
                     inputPorts[1] |= 0x20;
                     break;
+
                 case 5: // 1P Right
                     inputPorts[1] |= 0x40;
                     break;
+
                 case 6: // 1P Fire
                     inputPorts[1] |= 0x10;
                     break;
+
                 case 7: // 2P Left
                     inputPorts[2] |= 0x20;
                     break;
+
                 case 8: // 2P Right
                     inputPorts[2] |= 0x40;
                     break;
+
                 case 9: // 2P Fire
                     inputPorts[2] |= 0x10;
                     break;
+
                 case 10: // Easter Egg Part 1
                     inputPorts[1] += 0x72;
                     break;
+
                 case 11: // Easter Egg Part 2
                     inputPorts[1] += 0x34;
                     break;
@@ -222,33 +232,43 @@ namespace Invaders
                 case 1: // Coin
                     inputPorts[1] &= 0xFE;
                     break;
+
                 case 2: // 1P Start
                     inputPorts[1] &= 0xFB;
                     break;
+
                 case 3: // 2P start
                     inputPorts[1] &= 0xFD;
                     break;
+
                 case 4: // 1P Left
                     inputPorts[1] &= 0xDF;
                     break;
+
                 case 5: // 1P Right
                     inputPorts[1] &= 0xBF;
                     break;
+
                 case 6: // 1P Fire
                     inputPorts[1] &= 0xEF;
                     break;
+
                 case 7: // 2P Left
                     inputPorts[2] &= 0xDF;
                     break;
+
                 case 8: // 2P Right
                     inputPorts[2] &= 0xBF;
                     break;
+
                 case 9: // 2P Fire
                     inputPorts[2] &= 0xEF;
                     break;
+
                 case 10: // Easter Egg Part 1
                     inputPorts[1] &= 0x8D;
                     break;
+
                 case 11: // Easter Egg Part 2
                     inputPorts[1] &= 0xCB;
                     break;
@@ -271,7 +291,6 @@ namespace Invaders
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
         }
     }
 }

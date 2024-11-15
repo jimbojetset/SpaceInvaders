@@ -2,8 +2,6 @@
 {
     internal class Registers
     {
-        //const int INTERRUPT_ENABLED = 1;
-        //const int INTERRUPT_DISABLED = 0;
         private byte a = 0;
         private byte b = 0;
         private byte c = 0;
@@ -14,7 +12,7 @@
         private ushort sp = 0;
         private ushort pc = 0;
         private bool int_enable = false;
-        private Flags ?flags = new Flags();
+        private Flags? flags = new Flags();
 
         public Registers()
         {
@@ -31,7 +29,7 @@
             Flags? flags = new Flags();
         }
 
-    public byte A
+        public byte A
         {
             get { return this.a; }
             set { this.a = value; }
@@ -99,7 +97,10 @@
 
         public ulong HL
         {
-            get { return (ulong)this.h << 8 | (ulong)this.l; }
+            get
+            {
+                return (ulong)this.h << 8 | (ulong)this.l;
+            }
             set
             {
                 this.h = (byte)((value & 0xFF00) >> 8);
@@ -109,7 +110,10 @@
 
         public ulong DE
         {
-            get { return (ulong)this.d << 8 | (ulong)this.e; }
+            get
+            {
+                return (ulong)this.d << 8 | (ulong)this.e;
+            }
             set
             {
                 this.d = (byte)((value & 0xFF00) >> 8);
@@ -119,13 +123,15 @@
 
         public ulong BC
         {
-            get { return (ulong)this.b << 8 | (ulong)this.c; }
+            get
+            {
+                return (ulong)this.b << 8 | (ulong)this.c;
+            }
             set
             {
                 this.b = (byte)((value & 0xFF00) >> 8);
                 this.c = (byte)(value & 0x00FF);
             }
         }
-
     }
 }
