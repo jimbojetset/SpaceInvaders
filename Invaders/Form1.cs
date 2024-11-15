@@ -165,9 +165,9 @@ namespace Invaders
             if (e.KeyCode == Keys.Left) return 4;      // 1P Left
             if (e.KeyCode == Keys.Right) return 5;     // 1P Right
             if (e.KeyCode == Keys.D) return 6;         // 1P Fire
-            if (e.KeyCode == Keys.Z) return 7;         // 2P Left
-            if (e.KeyCode == Keys.X) return 8;         // 2P Right
-            if (e.KeyCode == Keys.LShiftKey) return 9; // 2P Fire
+            if (e.KeyCode == Keys.Left) return 7;      // 2P Left
+            if (e.KeyCode == Keys.Right) return 8;     // 2P Right
+            if (e.KeyCode == Keys.D) return 9;         // 2P Fire
             if (e.KeyCode == Keys.O) return 10;        // Easter Egg Part 1
             if (e.KeyCode == Keys.P) return 11;        // Easter Egg Part 2
             return 99;
