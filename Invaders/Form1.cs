@@ -44,15 +44,14 @@ namespace Invaders
         private void RunEmulation()
         {
             cpu_thread = new Thread(() => cpu!.RunEmulation());
+            cpu_thread.IsBackground = true;
             cpu_thread.Start();
 
             while (!cpu!.Running) { }
 
             while (cpu.Running)
-            {
                 if (inputPorts[1] > 0 || inputPorts[2] > 0)
                     cpu.PortIn = inputPorts;
-            }
         }
 
         private void SoundThread()
