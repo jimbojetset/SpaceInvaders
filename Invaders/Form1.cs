@@ -1,12 +1,5 @@
-using Microsoft.Win32;
-using NAudio.Wave;
 using SpaceInvaders;
-using System.Diagnostics;
 using System.Media;
-using System.Reflection.Emit;
-using System.Security.Cryptography;
-using System.Security.Policy;
-using System.Text;
 
 namespace Invaders
 {
