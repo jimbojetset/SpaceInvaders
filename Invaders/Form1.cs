@@ -129,7 +129,6 @@ namespace Invaders
                 Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
                 using (Graphics graphics = Graphics.FromImage(videoBitmap))
                 {
-                    //graphics.FillRectangle(semiBlack, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
                     int ptr = 0;
                     for (int x = 0; x < SCREEN_WIDTH; x += 2)
                         for (int y = 511; y > 0; y -= 16)
