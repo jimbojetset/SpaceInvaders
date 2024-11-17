@@ -24,7 +24,7 @@ namespace SpaceInvaders
         public byte[] Video
         { get { return video; } }
 
-        private byte[] portIn = new byte[4]; // 0,1,2,3
+        private byte[] portIn = new byte[3]; // 0,1,2,3
 
         public byte[] PortIn
         { set { portIn = value; } }
@@ -1828,8 +1828,8 @@ namespace SpaceInvaders
         private void OP_DB()
         {
             uint port = memory[registers.PC + 1];
-            if (port == 1 || port == 2)
-                registers.A = (byte)portIn[port];
+            if (port < 3)
+                registers.A = portIn[port];
             registers.PC++;
         }
 
