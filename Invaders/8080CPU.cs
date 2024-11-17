@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using static System.Windows.Forms.AxHost;
 
 namespace SpaceInvaders
 {
@@ -1829,18 +1828,8 @@ namespace SpaceInvaders
         private void OP_DB()
         {
             uint port = memory[registers.PC + 1];
-            switch (port)
-            {
-                case 0:
-                    registers.A = portIn[port];
-                    break;
-                case 1:
-                    registers.A = portIn[port];
-                    break;
-                case 3:
-                    // not sure what to do here to make tilt work
-                    break;
-            }
+            if (port < 3)
+                registers.A = portIn[port];
             registers.PC++;
         }
 

@@ -221,10 +221,6 @@ namespace Invaders
                 case 11: // Easter Egg Part 2
                     inputPorts[1] += 0x34;
                     break;
-
-                case 12: // Tilt
-                    inputPorts[2] |= 0x04;
-                    break;
             }
         }
 
@@ -274,10 +270,6 @@ namespace Invaders
 
                 case 11: // Easter Egg Part 2
                     inputPorts[1] &= 0xCB;
-                    break;
-
-                case 12: // Tilt
-                    inputPorts[2] |= 0xFB;
                     break;
             }
         }
