@@ -31,56 +31,56 @@
 
         public byte A
         {
-            get { return this.a; }
-            set { this.a = value; }
+            get { return a; }
+            set { a = value; }
         }
 
         public byte B
         {
-            get { return this.b; }
-            set { this.b = value; }
+            get { return b; }
+            set { b = value; }
         }
 
         public byte C
         {
-            get { return this.c; }
-            set { this.c = value; }
+            get { return c; }
+            set { c = value; }
         }
 
         public byte D
         {
-            get { return this.d; }
-            set { this.d = value; }
+            get { return d; }
+            set { d = value; }
         }
 
         public byte E
         {
-            get { return this.e; }
-            set { this.e = value; }
+            get { return e; }
+            set { e = value; }
         }
 
         public byte H
         {
-            get { return this.h; }
-            set { this.h = value; }
+            get { return h; }
+            set { h = value; }
         }
 
         public byte L
         {
-            get { return this.l; }
-            set { this.l = value; }
+            get { return l; }
+            set { l = value; }
         }
 
         public ushort SP
         {
-            get { return this.sp; }
-            set { this.sp = value; }
+            get { return sp; }
+            set { sp = value; }
         }
 
         public ushort PC
         {
-            get { return this.pc; }
-            set { this.pc = value; }
+            get { return pc; }
+            set { pc = value; }
         }
 
         public Flags Flags
@@ -99,12 +99,12 @@
         {
             get
             {
-                return (ulong)this.h << 8 | (ulong)this.l;
+                return (ulong)h << 8 | (ulong)l;
             }
             set
             {
-                this.h = (byte)((value & 0xFF00) >> 8);
-                this.l = (byte)(value & 0x00FF);
+                h = (byte)((value & 0xFF00) >> 8);
+                l = (byte)(value & 0x00FF);
             }
         }
 
@@ -112,12 +112,12 @@
         {
             get
             {
-                return (ulong)this.d << 8 | (ulong)this.e;
+                return (ulong)d << 8 | (ulong)e;
             }
             set
             {
-                this.d = (byte)((value & 0xFF00) >> 8);
-                this.e = (byte)(value & 0x00FF);
+                d = (byte)((value & 0xFF00) >> 8);
+                e = (byte)(value & 0x00FF);
             }
         }
 
@@ -125,12 +125,12 @@
         {
             get
             {
-                return (ulong)this.b << 8 | (ulong)this.c;
+                return (ulong)b << 8 | (ulong)c;
             }
             set
             {
-                this.b = (byte)((value & 0xFF00) >> 8);
-                this.c = (byte)(value & 0x00FF);
+                b = (byte)((value & 0xFF00) >> 8);
+                c = (byte)(value & 0x00FF);
             }
         }
     }

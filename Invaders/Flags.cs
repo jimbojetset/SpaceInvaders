@@ -11,65 +11,65 @@
 
         public Flags()
         {
-            this.Z = 0;
-            this.S = 0;
-            this.P = 0;
-            this.cy = 0;
-            this.ac = 0;
-            this.pad = 3;
+            Z = 0;
+            S = 0;
+            P = 0;
+            cy = 0;
+            ac = 0;
+            pad = 3;
         }
 
         public uint Z
         {
-            get { return this.z; }
-            set { this.z = value; }
+            get { return z; }
+            set { z = value; }
         }
 
         public uint S
         {
-            get { return this.s; }
-            set { this.s = value; }
+            get { return s; }
+            set { s = value; }
         }
 
         public uint P
         {
-            get { return this.p; }
-            set { this.p = value; }
+            get { return p; }
+            set { p = value; }
         }
 
         public uint CY
         {
-            get { return this.cy; }
-            set { this.cy = value; }
+            get { return cy; }
+            set { cy = value; }
         }
 
         public uint AC
         {
-            get { return this.ac; }
-            set { this.ac = value; }
+            get { return ac; }
+            set { ac = value; }
         }
 
         public uint Pad
         {
-            get { return this.pad; }
-            set { this.pad = value; }
+            get { return pad; }
+            set { pad = value; }
         }
 
-        public void UpdateByteCY(ulong value)
+        public void UpdateCarryByte(ulong value)
         {
-            this.cy = (uint)((value > 0x00FF) ? 1 : 0);
+            cy = (uint)((value > 0x00FF) ? 1 : 0);
         }
 
-        public void UpdateWordCY(ulong value)
+        public void UpdateCarryWord(ulong value)
         {
-            this.cy = (uint)((value > 0xFFFF) ? 1 : 0);
+            cy = (uint)((value > 0xFFFF) ? 1 : 0);
         }
 
         public void UpdateZSP(uint value)
         {
-            this.z = (uint)(((value & 0xFF) == 0) ? 1 : 0);
-            this.s = (uint)(((value & 0x80) == 0x80) ? 1 : 0);
-            this.p = (uint)CalculateParityFlag(value & 0xFF);
+            z = (uint)(((value & 0xFF) == 0) ? 1 : 0);
+            s = (uint)(((value & 0x80) == 0x80) ? 1 : 0);
+            p = (uint)CalculateParityFlag(value & 0xFF);
         }
 
         public int CalculateParityFlag(uint value)
