@@ -72,7 +72,7 @@ namespace SpaceInvaders
                 vSync = 1;
                 Tick();
                 Tick();
-                CopyVideoBuffer();
+                Buffer.BlockCopy(memory, 0x2400, video, 0, video.Length);
             }
         }
 
@@ -94,16 +94,11 @@ namespace SpaceInvaders
             }
         }
 
-        private void CopyVideoBuffer()
-        {
-            Buffer.BlockCopy(memory, 0x2400, video, 0, video.Length);
-        }
-
         private void CallOpcode(byte opcode)
         {
             switch (opcode)
             {
-                case 0x00: NOP(); break;
+                case 0x00: OP_00(); break;
                 case 0x01: OP_01(); break;
                 case 0x02: OP_02(); break;
                 case 0x03: OP_03(); break;
@@ -363,6 +358,11 @@ namespace SpaceInvaders
             }
         }
 
+        private void OP_00()
+        {
+            // NOP
+        }
+
         private void OP_01()
         {
             registers.C = memory[(uint)(registers.PC + 1)];
@@ -409,7 +409,7 @@ namespace SpaceInvaders
         }
 
         private void OP_08()
-        { } // NOP
+        { }
 
         private void OP_09()
         {
@@ -458,7 +458,7 @@ namespace SpaceInvaders
         }
 
         private void OP_10()
-        { } // NOP
+        { }
 
         private void OP_11()
         {
@@ -507,7 +507,7 @@ namespace SpaceInvaders
         }
 
         private void OP_18()
-        { } // NOP
+        { }
 
         private void OP_19()
         {
@@ -556,7 +556,7 @@ namespace SpaceInvaders
         }
 
         private void OP_20()
-        { } // NOP
+        { }
 
         private void OP_21()
         {
@@ -613,7 +613,7 @@ namespace SpaceInvaders
         }
 
         private void OP_28()
-        { } // NOP
+        { }
 
         private void OP_29()
         {
@@ -661,7 +661,7 @@ namespace SpaceInvaders
         }
 
         private void OP_30()
-        { } // NOP
+        { }
 
         private void OP_31()
         {
@@ -713,7 +713,7 @@ namespace SpaceInvaders
         }
 
         private void OP_38()
-        { } // NOP
+        { }
 
         private void OP_39()
         {
@@ -759,7 +759,7 @@ namespace SpaceInvaders
         }
 
         private void OP_40()
-        { } // NOP
+        { }
 
         private void OP_41()
         {
@@ -987,7 +987,7 @@ namespace SpaceInvaders
         }
 
         private void OP_6D()
-        { } // NOP
+        { }
 
         private void OP_6E()
         {
@@ -1037,7 +1037,7 @@ namespace SpaceInvaders
         }
 
         private void OP_76()
-        { } // NOP
+        { }
 
         private void OP_77()
         {
@@ -1082,7 +1082,7 @@ namespace SpaceInvaders
         }
 
         private void OP_7F()
-        { } // NOP
+        { }
 
         private void OP_80()
         {
@@ -1656,7 +1656,7 @@ namespace SpaceInvaders
         }
 
         private void OP_C7()
-        { } // NOP
+        { }
 
         private void OP_C8()
         {
@@ -1688,7 +1688,7 @@ namespace SpaceInvaders
         }
 
         private void OP_CB()
-        { } // NOP
+        { }
 
         private void OP_CC()
         {
@@ -1725,7 +1725,7 @@ namespace SpaceInvaders
         }
 
         private void OP_CF()
-        { } // NOP               RST(0x8)
+        { }
 
         private void OP_D0()
         {
@@ -1814,7 +1814,7 @@ namespace SpaceInvaders
         }
 
         private void OP_D7()
-        { } // NOP              RST(0x10);
+        { }
 
         private void OP_D8()
         {
@@ -1826,7 +1826,7 @@ namespace SpaceInvaders
         }
 
         private void OP_D9()
-        { } // NOP
+        { }
 
         private void OP_DA()
         {
@@ -1882,7 +1882,7 @@ namespace SpaceInvaders
         }
 
         private void OP_DD()
-        { } // NOP
+        { }
 
         private void OP_DE()
         {
@@ -1895,7 +1895,7 @@ namespace SpaceInvaders
         }
 
         private void OP_DF()
-        { } // NOP
+        { }
 
         private void OP_E0()
         {
@@ -1969,7 +1969,7 @@ namespace SpaceInvaders
         }
 
         private void OP_E7()
-        { } // NOP
+        { }
 
         private void OP_E8()
         {
@@ -1982,7 +1982,7 @@ namespace SpaceInvaders
 
         private void OP_E9()
         {
-            registers.PC = MakeWord(registers.H, registers.L);
+            registers.PC = (ushort)(registers.H << 8 | registers.L);
             registers.PC--;
         }
 
@@ -2026,7 +2026,7 @@ namespace SpaceInvaders
         }
 
         private void OP_ED()
-        { } // NOP
+        { }
 
         private void OP_EE()
         {
@@ -2037,7 +2037,7 @@ namespace SpaceInvaders
         }
 
         private void OP_EF()
-        { } // NOP
+        { }
 
         private void OP_F0()
         {
@@ -2108,7 +2108,7 @@ namespace SpaceInvaders
         }
 
         private void OP_F7()
-        { } // NOP
+        { }
 
         private void OP_F8()
         {
@@ -2159,7 +2159,7 @@ namespace SpaceInvaders
         }
 
         private void OP_FD()
-        { } // NOP
+        { }
 
         private void OP_FE()
         {
@@ -2170,19 +2170,11 @@ namespace SpaceInvaders
         }
 
         private void OP_FF()
-        { } // NOP
-
-        private void NOP()
         { }
 
         private ushort ReadOpcodeWord()
         {
-            return MakeWord(memory[registers.PC + 2], memory[registers.PC + 1]);
-        }
-
-        private ushort MakeWord(uint hi, uint lo)
-        {
-            return (ushort)(hi << 8 | lo);
+            return (ushort)(memory[registers.PC + 2] << 8 | memory[registers.PC + 1]);
         }
 
         private void Call(ushort address, ushort retAddress)
@@ -2191,28 +2183,31 @@ namespace SpaceInvaders
             byte retlo = (byte)(retAddress & 0xFF);
             memory[registers.SP - 1] = rethi;
             memory[registers.SP - 2] = retlo;
-            registers.SP -= 2;
             registers.PC = address;
+            registers.SP -= 2;
         }
 
         private void Ret()
         {
             uint pclo = memory[registers.SP];
             uint pchi = memory[registers.SP + 1];
-            registers.PC = MakeWord(pchi, pclo);
+            registers.PC = (ushort)(pchi << 8 | pclo);
             registers.SP += 2;
         }
 
         private void Interrupt(int num)
         {
-            if (!registers.INT_ENABLE) return;
+            if (!registers.INT_ENABLE) 
+                return;
             byte pchi = (byte)((registers.PC >> 8) & 0xFF);
             byte pclo = (byte)(registers.PC & 0xFF);
             memory[registers.SP - 1] = pchi;
             memory[registers.SP - 2] = pclo;
             registers.SP -= 2;
-            if (num == 1) { registers.PC = 0x0008; }
-            if (num == 2) { registers.PC = 0x0010; }
+            if (num == 1) 
+                registers.PC = 0x0008;
+            if (num == 2) 
+                registers.PC = 0x0010;
         }
     }
 }
