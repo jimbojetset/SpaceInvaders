@@ -11,7 +11,7 @@ namespace Invaders
         private Thread? display_thread;
         private Thread? sound_thread;
         private bool displayRunning = false;
-        private byte[] inputPorts = new byte[3] { 0x0E, 0x08, 0x00 };
+        private byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
         private readonly SolidBrush semiBlack = new SolidBrush(Color.FromArgb(180, Color.Black));
         private readonly int SCREEN_WIDTH = 448;
         private readonly int SCREEN_HEIGHT = 512;
@@ -221,6 +221,10 @@ namespace Invaders
                 case 11: // Easter Egg Part 2
                     inputPorts[1] += 0x34;
                     break;
+
+                case 12: // Easter Egg Part 2
+                    inputPorts[2] += 0x04;
+                    break;
             }
         }
 
@@ -270,6 +274,10 @@ namespace Invaders
 
                 case 11: // Easter Egg Part 2
                     inputPorts[1] &= 0xCB;
+                    break;
+
+                case 12: // Easter Egg Part 2
+                    inputPorts[1] &= 0xFB;
                     break;
             }
         }

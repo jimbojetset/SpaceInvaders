@@ -24,7 +24,7 @@ namespace SpaceInvaders
         public byte[] Video
         { get { return video; } }
 
-        private byte[] portIn = new byte[3]; // 0,1,2,3
+        private byte[] portIn = new byte[4]; // 0,1,2,3
 
         public byte[] PortIn
         { set { portIn = value; } }
@@ -39,12 +39,17 @@ namespace SpaceInvaders
         public byte[] Memory
         { get { return memory; } }
 
+        private int ext_shift_data = 0;
+        private int ext_shift_offset = 0;
+
+
         public _8080CPU(string filePath)
         {
             memory = new byte[0x10000];
             registers = new Registers();
             ReadROM(filePath, 0x00);
         }
+
 
         private void ReadROM(string filePath, int addr)
         {
@@ -1757,10 +1762,22 @@ namespace SpaceInvaders
         private void OP_D3()
         {
             uint port = memory[registers.PC + 1];
-            if (registers.A > 0)
-                portOut[port] = registers.A;
-            else
-                portOut[port] = 0;
+            switch (port)
+            {
+                case 2:
+                    ext_shift_offset = registers.A & 0x07;
+                    break;
+                case 3:
+                    portOut[3] = registers.A;
+                    break;
+                case 4:
+                    ext_shift_data = (ext_shift_data >> 8) | (registers.A << 8);
+                    break;
+                case 5:
+                    portOut[5] = registers.A;
+                    break;
+
+            }
             registers.PC++;
         }
 
@@ -1828,8 +1845,21 @@ namespace SpaceInvaders
         private void OP_DB()
         {
             uint port = memory[registers.PC + 1];
-            if (port < 3)
-                registers.A = portIn[port];
+            switch (port)
+            {
+                case 0:
+                    registers.A = portIn[0];
+                    break;
+                case 1:
+                    registers.A = portIn[1];
+                    break;
+                case 2:
+                    registers.A = portIn[2];
+                    break;
+                case 3:
+                    registers.A = (byte)(ext_shift_data >> (8 - ext_shift_offset));
+                    break;
+            }
             registers.PC++;
         }
 
