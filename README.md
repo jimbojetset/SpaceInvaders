@@ -16,4 +16,4 @@ D:  Shoot (P1 and P2)
 
 Press O followed by P in demo mode to activate the 'TAITO COP' easter egg.
 
-Press and hold T for tilt mode.
+Press T for tilt mode.
