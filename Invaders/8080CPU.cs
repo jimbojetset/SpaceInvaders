@@ -39,9 +39,8 @@ namespace SpaceInvaders
         public byte[] Memory
         { get { return memory; } }
 
-        private int ext_shift_data = 0;
-        private int ext_shift_offset = 0;
-
+        private int hardwareShiftRegisterData = 0;
+        private int hardwareShiftRegisterOffset = 0;
 
         public _8080CPU(string filePath)
         {
@@ -49,7 +48,6 @@ namespace SpaceInvaders
             registers = new Registers();
             ReadROM(filePath, 0x00);
         }
-
 
         private void ReadROM(string filePath, int addr)
         {
@@ -1765,18 +1763,20 @@ namespace SpaceInvaders
             switch (port)
             {
                 case 2:
-                    ext_shift_offset = registers.A & 0x07;
+                    hardwareShiftRegisterOffset = registers.A & 0x07;
                     break;
+
                 case 3:
                     portOut[3] = registers.A;
                     break;
+
                 case 4:
-                    ext_shift_data = (ext_shift_data >> 8) | (registers.A << 8);
+                    hardwareShiftRegisterData = (hardwareShiftRegisterData >> 8) | (registers.A << 8);
                     break;
+
                 case 5:
                     portOut[5] = registers.A;
                     break;
-
             }
             registers.PC++;
         }
@@ -1850,14 +1850,17 @@ namespace SpaceInvaders
                 case 0:
                     registers.A = portIn[0];
                     break;
+
                 case 1:
                     registers.A = portIn[1];
                     break;
+
                 case 2:
                     registers.A = portIn[2];
                     break;
+
                 case 3:
-                    registers.A = (byte)(ext_shift_data >> (8 - ext_shift_offset));
+                    registers.A = (byte)(hardwareShiftRegisterData >> (8 - hardwareShiftRegisterOffset));
                     break;
             }
             registers.PC++;
