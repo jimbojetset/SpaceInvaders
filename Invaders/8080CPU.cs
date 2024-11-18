@@ -2189,9 +2189,9 @@ namespace SpaceInvaders
 
         private void Ret()
         {
-            uint pclo = memory[registers.SP];
-            uint pchi = memory[registers.SP + 1];
-            registers.PC = (ushort)(pchi << 8 | pclo);
+            uint sphi = memory[registers.SP + 1];
+            uint splo = memory[registers.SP];
+            registers.PC = (ushort)(sphi << 8 | splo);
             registers.SP += 2;
         }
 
