@@ -10,7 +10,7 @@ namespace Invaders
         private Thread? cpu_thread;
         private Thread? display_thread;
         private Thread? sound_thread;
-        private byte[] inputPorts = [0x0E, 0x08, 0x00, 0x00];
+        private readonly byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
         private readonly int SCREEN_WIDTH = 448;
         private readonly int SCREEN_HEIGHT = 512;
 
@@ -24,30 +24,22 @@ namespace Invaders
         {
             cpu = new _8080CPU(@"invaders.rom");
 
-            cpu_thread = new Thread(() => cpu!.Start())
-            {
-                IsBackground = true
-            };
+            cpu_thread = new Thread(() => cpu!.Start());
+            cpu_thread.IsBackground = true;
             cpu_thread.Start();
 
             while (!cpu.Running) { }
 
-            port_thread = new Thread(() => PortThread())
-            {
-                IsBackground = true
-            };
+            port_thread = new Thread(() => PortThread());
+            port_thread.IsBackground = true;
             port_thread.Start();
 
-            display_thread = new Thread(() => DisplayThread())
-            {
-                IsBackground = true
-            };
+            display_thread = new Thread(() => DisplayThread());
+            display_thread.IsBackground = true;
             display_thread.Start();
 
-            sound_thread = new Thread(() => SoundThread())
-            {
-                IsBackground = true
-            };
+            sound_thread = new Thread(() => SoundThread());
+            sound_thread.IsBackground = true;
             sound_thread.Start();
         }
 
@@ -55,8 +47,7 @@ namespace Invaders
         {
             while (cpu != null && cpu.Running)
             {
-                if (inputPorts[1] > 0 || inputPorts[2] > 0)
-                    cpu.PortIn = inputPorts;
+                cpu.PortIn = inputPorts;
                 WaitForV_Sync();
             }
         }
@@ -65,7 +56,6 @@ namespace Invaders
         {
             while (cpu != null && cpu.Running)
             {
-                if (!cpu.Running) { break; }
                 Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
                 using (Graphics graphics = Graphics.FromImage(videoBitmap))
                 {
@@ -279,7 +269,7 @@ namespace Invaders
                     break;
 
                 case 12: // Tilt
-                    inputPorts[1] &= 0xFB;
+                    inputPorts[2] &= 0xFB;
                     break;
             }
         }

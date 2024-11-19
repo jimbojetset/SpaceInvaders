@@ -12,7 +12,7 @@
         private ushort sp = 0;
         private ushort pc = 0;
         private bool int_enable = false;
-        private Flags? flags = new();
+        private Flags? flags = new Flags();
 
         public Registers()
         {
@@ -26,7 +26,7 @@
             sp = 0;
             pc = 0;
             int_enable = false;
-            Flags? flags = new();
+            Flags? flags = new Flags();
         }
 
         public byte A
