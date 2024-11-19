@@ -10,7 +10,6 @@ namespace Invaders
         private Thread? cpu_thread;
         private Thread? display_thread;
         private Thread? sound_thread;
-        private bool displayRunning = false;
         private byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
         private readonly SolidBrush semiBlack = new SolidBrush(Color.FromArgb(180, Color.Black));
         private readonly int SCREEN_WIDTH = 448;
@@ -50,8 +49,11 @@ namespace Invaders
             while (!cpu!.Running) { }
 
             while (cpu.Running)
+            {
                 if (inputPorts[1] > 0 || inputPorts[2] > 0)
                     cpu.PortIn = inputPorts;
+                ThrottleControl();
+            }
         }
 
         private void SoundThread()
@@ -84,6 +86,7 @@ namespace Invaders
                         player.SoundLocation = Application.StartupPath + @"\Sound\invaderkilled.wav";
                         player.PlaySync();
                     }
+                    prevPort3 = cpu!.PortOut[3];
                 }
 
                 if (prevPort5 != cpu.PortOut[5])
@@ -115,15 +118,13 @@ namespace Invaders
                     }
                     prevPort5 = cpu!.PortOut[5];
                 }
-                while (cpu!.V_Sync == 1 && cpu.Running) { Thread.Sleep(1); }
-                while (cpu!.V_Sync == 2 && cpu.Running) { Thread.Sleep(1); }
+                ThrottleControl();
             }
         }
 
         private void DisplayThread()
         {
-            displayRunning = true;
-            while (cpu != null && cpu.Running && displayRunning)
+            while (cpu != null && cpu.Running)
             {
                 if (!cpu.Running) { break; }
                 Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -141,8 +142,7 @@ namespace Invaders
                         }
                 }
                 try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.Image = videoBitmap; }); } catch { }
-                while (cpu!.V_Sync == 1 && cpu.Running) { Thread.Sleep(1); }
-                while (cpu!.V_Sync == 2 && cpu.Running) { Thread.Sleep(1); }
+                ThrottleControl();
             }
         }
 
@@ -156,7 +156,6 @@ namespace Invaders
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            displayRunning = false;
             cpu!.Running = false;
         }
 
@@ -299,8 +298,10 @@ namespace Invaders
                 KeyLifted(k);
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void ThrottleControl()
         {
+            while (cpu!.V_Sync == 1 && cpu.Running) { Thread.Sleep(1); }// throttle
+            while (cpu!.V_Sync == 2 && cpu.Running) { Thread.Sleep(1); }// throttle
         }
     }
 }
