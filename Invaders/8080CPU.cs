@@ -51,11 +51,11 @@ namespace SpaceInvaders
 
         private void ReadROM(string filePath, int addr)
         {
-            FileStream romObj = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            FileStream romObj = new(filePath, FileMode.Open, FileAccess.Read);
             romObj.Seek(0, SeekOrigin.Begin);
-            registers.PC = (ushort)addr;
             for (int i = addr; i < addr + romObj.Length; i++)
                 memory[i] = (byte)romObj.ReadByte();
+            registers.PC = (ushort)addr;
         }
 
         public void Stop()
