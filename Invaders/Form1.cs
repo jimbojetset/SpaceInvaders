@@ -12,6 +12,7 @@ namespace Invaders
         private Thread? cpu_thread;
         private Thread? display_thread;
         private Thread? sound_thread;
+        private bool displayReady = false;
         private readonly byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
         private readonly int SCREEN_WIDTH = 448;
         private readonly int SCREEN_HEIGHT = 512;
@@ -58,6 +59,8 @@ namespace Invaders
         {
             while (cpu != null && cpu.Running)
             {
+                byte[] video = new byte[0x1C00];
+                Buffer.BlockCopy(cpu.Video, 0, video, 0, video.Length);
                 Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
                 using (Graphics graphics = Graphics.FromImage(videoBitmap))
                 {
@@ -66,10 +69,10 @@ namespace Invaders
                         for (int y = 511; y > 0; y -= 16)
                         {
                             Pen pen = GetPenColor(x, y);
-                            byte value = cpu.Video[ptr++];
+                            byte value = video[ptr++];
                             for (int b = 0; b < 8; b++)
                                 if ((value & (1 << b)) != 0)
-                                    try { graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1); } catch { }
+                                    graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
                         }
                 }
                 try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.Image = videoBitmap; }); } catch { }
