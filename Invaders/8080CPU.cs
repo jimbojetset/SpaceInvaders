@@ -58,12 +58,12 @@ namespace SpaceInvaders
                 memory[i] = (byte)romObj.ReadByte();
         }
 
-        public void StopEmulation()
+        public void Stop()
         {
             running = false;
         }
 
-        public void RunEmulation()
+        public void Start()
         {
             running = true;
             vSync = 1;

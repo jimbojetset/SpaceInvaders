@@ -43,7 +43,7 @@ namespace Invaders
 
         private void RunEmulation()
         {
-            cpu_thread = new Thread(() => cpu!.RunEmulation());
+            cpu_thread = new Thread(() => cpu!.Start());
             cpu_thread.IsBackground = true;
             cpu_thread.Start();
 
@@ -115,7 +115,8 @@ namespace Invaders
                     }
                     prevPort5 = cpu!.PortOut[5];
                 }
-                while (cpu!.V_Sync == 1 && cpu.Running) { }
+                while (cpu!.V_Sync == 1 && cpu.Running) { Thread.Sleep(1); }
+                while (cpu!.V_Sync == 2 && cpu.Running) { Thread.Sleep(1); }
             }
         }
 
@@ -140,6 +141,8 @@ namespace Invaders
                         }
                 }
                 try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.Image = videoBitmap; }); } catch { }
+                while (cpu!.V_Sync == 1 && cpu.Running) { Thread.Sleep(1); }
+                while (cpu!.V_Sync == 2 && cpu.Running) { Thread.Sleep(1); }
             }
         }
 
