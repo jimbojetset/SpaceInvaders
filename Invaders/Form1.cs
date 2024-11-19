@@ -149,7 +149,7 @@ namespace Invaders
         {
             int alpha = 200;
             if (screenPos_Y < 480 && screenPos_Y > 368) return new Pen(Color.FromArgb(alpha, 0,255,0));
-            if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 50 && screenPos_X < 274)) return new Pen(Color.FromArgb(50, 0, 255, 0));
+            if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 50 && screenPos_X < 274)) return new Pen(Color.FromArgb(alpha, 0, 255, 0));
             if (screenPos_Y < 128 && screenPos_Y > 64) return new Pen(Color.FromArgb(alpha, 255, 0, 0));
             return new Pen(Color.FromArgb(alpha, 255, 255, 255));
         }
