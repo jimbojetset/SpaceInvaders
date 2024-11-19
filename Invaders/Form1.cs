@@ -6,12 +6,11 @@ namespace Invaders
     public partial class Form1 : Form
     {
         private _8080CPU? cpu;
-        private Thread? emu_thread;
+        private Thread? port_thread;
         private Thread? cpu_thread;
         private Thread? display_thread;
         private Thread? sound_thread;
         private byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
-        private readonly SolidBrush semiBlack = new SolidBrush(Color.FromArgb(180, Color.Black));
         private readonly int SCREEN_WIDTH = 448;
         private readonly int SCREEN_HEIGHT = 512;
 
@@ -25,11 +24,15 @@ namespace Invaders
         {
             cpu = new _8080CPU(@"invaders.rom");
 
-            emu_thread = new Thread(() => RunEmulation());
-            emu_thread.IsBackground = true;
-            emu_thread.Start();
+            cpu_thread = new Thread(() => cpu!.Start());
+            cpu_thread.IsBackground = true;
+            cpu_thread.Start();
 
             while (!cpu.Running) { }
+
+            port_thread = new Thread(() => PortThread());
+            port_thread.IsBackground = true;
+            port_thread.Start();
 
             display_thread = new Thread(() => DisplayThread());
             display_thread.IsBackground = true;
@@ -40,19 +43,13 @@ namespace Invaders
             sound_thread.Start();
         }
 
-        private void RunEmulation()
+        private void PortThread()
         {
-            cpu_thread = new Thread(() => cpu!.Start());
-            cpu_thread.IsBackground = true;
-            cpu_thread.Start();
-
-            while (!cpu!.Running) { }
-
-            while (cpu.Running)
+            while (cpu != null && cpu.Running)
             {
                 if (inputPorts[1] > 0 || inputPorts[2] > 0)
                     cpu.PortIn = inputPorts;
-                ThrottleControl();
+                WaitForV_Sync();
             }
         }
 
@@ -118,7 +115,7 @@ namespace Invaders
                     }
                     prevPort5 = cpu!.PortOut[5];
                 }
-                ThrottleControl();
+                WaitForV_Sync();
             }
         }
 
@@ -142,7 +139,7 @@ namespace Invaders
                         }
                 }
                 try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.Image = videoBitmap; }); } catch { }
-                ThrottleControl();
+                WaitForV_Sync();
             }
         }
 
@@ -152,6 +149,12 @@ namespace Invaders
             if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 50 && screenPos_X < 274)) return new Pen(Color.Green);
             if (screenPos_Y < 128 && screenPos_Y > 64) return new Pen(Color.Red);
             return new Pen(Color.White);
+        }
+
+        private void WaitForV_Sync()
+        {
+            while (cpu!.V_Sync == 1 && cpu.Running) { Thread.Sleep(1); }// throttle
+            while (cpu!.V_Sync == 2 && cpu.Running) { Thread.Sleep(1); }// throttle
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -296,12 +299,6 @@ namespace Invaders
             uint k = GetKeyValue(e);
             if (k != 99)
                 KeyLifted(k);
-        }
-
-        private void ThrottleControl()
-        {
-            while (cpu!.V_Sync == 1 && cpu.Running) { Thread.Sleep(1); }// throttle
-            while (cpu!.V_Sync == 2 && cpu.Running) { Thread.Sleep(1); }// throttle
         }
     }
 }
