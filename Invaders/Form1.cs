@@ -1,5 +1,7 @@
 using SpaceInvaders;
+using System;
 using System.Media;
+using System.Windows.Forms;
 
 namespace Invaders
 {
@@ -54,6 +56,7 @@ namespace Invaders
 
         private void DisplayThread()
         {
+            byte[] oldVid = new byte[0x1C00];
             while (cpu != null && cpu.Running)
             {
                 Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -71,7 +74,6 @@ namespace Invaders
                         }
                 }
                 try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.Image = videoBitmap; }); } catch { }
-                WaitForV_Sync();
             }
         }
 
