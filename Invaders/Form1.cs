@@ -56,7 +56,6 @@ namespace Invaders
 
         private void DisplayThread()
         {
-            byte[] oldVid = new byte[0x1C00];
             while (cpu != null && cpu.Running)
             {
                 Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
