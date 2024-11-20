@@ -24,16 +24,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="invaders.e">
+    <None Update="ROMS\invaders.e">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="invaders.f">
+    <None Update="ROMS\invaders.f">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="invaders.g">
+    <None Update="ROMS\invaders.g">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="invaders.h">
+    <None Update="ROMS\invaders.h">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Sound\explosion.wav">
