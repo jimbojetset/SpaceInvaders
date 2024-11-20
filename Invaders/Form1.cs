@@ -12,7 +12,6 @@ namespace Invaders
         private Thread? cpu_thread;
         private Thread? display_thread;
         private Thread? sound_thread;
-        private bool displayReady = false;
         private readonly byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
         private readonly int SCREEN_WIDTH = 448;
         private readonly int SCREEN_HEIGHT = 512;
