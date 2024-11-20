@@ -98,7 +98,7 @@ namespace Invaders
             if (screenPos_Y < 478 && screenPos_Y > 390) return new Pen(Color.FromArgb(0x0F, 0xEF, 0x0F));
             if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 0 && screenPos_X < 254)) return new Pen(Color.FromArgb(0x0F, 0xFF, 0x0F));
             if (screenPos_Y < 128 && screenPos_Y > 64) return new Pen(Color.FromArgb(0xFF,0x40,0x00));
-            return new Pen(Color.FromArgb(0xEF, 0xEF, 0xFF));
+            return new Pen(Color.FromArgb(0xDF, 0xDF, 0xFF));
         }
 
         private void SoundThread()
@@ -163,7 +163,6 @@ namespace Invaders
                     }
                     prevPort5 = cpu!.PortOut[5];
                 }
-                Thread.Sleep(6);
             }
         }
 
