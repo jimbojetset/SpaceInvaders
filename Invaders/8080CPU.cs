@@ -71,6 +71,7 @@ namespace SpaceInvaders
             {
                 vSync = 1;
                 Tick();
+                vSync = 2;
                 Tick();
                 Buffer.BlockCopy(memory, 0x2400, video, 0, video.Length);
             }
@@ -88,7 +89,6 @@ namespace SpaceInvaders
                 if (stopwatch.ElapsedMilliseconds > 8.33 && running)
                 {
                     Interrupt(vSync);
-                    vSync = (vSync == 1) ? 2 : 1;
                     hit_v_sync = true;
                 }
             }
