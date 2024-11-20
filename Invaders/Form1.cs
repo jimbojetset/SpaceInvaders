@@ -25,7 +25,12 @@ namespace Invaders
 
         private void Execute()
         {
-            cpu = new _8080CPU(@"invaders.rom");
+            string appPath = AppDomain.CurrentDomain.BaseDirectory;
+            cpu = new _8080CPU(0x00);
+            cpu.LoadROM(appPath + @"invaders.h", 0x0000, 0x800);//invaders.h 0000 - 07FF
+            cpu.LoadROM(appPath + @"invaders.g", 0x0800, 0x800);//invaders.g 0800 - 0FFF
+            cpu.LoadROM(appPath + @"invaders.f", 0x1000, 0x800);//invaders.f 1000 - 17FF
+            cpu.LoadROM(appPath + @"invaders.e", 0x1800, 0x800);//invaders.e 1800 - 1FFF
 
             cpu_thread = new Thread(() => cpu!.Start());
             cpu_thread.IsBackground = true;

@@ -42,20 +42,16 @@ namespace SpaceInvaders
         private int hardwareShiftRegisterData = 0;
         private int hardwareShiftRegisterOffset = 0;
 
-        public _8080CPU(string filePath)
+        public _8080CPU(ushort pc)
         {
-            memory = new byte[0x10000];
+            memory = new byte[0x4000];//0000-1FFF 8K ROM    2000 - 23FF 1K RAM    2400 - 3FFF 7K Video RAM
             registers = new Registers();
-            ReadROM(filePath, 0x00);
+            registers.PC = pc;
         }
 
-        private void ReadROM(string filePath, int addr)
+        public void LoadROM(string filePath, int addr, int length)
         {
-            FileStream romObj = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            romObj.Seek(0, SeekOrigin.Begin);
-            registers.PC = (ushort)addr;
-            for (int i = addr; i < addr + romObj.Length; i++)
-                memory[i] = (byte)romObj.ReadByte();
+            Array.Copy(File.ReadAllBytes(filePath), 0, memory, addr, length);
         }
 
         public void Stop()
