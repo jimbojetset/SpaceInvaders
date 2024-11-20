@@ -44,7 +44,7 @@ namespace SpaceInvaders
 
         public _8080CPU(ushort pc)
         {
-            memory = new byte[0x4000];//0000-1FFF 8K ROM    2000 - 23FF 1K RAM    2400 - 3FFF 7K Video RAM
+            memory = new byte[0x10000];//0000-1FFF 8K ROM    2000 - 23FF 1K RAM    2400 - 3FFF 7K Video RAM    4000+ Mirror RAM
             registers = new Registers();
             registers.PC = pc;
         }

@@ -1,6 +1,7 @@
 using SpaceInvaders;
 using System;
 using System.Media;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace Invaders
@@ -12,9 +13,12 @@ namespace Invaders
         private Thread? cpu_thread;
         private Thread? display_thread;
         private Thread? sound_thread;
+        private Bitmap? videoBitmap;
         private readonly byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
         private readonly int SCREEN_WIDTH = 448;
         private readonly int SCREEN_HEIGHT = 512;
+        private readonly string appPath = AppDomain.CurrentDomain.BaseDirectory;
+        private readonly byte[] video = new byte[0x1C00];
 
         public Form1()
         {
@@ -23,8 +27,7 @@ namespace Invaders
         }
 
         private void Execute()
-        {
-            string appPath = AppDomain.CurrentDomain.BaseDirectory;
+        {   
             cpu = new _8080CPU(0x00);
             cpu.LoadROM(appPath + @"invaders.h", 0x0000, 0x800);//invaders.h 0000 - 07FF
             cpu.LoadROM(appPath + @"invaders.g", 0x0800, 0x800);//invaders.g 0800 - 0FFF
@@ -55,33 +58,47 @@ namespace Invaders
             while (cpu != null && cpu.Running)
             {
                 cpu.PortIn = inputPorts;
-                WaitForV_Sync();
+                WaitForV_Sync(); // throttle control
             }
         }
+
+        [DllImport("msvcrt.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern int memcmp(byte[] b1, byte[] b2, long count);
 
         private void DisplayThread()
         {
             while (cpu != null && cpu.Running)
             {
-                byte[] video = new byte[0x1C00];
-                Buffer.BlockCopy(cpu.Video, 0, video, 0, video.Length);
-                Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
-                using (Graphics graphics = Graphics.FromImage(videoBitmap))
+                if (!(memcmp(video, cpu.Video, video.Length) == 0)) // has the video changed?
                 {
-                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                    int ptr = 0;
-                    for (int x = 0; x < SCREEN_WIDTH; x += 2)
-                        for (int y = 511; y > 0; y -= 16)
-                        {
-                            Pen pen = GetPenColor(x, y);
-                            byte value = video[ptr++];
-                            for (int b = 0; b < 8; b++)
-                                if ((value & (1 << b)) != 0)
-                                    graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
-                        }
+                    Array.Copy(cpu.Video, 0, video, 0, video.Length);
+                    videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+                    using (Graphics graphics = Graphics.FromImage(videoBitmap))
+                    {
+                        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        int ptr = 0;
+                        for (int x = 0; x < SCREEN_WIDTH; x += 2)
+                            for (int y = 511; y > 0; y -= 16)
+                            {
+                                Pen pen = GetPenColor(x, y);
+                                byte value = video[ptr++];
+                                for (int b = 0; b < 8; b++)
+                                    if ((value & (1 << b)) != 0)
+                                        graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
+                            }
+                    }
+                    try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.Image = videoBitmap; }); } catch { }
                 }
-                try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.Image = videoBitmap; }); } catch { }
+                Thread.Sleep(4); // throttle control
             }
+        }
+
+        private static Pen GetPenColor(int screenPos_X, int screenPos_Y)
+        {
+            if (screenPos_Y < 478 && screenPos_Y > 390) return new Pen(Color.Green);
+            if ((screenPos_Y < 512 && screenPos_Y > 478) && (screenPos_X > 0 && screenPos_X < 254)) return new Pen(Color.Green);
+            if (screenPos_Y < 128 && screenPos_Y > 64) return new Pen(Color.Red);
+            return new Pen(Color.White);
         }
 
         private void SoundThread()
@@ -146,16 +163,8 @@ namespace Invaders
                     }
                     prevPort5 = cpu!.PortOut[5];
                 }
-                WaitForV_Sync();
+                WaitForV_Sync(); // throttle control
             }
-        }
-
-        private static Pen GetPenColor(int screenPos_X, int screenPos_Y)
-        {
-            if (screenPos_Y < 478 && screenPos_Y > 390) return new Pen(Color.Green);
-            if ((screenPos_Y < 512 && screenPos_Y > 478) && (screenPos_X > 0 && screenPos_X < 254)) return new Pen(Color.Green);
-            if (screenPos_Y < 128 && screenPos_Y > 64) return new Pen(Color.Red);
-            return new Pen(Color.White);
         }
 
         private byte GetKeyValue(KeyEventArgs e)
