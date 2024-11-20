@@ -106,7 +106,6 @@ namespace Invaders
             SoundPlayer player = new();
             byte prevPort3 = new();
             byte prevPort5 = new();
-            bool soundPlaying = false;
 
             while (cpu != null && cpu.Running)
             {
@@ -133,7 +132,6 @@ namespace Invaders
                         player.PlaySync();
                     }
                     prevPort3 = cpu!.PortOut[3];
-                    soundPlaying = true;
                 }
 
                 if (prevPort5 != cpu.PortOut[5])
@@ -163,11 +161,9 @@ namespace Invaders
                         player.SoundLocation = Application.StartupPath + @"\Sound\explosion.wav";
                         player.PlaySync();
                     }
-                    soundPlaying = true;
                     prevPort5 = cpu!.PortOut[5];
                 }
-                if(!soundPlaying)
-                    Thread.Sleep(16); // throttle control
+                WaitForV_Sync();
             }
         }
 
