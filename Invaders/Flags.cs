@@ -65,14 +65,14 @@
             cy = (uint)((value > 0xFFFF) ? 1 : 0);
         }
 
-        public void UpdateZSP(uint value)
+        public void UpdateZSP(ulong value)
         {
             z = (uint)(((value & 0xFF) == 0) ? 1 : 0);
             s = (uint)(((value & 0x80) == 0x80) ? 1 : 0);
             p = (uint)CalculateParityFlag(value & 0xFF);
         }
 
-        public int CalculateParityFlag(uint value)
+        public int CalculateParityFlag(ulong value)
         {
             int count = 0;
             for (int i = 0; i < 16; i++)
