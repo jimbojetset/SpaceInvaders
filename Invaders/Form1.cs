@@ -58,7 +58,7 @@ namespace Invaders
             while (cpu != null && cpu.Running)
             {
                 cpu.PortIn = inputPorts;
-                WaitForV_Sync(); // throttle control
+                Thread.Sleep(8);
             }
         }
 
@@ -89,7 +89,7 @@ namespace Invaders
                     }
                     try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
                 }
-                Thread.Sleep(2); // throttle control
+                Thread.Sleep(8); // throttle control
             }
         }
 
@@ -163,6 +163,7 @@ namespace Invaders
                     }
                     prevPort5 = cpu!.PortOut[5];
                 }
+                Thread.Sleep(8);
             }
         }
 
@@ -303,12 +304,6 @@ namespace Invaders
             uint k = GetKeyValue(e);
             if (k != 99)
                 KeyLifted(k);
-        }
-
-        private void WaitForV_Sync()
-        {
-            while (cpu!.V_Sync == 1 && cpu.Running) { Thread.Sleep(1); }// throttle
-            while (cpu!.V_Sync == 2 && cpu.Running) { Thread.Sleep(1); }// throttle
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
