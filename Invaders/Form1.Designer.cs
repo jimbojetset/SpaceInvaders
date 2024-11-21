@@ -37,9 +37,9 @@
             // 
             pictureBox1.BackColor = Color.Transparent;
             pictureBox1.BackgroundImageLayout = ImageLayout.Stretch;
-            pictureBox1.Location = new Point(141, 0);
+            pictureBox1.Location = new Point(113, 0);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(395, 569);
+            pictureBox1.Size = new Size(395, 567);
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             // 
@@ -50,7 +50,7 @@
             BackColor = Color.Black;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(684, 569);
+            ClientSize = new Size(617, 568);
             Controls.Add(pictureBox1);
             DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.FixedSingle;
