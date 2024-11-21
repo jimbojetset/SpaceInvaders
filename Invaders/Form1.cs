@@ -87,7 +87,7 @@ namespace Invaders
                                         graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
                             }
                     }
-                    try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.Image = videoBitmap; }); } catch { }
+                    try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
                 }
                 Thread.Sleep(2); // throttle control
             }
@@ -95,10 +95,10 @@ namespace Invaders
 
         private static Pen GetPenColor(int screenPos_X, int screenPos_Y)
         {
-            if (screenPos_Y < 478 && screenPos_Y > 390) return new Pen(Color.FromArgb(0x0F, 0xEF, 0x0F));
-            if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 0 && screenPos_X < 254)) return new Pen(Color.FromArgb(0x0F, 0xFF, 0x0F));
+            if (screenPos_Y < 478 && screenPos_Y > 390) return new Pen(Color.FromArgb(0xD0, 0x0F, 0xDF, 0x0F));
+            if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 0 && screenPos_X < 254)) return new Pen(Color.FromArgb(0xD0, 0x0F, 0xDF, 0x0F));
             if (screenPos_Y < 128 && screenPos_Y > 64) return new Pen(Color.FromArgb(0xFF,0x40,0x00));
-            return new Pen(Color.FromArgb(0xDF, 0xDF, 0xFF));
+            return new Pen(Color.FromArgb(0xEF, 0xEF, 0xFF));
         }
 
         private void SoundThread()
