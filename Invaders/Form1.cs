@@ -69,7 +69,7 @@ namespace Invaders
         {
             while (cpu != null && cpu.Running)
             {
-                if (!(memcmp(video, cpu.Video, video.Length) == 0)) // has the video changed?
+                if (!(memcmp(video, cpu.Video, video.Length) == 0)) // only draw if the video has changed?
                 {
                     Array.Copy(cpu.Video, 0, video, 0, video.Length);
                     videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
