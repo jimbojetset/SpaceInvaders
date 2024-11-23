@@ -6,7 +6,6 @@
         private uint s; // Sign bit
         private uint p; // Parity bit
         private uint cy; // Carry bit
-        private uint ac; // Auxiliary carry bit
 
         public Flags()
         {
@@ -14,7 +13,6 @@
             S = 0;
             P = 0;
             cy = 0;
-            ac = 0;
         }
 
         public uint Z
@@ -84,9 +82,6 @@
             if (z == 1)
                 flags = flags | 0b01000000;
 
-            if (ac == 1)
-                flags = flags | 0b00010000;
-
             if (p == 1)
                 flags = flags | 0b00000100;
 
@@ -100,7 +95,6 @@
         {
             s = (uint)(((flags & 0b10000000) == 0b10000000) ? 1 : 0);
             z = (uint)(((flags & 0b01000000) == 0b01000000) ? 1 : 0);
-            ac = (uint)(((flags & 0b00010000) == 0b00010000) ? 1 : 0);
             p = (uint)(((flags & 0b00000100) == 0b00000100) ? 1 : 0);
             cy = (uint)(((flags & 0b00000001) == 0b00000001) ? 1 : 0);
         }
