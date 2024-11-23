@@ -71,7 +71,7 @@ namespace Invaders
             while (cpu != null && cpu.Running)
             {
                 while (memcmp(video, cpu.Video, video.Length) == 0)
-                    Thread.Sleep(16);
+                    Thread.Sleep(8);
 
                 Array.Copy(cpu.Video, 0, video, 0, video.Length);
                 videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
