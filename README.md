@@ -1,6 +1,6 @@
 An 8080 CPU based Space Invader Emulator written in c# .NET8 + Windows Forms + sound.
 
-![Capture](https://github.com/user-attachments/assets/1146f21e-4c40-4612-9f35-5a3050caed1b)
+![Screenshot 2024-11-23 122748](https://github.com/user-attachments/assets/876d490a-38c4-4601-b567-284f98693782)
 
 C:  Insert Coin
 
