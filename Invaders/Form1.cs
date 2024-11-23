@@ -95,10 +95,10 @@ namespace Invaders
 
         private static Pen GetPenColor(int screenPos_X, int screenPos_Y)
         {
-            if (screenPos_Y < 478 && screenPos_Y > 390) return new Pen(Color.FromArgb(0xD0, 0x0F, 0xDF, 0x0F));
-            if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 0 && screenPos_X < 254)) return new Pen(Color.FromArgb(0xD0, 0x0F, 0xDF, 0x0F));
-            if (screenPos_Y < 128 && screenPos_Y > 64) return new Pen(Color.FromArgb(0xFF,0x40,0x00));
-            return new Pen(Color.FromArgb(0xEF, 0xEF, 0xFF));
+            if (screenPos_Y < 478 && screenPos_Y > 390) return new Pen(Color.FromArgb(0xE0, 0x0F, 0xDF, 0x0F));
+            if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 0 && screenPos_X < 254)) return new Pen(Color.FromArgb(0xE0, 0x0F, 0xDF, 0x0F));
+            if (screenPos_Y < 128 && screenPos_Y > 64) return new Pen(Color.FromArgb(0xE0, 0xFF, 0x40, 0x00));
+            return new Pen(Color.FromArgb(0xE0, 0xEF, 0xEF, 0xFF));
         }
 
         private void SoundThread()
