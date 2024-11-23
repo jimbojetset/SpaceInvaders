@@ -58,7 +58,8 @@
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "Form1";
-            Text = "Space Invaders by Jim Booth";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Space Invaders";
             FormClosing += Form1_FormClosing;
             KeyDown += Form1_KeyDown;
             KeyUp += Form1_KeyUp;

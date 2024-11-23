@@ -1,4 +1,4 @@
-﻿namespace SpaceInvaders
+﻿namespace Invaders.CPU
 {
     internal class Flags
     {
@@ -49,18 +49,18 @@
 
         public void UpdateCarryByte(ulong value)
         {
-            cy = (uint)((value > 0x00FF) ? 1 : 0);
+            cy = (uint)(value > 0x00FF ? 1 : 0);
         }
 
         public void UpdateCarryWord(ulong value)
         {
-            cy = (uint)((value > 0xFFFF) ? 1 : 0);
+            cy = (uint)(value > 0xFFFF ? 1 : 0);
         }
 
         public void UpdateZSP(ulong value)
         {
-            z = (uint)(((value & 0xFF) == 0) ? 1 : 0);
-            s = (uint)(((value & 0x80) == 0x80) ? 1 : 0);
+            z = (uint)((value & 0xFF) == 0 ? 1 : 0);
+            s = (uint)((value & 0x80) == 0x80 ? 1 : 0);
             p = CalculateParityFlag(value & 0xFF);
         }
 
@@ -73,7 +73,7 @@
                     count += 1;
                 value >>= 1;
             }
-            return (uint)((0 == (count & 0x1)) ? 1 : 0);
+            return (uint)(0 == (count & 0x1) ? 1 : 0);
         }
 
         public byte ToByte()
@@ -104,11 +104,11 @@
 
         public void SetFromByte(byte flags)
         {
-            s = (uint)(((flags & 0b10000000) == 0b10000000) ? 1 : 0);
-            z = (uint)(((flags & 0b01000000) == 0b01000000) ? 1 : 0);
-            ac = (uint)(((flags & 0b00010000) == 0b00010000) ? 1 : 0);
-            p = (uint)(((flags & 0b00000100) == 0b00000100) ? 1 : 0);
-            cy = (uint)(((flags & 0b00000001) == 0b00000001) ? 1 : 0);
+            s = (uint)((flags & 0b10000000) == 0b10000000 ? 1 : 0);
+            z = (uint)((flags & 0b01000000) == 0b01000000 ? 1 : 0);
+            ac = (uint)((flags & 0b00010000) == 0b00010000 ? 1 : 0);
+            p = (uint)((flags & 0b00000100) == 0b00000100 ? 1 : 0);
+            cy = (uint)((flags & 0b00000001) == 0b00000001 ? 1 : 0);
         }
     }
 }

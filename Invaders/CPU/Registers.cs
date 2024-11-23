@@ -1,4 +1,4 @@
-﻿namespace SpaceInvaders
+﻿namespace Invaders.CPU
 {
     internal class Registers
     {
@@ -99,7 +99,7 @@
         {
             get
             {
-                return (ulong)h << 8 | (ulong)l;
+                return (ulong)h << 8 | l;
             }
             set
             {
@@ -112,7 +112,7 @@
         {
             get
             {
-                return (ulong)d << 8 | (ulong)e;
+                return (ulong)d << 8 | e;
             }
             set
             {
@@ -125,7 +125,7 @@
         {
             get
             {
-                return (ulong)b << 8 | (ulong)c;
+                return (ulong)b << 8 | c;
             }
             set
             {
