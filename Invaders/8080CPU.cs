@@ -27,7 +27,10 @@ namespace SpaceInvaders
         private byte[] portIn = new byte[4]; // 0,1,2,3
 
         public byte[] PortIn
-        { set { portIn = value; } }
+        { 
+            set { portIn = value; } 
+            get { return portIn; }
+        }
 
         private byte[] portOut = new byte[7]; // 2,3,5,6
 

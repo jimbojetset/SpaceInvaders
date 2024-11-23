@@ -57,8 +57,9 @@ namespace Invaders
         {
             while (cpu != null && cpu.Running)
             {
+                while (cpu.PortIn == inputPorts)
+                    Thread.Sleep(8);
                 cpu.PortIn = inputPorts;
-                Thread.Sleep(8);
             }
         }
 
@@ -69,27 +70,26 @@ namespace Invaders
         {
             while (cpu != null && cpu.Running)
             {
-                if (!(memcmp(video, cpu.Video, video.Length) == 0)) // only draw if the video has changed?
+                while (memcmp(video, cpu.Video, video.Length) == 0)
+                    Thread.Sleep(16);
+
+                Array.Copy(cpu.Video, 0, video, 0, video.Length);
+                videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+                using (Graphics graphics = Graphics.FromImage(videoBitmap))
                 {
-                    Array.Copy(cpu.Video, 0, video, 0, video.Length);
-                    videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
-                    using (Graphics graphics = Graphics.FromImage(videoBitmap))
-                    {
-                        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                        int ptr = 0;
-                        for (int x = 0; x < SCREEN_WIDTH; x += 2)
-                            for (int y = 511; y > 0; y -= 16)
-                            {
-                                Pen pen = GetPenColor(x, y);
-                                byte value = video[ptr++];
-                                for (int b = 0; b < 8; b++)
-                                    if ((value & (1 << b)) != 0)
-                                        graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
-                            }
-                    }
-                    try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
+                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    int ptr = 0;
+                    for (int x = 0; x < SCREEN_WIDTH; x += 2)
+                        for (int y = 511; y > 0; y -= 16)
+                        {
+                            Pen pen = GetPenColor(x, y);
+                            byte value = video[ptr++];
+                            for (int b = 0; b < 8; b++)
+                                if ((value & (1 << b)) != 0)
+                                    graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
+                        }
                 }
-                Thread.Sleep(8); // throttle control
+                try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
             }
         }
 
@@ -109,6 +109,9 @@ namespace Invaders
 
             while (cpu != null && cpu.Running)
             {
+                while (prevPort3 == cpu.PortOut[3] && prevPort5 == cpu.PortOut[5])
+                    Thread.Sleep(8);
+
                 if (prevPort3 != cpu.PortOut[3])
                 {
                     if (((cpu.PortOut[3] & 0x01) == 0x01) && ((cpu.PortOut[3] & 0x01) != (prevPort3 & 0x01)))
@@ -163,7 +166,6 @@ namespace Invaders
                     }
                     prevPort5 = cpu!.PortOut[5];
                 }
-                Thread.Sleep(8);
             }
         }
 
