@@ -72,7 +72,7 @@ namespace Invaders.CPU
                 Tick();
                 @int = 2;
                 Tick();
-                Buffer.BlockCopy(memory, 0x2400, video, 0, video.Length);
+                Array.Copy(memory, 0x2400, video, 0, video.Length);
             }
         }
 
