@@ -1582,7 +1582,7 @@ namespace SpaceInvaders
         {
             registers.Flags.Z = 1;
             registers.Flags.S = 0;
-            registers.Flags.P = (uint)registers.Flags.CalculateParityFlag(registers.A);
+            registers.Flags.P = Flags.CalculateParityFlag(registers.A);
             registers.Flags.CY = 0;
         }
 

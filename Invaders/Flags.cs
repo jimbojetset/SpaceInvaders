@@ -7,7 +7,6 @@
         private uint p; // Parity bit
         private uint cy; // Carry bit
         private uint ac; // Auxiliary carry bit
-        private uint pad;
 
         public Flags()
         {
@@ -16,7 +15,6 @@
             P = 0;
             cy = 0;
             ac = 0;
-            pad = 3;
         }
 
         public uint Z
@@ -43,18 +41,6 @@
             set { cy = value; }
         }
 
-        public uint AC
-        {
-            get { return ac; }
-            set { ac = value; }
-        }
-
-        public uint Pad
-        {
-            get { return pad; }
-            set { pad = value; }
-        }
-
         public void UpdateCarryByte(ulong value)
         {
             cy = (uint)((value > 0x00FF) ? 1 : 0);
@@ -69,10 +55,10 @@
         {
             z = (uint)(((value & 0xFF) == 0) ? 1 : 0);
             s = (uint)(((value & 0x80) == 0x80) ? 1 : 0);
-            p = (uint)CalculateParityFlag(value & 0xFF);
+            p = CalculateParityFlag(value & 0xFF);
         }
 
-        public int CalculateParityFlag(ulong value)
+        public static uint CalculateParityFlag(ulong value)
         {
             int count = 0;
             for (int i = 0; i < 16; i++)
@@ -81,7 +67,7 @@
                     count += 1;
                 value >>= 1;
             }
-            return (0 == (count & 0x1)) ? 1 : 0;
+            return (uint)((0 == (count & 0x1)) ? 1 : 0);
         }
 
         public byte ToByte()
@@ -90,7 +76,7 @@
              * 7 6 5 4 3 2 1 0
              * S Z 0 A 0 P 1 C
              */
-            var flags = 0b00000010;
+            int flags = 0b00000010;
 
             if (s == 1)
                 flags = flags | 0b10000000;
