@@ -599,18 +599,25 @@ namespace SpaceInvaders
 
         private void OP_27()
         {
-            if ((registers.A & 0x0F) > 9)
+            if ((registers.A & 0x0F) > 9 || registers.Flags.AC == 1)
             {
                 registers.A += 6;
+                registers.Flags.AC = 1;
             }
-            if ((1 == registers.Flags.CY) || ((registers.A & 0xF0) > 0x90))
+            else
+                registers.Flags.AC = 0;
+
+
+            if ((registers.Flags.CY == 1) || ((registers.A & 0xF0) > 0x90))
             {
                 registers.A += 0x60;
                 registers.Flags.CY = 1;
                 registers.Flags.UpdateZSP(registers.A);
             }
+            else
+                registers.Flags.CY = 0;
         }
-
+        
         private void OP_28()
         { }
 
