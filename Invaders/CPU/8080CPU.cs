@@ -88,10 +88,13 @@ namespace Invaders.CPU
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             bool interrupted = false;
+            uint o = 0;
             while (!interrupted && running)
             {
                 if (Test && registers.PC == 0x05)
                     TestOut();
+                if(registers.PC == 0x05C0) 
+                { }
                 CallOpcode(memory[registers.PC]);
                 registers.PC++;
                 if (stopwatch.ElapsedMilliseconds > 8.33 && running)
@@ -106,13 +109,13 @@ namespace Invaders.CPU
         {
             if (registers.C == 0x09)
             {
-                string s = ((char)registers.DE).ToString();
+                string s = ((char)memory[registers.DE]).ToString();
                 ulong cnt = 0;
                 while (s != "$")
                 {
                     Debug.Write(s);
                     cnt++;
-                    s = (memory[registers.DE + cnt]).ToString();
+                    s = ((char)memory[registers.DE + cnt]).ToString();
                 }
             }
             else if (registers.C == 0x02)
@@ -324,6 +327,7 @@ namespace Invaders.CPU
                 case 0xC9: OP_C9(); return;
                 case 0xCA: OP_CA(); return;
                 case 0xCC: OP_CC(); return;
+                case 0xCB: OP_C3(); return;// undocumented
                 case 0xCD: OP_CD(); return;
                 case 0xCE: OP_CE(); return;
                 case 0xCF: OP_CF(); return;
@@ -336,9 +340,11 @@ namespace Invaders.CPU
                 case 0xD6: OP_D6(); return;
                 case 0xD7: OP_D7(); return;
                 case 0xD8: OP_D8(); return;
+                case 0xD9: OP_C9(); return; // undocumented
                 case 0xDA: OP_DA(); return;
                 case 0xDB: OP_DB(); return;
                 case 0xDC: OP_DC(); return;
+                case 0xDD: OP_CD(); return; // undocumented
                 case 0xDE: OP_DE(); return;
                 case 0xDF: OP_DF(); return;
                 case 0xE0: OP_E0(); return;
