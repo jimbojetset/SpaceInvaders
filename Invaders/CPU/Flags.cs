@@ -5,7 +5,7 @@
         private uint z; // Zero bit
         private uint s; // Sign bit
         private uint p; // Parity bit
-        private uint cy; // Carry bit
+        private uint c; // Carry bit
         private uint ac; // Auxiliary carry bit
 
         public Flags()
@@ -13,7 +13,7 @@
             Z = 0;
             S = 0;
             P = 0;
-            cy = 0;
+            c = 0;
             ac = 0;
         }
 
@@ -35,10 +35,10 @@
             set { p = value; }
         }
 
-        public uint CY
+        public uint C
         {
-            get { return cy; }
-            set { cy = value; }
+            get { return c; }
+            set { c = value; }
         }
 
         public uint AC
@@ -49,12 +49,12 @@
 
         public void UpdateCarryByte(ulong value)
         {
-            cy = (uint)(value > 0x00FF ? 1 : 0);
+            c = (uint)(value > 0x00FF ? 1 : 0);
         }
 
         public void UpdateCarryWord(ulong value)
         {
-            cy = (uint)(value > 0xFFFF ? 1 : 0);
+            c = (uint)(value > 0xFFFF ? 1 : 0);
         }
 
         public void UpdateZSP(ulong value)
@@ -96,7 +96,7 @@
             if (p == 1)
                 flags = flags | 0b00000100;
 
-            if (cy == 1)
+            if (c == 1)
                 flags = flags | 0b00000001;
 
             return (byte)flags;
@@ -108,7 +108,7 @@
             z = (uint)((flags & 0b01000000) == 0b01000000 ? 1 : 0);
             ac = (uint)((flags & 0b00010000) == 0b00010000 ? 1 : 0);
             p = (uint)((flags & 0b00000100) == 0b00000100 ? 1 : 0);
-            cy = (uint)((flags & 0b00000001) == 0b00000001 ? 1 : 0);
+            c = (uint)((flags & 0b00000001) == 0b00000001 ? 1 : 0);
         }
     }
 }
