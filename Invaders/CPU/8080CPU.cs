@@ -93,7 +93,7 @@ namespace Invaders.CPU
             {
                 if (Test && registers.PC == 0x05)
                     TestOut();
-                if(registers.PC == 0x05C0) 
+                if(registers.PC == 0x05C3) 
                 { }
                 CallOpcode(memory[registers.PC]);
                 registers.PC++;
@@ -1608,6 +1608,8 @@ namespace Invaders.CPU
             {
                 registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
                 registers.SP += 2;
+                registers.PC--;
+
                 //Ret();
                 //registers.PC--;
             }
@@ -1684,6 +1686,7 @@ namespace Invaders.CPU
             {
                 registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
                 registers.SP += 2;
+                registers.PC--;
                 //Ret();
                 //registers.PC--;
             }
@@ -1693,6 +1696,7 @@ namespace Invaders.CPU
         {
             registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
             registers.SP += 2;
+            registers.PC--;
             //Ret();
             //registers.PC--;
         }
@@ -1757,6 +1761,7 @@ namespace Invaders.CPU
             {
                 registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
                 registers.SP += 2;
+                registers.PC--;
                 //Ret();
                 //registers.PC--;
             }
@@ -1856,6 +1861,7 @@ namespace Invaders.CPU
             {
                 registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
                 registers.SP += 2;
+                registers.PC--;
                 //Ret();
                 //registers.PC--;
             }
@@ -1941,6 +1947,7 @@ namespace Invaders.CPU
             {
                 registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
                 registers.SP += 2;
+                registers.PC--;
                 //Ret();
                 //registers.PC--;
             }
@@ -2020,6 +2027,7 @@ namespace Invaders.CPU
             {
                 registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
                 registers.SP += 2;
+                registers.PC--;
                 //Ret();
                 //registers.PC--;
             }
@@ -2090,6 +2098,7 @@ namespace Invaders.CPU
             {
                 registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
                 registers.SP += 2;
+                registers.PC--;
                 //Ret();
                 //registers.PC--;
             }
@@ -2166,6 +2175,7 @@ namespace Invaders.CPU
             {
                 registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
                 registers.SP += 2;
+                registers.PC--;
                 //Ret();
                 //registers.PC--;
             }
@@ -2235,14 +2245,6 @@ namespace Invaders.CPU
             memory[registers.SP - 2] = (byte)(retAddress & 0xFF);
             registers.PC = address;
             registers.SP -= 2;
-        }
-
-        private void Ret()
-        {
-            var sphi = memory[registers.SP + 1];
-            var splo = memory[registers.SP];
-            registers.PC = (ushort)(sphi << 8 | splo);
-            registers.SP += 2;
         }
 
         private void Interrupt(int num)
