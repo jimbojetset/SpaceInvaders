@@ -1,4 +1,4 @@
-using SpaceInvaders;
+using Invaders.CPU;
 using System;
 using System.Media;
 using System.Runtime.InteropServices;
@@ -27,12 +27,18 @@ namespace Invaders
         }
 
         private void Execute()
-        {   
-            cpu = new _8080CPU(0x00);
-            cpu.LoadROM(appPath + @"ROMS\invaders.h", 0x0000, 0x800);//invaders.h 0000 - 07FF
-            cpu.LoadROM(appPath + @"ROMS\invaders.g", 0x0800, 0x800);//invaders.g 0800 - 0FFF
-            cpu.LoadROM(appPath + @"ROMS\invaders.f", 0x1000, 0x800);//invaders.f 1000 - 17FF
-            cpu.LoadROM(appPath + @"ROMS\invaders.e", 0x1800, 0x800);//invaders.e 1800 - 1FFF
+        {
+            cpu = new _8080CPU(0x0100, true);
+            //cpu.LoadROM(appPath + @"ROMS\cputest.com", 0x0100, 0x4B00);
+            cpu.LoadROM(appPath + @"ROMS\tst8080.com", 0x0100, 0x0600);
+            //cpu.LoadROM(appPath + @"ROMS\zexall.com", 0x0100, 0x2200);
+            //cpu.LoadROM(appPath + @"ROMS\test.com", 0x0100, 0x0701);
+
+            //cpu = new _8080CPU(0x0000, false);
+            //cpu.LoadROM(appPath + @"ROMS\invaders.h", 0x0000, 0x800); // invaders.h 0000 - 07FF
+            //cpu.LoadROM(appPath + @"ROMS\invaders.g", 0x0800, 0x800); // invaders.g 0800 - 0FFF
+            //cpu.LoadROM(appPath + @"ROMS\invaders.f", 0x1000, 0x800); // invaders.f 1000 - 17FF
+            //cpu.LoadROM(appPath + @"ROMS\invaders.e", 0x1800, 0x800); // invaders.e 1800 - 1FFF
 
             cpu_thread = new Thread(() => cpu!.Start());
             cpu_thread.IsBackground = true;
@@ -51,14 +57,16 @@ namespace Invaders
             sound_thread = new Thread(() => SoundThread());
             sound_thread.IsBackground = true;
             sound_thread.Start();
+
         }
 
         private void PortThread()
         {
             while (cpu != null && cpu.Running)
             {
+                while (cpu.PortIn == inputPorts)
+                    Thread.Sleep(8);
                 cpu.PortIn = inputPorts;
-                WaitForV_Sync(); // throttle control
             }
         }
 
@@ -69,36 +77,35 @@ namespace Invaders
         {
             while (cpu != null && cpu.Running)
             {
-                if (!(memcmp(video, cpu.Video, video.Length) == 0)) // only draw if the video has changed?
+                while (memcmp(video, cpu.Video, video.Length) == 0)
+                    Thread.Sleep(8);
+
+                Array.Copy(cpu.Video, 0, video, 0, video.Length);
+                videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+                using (Graphics graphics = Graphics.FromImage(videoBitmap))
                 {
-                    Array.Copy(cpu.Video, 0, video, 0, video.Length);
-                    videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
-                    using (Graphics graphics = Graphics.FromImage(videoBitmap))
-                    {
-                        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                        int ptr = 0;
-                        for (int x = 0; x < SCREEN_WIDTH; x += 2)
-                            for (int y = 511; y > 0; y -= 16)
-                            {
-                                Pen pen = GetPenColor(x, y);
-                                byte value = video[ptr++];
-                                for (int b = 0; b < 8; b++)
-                                    if ((value & (1 << b)) != 0)
-                                        graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
-                            }
-                    }
-                    try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
+                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    int ptr = 0;
+                    for (int x = 0; x < SCREEN_WIDTH; x += 2)
+                        for (int y = 511; y > 0; y -= 16)
+                        {
+                            Pen pen = GetPenColor(x, y);
+                            byte value = video[ptr++];
+                            for (int b = 0; b < 8; b++)
+                                if ((value & (1 << b)) != 0)
+                                    graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
+                        }
                 }
-                Thread.Sleep(2); // throttle control
+                try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
             }
         }
 
         private static Pen GetPenColor(int screenPos_X, int screenPos_Y)
         {
-            if (screenPos_Y < 478 && screenPos_Y > 390) return new Pen(Color.FromArgb(0xD0, 0x0F, 0xDF, 0x0F));
-            if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 0 && screenPos_X < 254)) return new Pen(Color.FromArgb(0xD0, 0x0F, 0xDF, 0x0F));
-            if (screenPos_Y < 128 && screenPos_Y > 64) return new Pen(Color.FromArgb(0xFF,0x40,0x00));
-            return new Pen(Color.FromArgb(0xEF, 0xEF, 0xFF));
+            if (screenPos_Y < 478 && screenPos_Y > 390) return new Pen(Color.FromArgb(0xE0, 0x0F, 0xDF, 0x0F));
+            if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 0 && screenPos_X < 254)) return new Pen(Color.FromArgb(0xE0, 0x0F, 0xDF, 0x0F));
+            if (screenPos_Y < 128 && screenPos_Y > 64) return new Pen(Color.FromArgb(0xE0, 0xFF, 0x40, 0x00));
+            return new Pen(Color.FromArgb(0xE0, 0xEF, 0xEF, 0xFF));
         }
 
         private void SoundThread()
@@ -109,6 +116,9 @@ namespace Invaders
 
             while (cpu != null && cpu.Running)
             {
+                while (prevPort3 == cpu.PortOut[3] && prevPort5 == cpu.PortOut[5])
+                    Thread.Sleep(8);
+
                 if (prevPort3 != cpu.PortOut[3])
                 {
                     if (((cpu.PortOut[3] & 0x01) == 0x01) && ((cpu.PortOut[3] & 0x01) != (prevPort3 & 0x01)))
@@ -303,12 +313,6 @@ namespace Invaders
             uint k = GetKeyValue(e);
             if (k != 99)
                 KeyLifted(k);
-        }
-
-        private void WaitForV_Sync()
-        {
-            while (cpu!.V_Sync == 1 && cpu.Running) { Thread.Sleep(1); }// throttle
-            while (cpu!.V_Sync == 2 && cpu.Running) { Thread.Sleep(1); }// throttle
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
