@@ -1606,8 +1606,10 @@ namespace Invaders.CPU
         {
             if (registers.Flags.Z == 0)
             {
-                Ret();
-                registers.PC--;
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
+                //Ret();
+                //registers.PC--;
             }
         }
 
@@ -1680,15 +1682,19 @@ namespace Invaders.CPU
         {
             if (registers.Flags.Z == 1)
             {
-                Ret();
-                registers.PC--;
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
+                //Ret();
+                //registers.PC--;
             }
         }
 
         private void OP_C9()
         {
-            Ret();
-            registers.PC--;
+            registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+            registers.SP += 2;
+            //Ret();
+            //registers.PC--;
         }
 
         private void OP_CA()
@@ -1749,8 +1755,10 @@ namespace Invaders.CPU
         {
             if (registers.Flags.C == 0)
             {
-                Ret();
-                registers.PC--;
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
+                //Ret();
+                //registers.PC--;
             }
         }
 
@@ -1777,6 +1785,11 @@ namespace Invaders.CPU
 
         private void OP_D3()
         {
+            if (Test)
+            {
+                registers.PC++;
+                return;
+            }
             var port = memory[registers.PC + 1];
             switch (port)
             {
@@ -1841,8 +1854,10 @@ namespace Invaders.CPU
         {
             if (registers.Flags.C == 1)
             {
-                Ret();
-                registers.PC--;
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
+                //Ret();
+                //registers.PC--;
             }
         }
 
@@ -1862,6 +1877,11 @@ namespace Invaders.CPU
 
         private void OP_DB()
         {
+            if (Test)
+            {
+                registers.PC++;
+                return;
+            }
             var port = memory[registers.PC + 1];
             switch (port)
             {
@@ -1919,8 +1939,10 @@ namespace Invaders.CPU
         {
             if (registers.Flags.P == 0)
             {
-                Ret();
-                registers.PC--;
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
+                //Ret();
+                //registers.PC--;
             }
         }
 
@@ -1996,8 +2018,10 @@ namespace Invaders.CPU
         {
             if (registers.Flags.P == 1)
             {
-                Ret();
-                registers.PC--;
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
+                //Ret();
+                //registers.PC--;
             }
         }
 
@@ -2064,8 +2088,10 @@ namespace Invaders.CPU
         {
             if (registers.Flags.P == 1)
             {
-                Ret();
-                registers.PC--;
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
+                //Ret();
+                //registers.PC--;
             }
         }
 
@@ -2138,8 +2164,10 @@ namespace Invaders.CPU
         {
             if (registers.Flags.S == 1)
             {
-                Ret();
-                registers.PC--;
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
+                //Ret();
+                //registers.PC--;
             }
         }
 
