@@ -27,18 +27,12 @@ namespace Invaders
         }
 
         private void Execute()
-        {   
-            cpu = new _8080CPU(0x0100, true);
-            //cpu.LoadROM(appPath + @"ROMS\cputest.com", 0x0100, 0x4B00);
-            cpu.LoadROM(appPath + @"ROMS\tst8080.com", 0x0100, 0x0600);
-            //cpu.LoadROM(appPath + @"ROMS\zexall.com", 0x0100, 0x2200);
-            //cpu.LoadROM(appPath + @"ROMS\test.com", 0x0100, 0x0701);
-
-            //cpu = new _8080CPU(0x0000, false);
-            //cpu.LoadROM(appPath + @"ROMS\invaders.h", 0x0000, 0x800); // invaders.h 0000 - 07FF
-            //cpu.LoadROM(appPath + @"ROMS\invaders.g", 0x0800, 0x800); // invaders.g 0800 - 0FFF
-            //cpu.LoadROM(appPath + @"ROMS\invaders.f", 0x1000, 0x800); // invaders.f 1000 - 17FF
-            //cpu.LoadROM(appPath + @"ROMS\invaders.e", 0x1800, 0x800); // invaders.e 1800 - 1FFF
+        {
+            cpu = new _8080CPU(0x00);
+            cpu.LoadROM(appPath + @"ROMS\invaders.h", 0x0000, 0x800);//invaders.h 0000 - 07FF
+            cpu.LoadROM(appPath + @"ROMS\invaders.g", 0x0800, 0x800);//invaders.g 0800 - 0FFF
+            cpu.LoadROM(appPath + @"ROMS\invaders.f", 0x1000, 0x800);//invaders.f 1000 - 17FF
+            cpu.LoadROM(appPath + @"ROMS\invaders.e", 0x1800, 0x800);//invaders.e 1800 - 1FFF
 
             cpu_thread = new Thread(() => cpu!.Start());
             cpu_thread.IsBackground = true;

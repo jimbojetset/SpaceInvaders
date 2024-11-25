@@ -95,11 +95,11 @@
             set { int_enable = value; }
         }
 
-        public ushort HL
+        public ulong HL
         {
             get
             {
-                return (ushort)(h << 8 | l);
+                return (ulong)h << 8 | (ulong)l;
             }
             set
             {
@@ -108,11 +108,11 @@
             }
         }
 
-        public ushort DE
+        public ulong DE
         {
             get
             {
-                return (ushort)(d << 8 | e);
+                return (ulong)d << 8 | (ulong)e;
             }
             set
             {
@@ -121,11 +121,11 @@
             }
         }
 
-        public ushort BC
+        public ulong BC
         {
             get
             {
-                return (ushort)(b << 8 | c);
+                return (ulong)b << 8 | (ulong)c;
             }
             set
             {

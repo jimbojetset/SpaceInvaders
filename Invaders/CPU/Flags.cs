@@ -7,16 +7,18 @@ namespace Invaders.CPU
         private uint z; // Zero bit
         private uint s; // Sign bit
         private uint p; // Parity bit
-        private uint c; // Carry bit
+        private uint cy; // Carry bit
         private uint ac; // Auxiliary carry bit
+        private uint pad;
 
         public Flags()
         {
             Z = 0;
             S = 0;
             P = 0;
-            c = 0;
+            cy = 0;
             ac = 0;
+            pad = 3;
         }
 
         public uint Z
@@ -37,10 +39,10 @@ namespace Invaders.CPU
             set { p = value; }
         }
 
-        public uint C
+        public uint CY
         {
-            get { return c; }
-            set { c = value; }
+            get { return cy; }
+            set { cy = value; }
         }
 
         public uint AC
@@ -49,42 +51,48 @@ namespace Invaders.CPU
             set { ac = value; }
         }
 
-        public void UpdateCarryByte(ushort value)
+        public uint Pad
         {
-            c = (uint)(value > 0xFF ? 1 : 0);
+            get { return pad; }
+            set { pad = value; }
         }
 
-        public void UpdateCarryWord(ushort value)
+        public void UpdateCarryByte(ulong value)
         {
-            c = (uint)(value > 0xFFFF ? 1 : 0);
+            cy = (uint)((value > 0x00FF) ? 1 : 0);
         }
 
-        public void UpdateZSP(ushort value)
+        public void UpdateCarryWord(ulong value)
         {
-            z = (uint)((value & 0xFF) == 0 ? 1 : 0);
-            s = (uint)((value & 0x80) == 0x80 ? 1 : 0);
-            p = CalculateParityFlag((ushort)(value & 0xFF));
+            cy = (uint)((value > 0xFFFF) ? 1 : 0);
         }
 
-        public static uint CalculateParityFlag(ushort value)
+        public void UpdateZSP(ulong value)
+        {
+            z = (uint)(((value & 0xFF) == 0) ? 1 : 0);
+            s = (uint)(((value & 0x80) == 0x80) ? 1 : 0);
+            p = (uint)CalculateParityFlag(value & 0xFF);
+        }
+
+        public int CalculateParityFlag(ulong value)
         {
             int count = 0;
-            for (int i = 0; i < 8; i++) // changed to 8 from 16
+            for (int i = 0; i < 16; i++)
             {
                 if ((value & 0x01) == 1)
                     count += 1;
                 value >>= 1;
             }
-            return (uint)(((count & 0x1) == 0) ? 1 : 0);
+            return (0 == (count & 0x1)) ? 1 : 0;
         }
 
         public byte ToByte()
         {
             /**
              * 7 6 5 4 3 2 1 0
-             * S Z 0 A 0 P 1 C **/
-             
-            int flags = 0b00000010;
+             * S Z 0 A 0 P 1 C
+             */
+            var flags = 0b00000010;
 
             if (s == 1)
                 flags = flags | 0b10000000;
@@ -98,27 +106,19 @@ namespace Invaders.CPU
             if (p == 1)
                 flags = flags | 0b00000100;
 
-            if (c == 1)
+            if (cy == 1)
                 flags = flags | 0b00000001;
+
             return (byte)flags;
-            //return ((byte)(z | s << 1 | p << 2 | c << 3 | ac << 4));
         }
 
         public void SetFromByte(byte flags)
         {
-            if (0x01 == (flags & 0x01)) z = 0x01; else z = 0x00;
-            if (0x02 == (flags & 0x02)) s = 0x01; else s = 0x00;
-            if (0x04 == (flags & 0x04)) p = 0x01; else p = 0x00;
-            if (0x08 == (flags & 0x08)) c = 0x01; else c = 0x00;
-            if (0x10 == (flags & 0x10)) ac = 0x01; else ac = 0x00;
-
-
-            /*
-            s = (uint)((flags & 0b10000000) == 0b10000000 ? 1 : 0);
-            z = (uint)((flags & 0b01000000) == 0b01000000 ? 1 : 0);
-            ac = (uint)((flags & 0b00010000) == 0b00010000 ? 1 : 0);
-            p = (uint)((flags & 0b00000100) == 0b00000100 ? 1 : 0);
-            c = (uint)((flags & 0b00000001) == 0b00000001 ? 1 : 0);*/
+            s = (uint)(((flags & 0b10000000) == 0b10000000) ? 1 : 0);
+            z = (uint)(((flags & 0b01000000) == 0b01000000) ? 1 : 0);
+            ac = (uint)(((flags & 0b00010000) == 0b00010000) ? 1 : 0);
+            p = (uint)(((flags & 0b00000100) == 0b00000100) ? 1 : 0);
+            cy = (uint)(((flags & 0b00000001) == 0b00000001) ? 1 : 0);
         }
     }
 }
