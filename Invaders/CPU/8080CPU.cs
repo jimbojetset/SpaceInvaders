@@ -2170,7 +2170,10 @@ namespace Invaders.CPU
         }
 
         private void OP_FF()
-        { }
+        {
+            Call(0x38, (ushort)(registers.PC + 2));
+            registers.PC--;
+        }
 
         private ushort ReadOpcodeWord()
         {
@@ -2179,10 +2182,8 @@ namespace Invaders.CPU
 
         private void Call(ushort address, ushort retAddress)
         {
-            var rethi = (byte)((retAddress >> 8) & 0xFF);
-            var retlo = (byte)(retAddress & 0xFF);
-            memory[registers.SP - 1] = rethi;
-            memory[registers.SP - 2] = retlo;
+            memory[registers.SP - 1] = (byte)(retAddress >> 8 & 0xFF);
+            memory[registers.SP - 2] = (byte)(retAddress & 0xFF);
             registers.PC = address;
             registers.SP -= 2;
         }
