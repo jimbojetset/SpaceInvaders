@@ -24,6 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ROMS\cpudiag.bin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="ROMS\CPUTEST.COM">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

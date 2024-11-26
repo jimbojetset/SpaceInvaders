@@ -23,6 +23,7 @@ namespace Invaders.CPU
 
         private int @int = 1;
 
+        private bool DebugOut = false;
         private bool Test = false;
 
         public int Int
@@ -54,12 +55,14 @@ namespace Invaders.CPU
         private int hardwareShiftRegisterData = 0;
         private int hardwareShiftRegisterOffset = 0;
 
-        public _8080CPU(ushort pc, bool test = false)
+        public _8080CPU(ushort pc = 0x0000, bool test = false, bool debugOut = false)
         {
             memory = new byte[0x10000];
             registers = new Registers();
             registers.PC = pc;
             Test = test;
+            DebugOut = debugOut;
+            if (debugOut) Test = true;
         }
 
         public void LoadROM(string filePath, int addr, int length)
@@ -96,13 +99,15 @@ namespace Invaders.CPU
             bool interrupted = false;
             while (!interrupted && running)
             {
+                if(registers.PC == 0x0225)
+                { }
                 byte opcode = memory[registers.PC];
                 if (Test)
                 {
+                    if (DebugOut)
+                        Debug.WriteLine("PC: " + registers.PC.ToString("x4") + ", AF: " + ((registers.A << 8) | registers.Flags.ToByte()).ToString("x4") + " BC: " + registers.BC.ToString("x4") + ", DE: " + registers.DE.ToString("x4") + ", HL: " + registers.HL.ToString("x4") + ", SP: " + registers.SP.ToString("x4") + "  opcode:" + opcode.ToString("x2"));
                     if (registers.PC == 0x05)
                         TestWriteOut();
-                    else
-                        Debug.WriteLine("PC: " + registers.PC.ToString("x4") + ", AF: " + ((registers.A << 8) | registers.Flags.ToByte()).ToString("x4") + " BC: " + registers.BC.ToString("x4") + ", DE: " + registers.DE.ToString("x4") + ", HL: " + registers.HL.ToString("x4") + ", SP: " + registers.SP.ToString("x4") + "  opcode:" + opcode.ToString("x2"));
                 }
                 CallOpcode(opcode);
                 registers.PC++;
@@ -118,13 +123,11 @@ namespace Invaders.CPU
         {
             if (registers.C == 0x09)
             {
-                string s = ((char)memory[registers.DE]).ToString();
+                string ret = ((char)memory[registers.DE]).ToString();
                 ushort cnt = 0;
-                while (s != "$")
-                {
-                    Debug.Write(s);
-                    s = ((char)memory[registers.DE + cnt++]).ToString();
-                }
+                while (((char)memory[registers.DE + cnt]).ToString() != "$")          
+                    ret += ((char)memory[registers.DE + cnt++]).ToString();
+                Debug.WriteLine(ret);
             }
             else if (registers.C == 0x02)
                 Debug.Write(((char)registers.E).ToString());
@@ -2096,9 +2099,15 @@ namespace Invaders.CPU
 
         private void OP_F1()
         {
-            var flags = memory[registers.SP];
-            registers.Flags.SetFromByte(flags);
             registers.A = memory[registers.SP + 1];
+            var flags = memory[registers.SP];
+
+            if (0x01 == (flags & 0x01)) registers.Flags.Z = 0x01; else registers.Flags.Z = 0x00;
+            if (0x02 == (flags & 0x02)) registers.Flags.S = 0x01; else registers.Flags.S = 0x00;
+            if (0x04 == (flags & 0x04)) registers.Flags.P = 0x01; else registers.Flags.P = 0x00;
+            if (0x08 == (flags & 0x08)) registers.Flags.CY = 0x01; else registers.Flags.CY = 0x00;
+            if (0x10 == (flags & 0x10)) registers.Flags.AC = 0x01; else registers.Flags.AC = 0x00;
+
             registers.SP += 2;
         }
 
@@ -2138,8 +2147,9 @@ namespace Invaders.CPU
 
         private void OP_F5()
         {
-            memory[registers.SP - 2] = registers.Flags.ToByte();
             memory[registers.SP - 1] = registers.A;
+            byte addr = ((byte)(registers.Flags.Z | registers.Flags.S << 1 | registers.Flags.P << 2 | registers.Flags.CY << 3 | registers.Flags.AC << 4));
+            memory[registers.SP - 2] = addr;
             registers.SP -= 2;
         }
 
@@ -2229,7 +2239,7 @@ namespace Invaders.CPU
 
         private void Call(ushort address, ushort retAddress)
         {
-            memory[registers.SP - 1] = (byte)(retAddress >> 8 & 0xFF);
+            memory[registers.SP - 1] = (byte)((retAddress >> 8) & 0xFF);
             memory[registers.SP - 2] = (byte)(retAddress & 0xFF);
             registers.PC = address;
             registers.SP -= 2;
