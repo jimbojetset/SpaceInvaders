@@ -74,10 +74,20 @@ namespace Invaders.CPU
             p = (uint)CalculateParityFlag(value & 0xFF);
         }
 
+        public void CalcAuxCarryFlag(byte a, byte b)
+        {
+            ac = (uint)((((a & 0x0f) + (b & 0x0f)) > 0x0f) ? 1 : 0);
+        }
+
+        public void CalcAuxCarryFlag(byte a, byte b, byte c)
+        {
+            ac = (uint)((((a & 0x0f) + (b & 0x0f) + (c & 0x0f)) > 0x0f) ? 1 : 0);
+        }
+
         public int CalculateParityFlag(ulong value)
         {
             int count = 0;
-            for (int i = 0; i < 16; i++)
+            for (int i = 0; i < 8; i++)
             {
                 if ((value & 0x01) == 1)
                     count += 1;

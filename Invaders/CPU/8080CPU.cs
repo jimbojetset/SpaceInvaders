@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Win32;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -69,7 +70,25 @@ namespace Invaders.CPU
         {
             Array.Copy(File.ReadAllBytes(filePath), 0, memory, addr, length);
             if (Test)
+            {
                 memory[0x05] = 0xC9;
+                //CpuDiagTestRomAdjust();
+            }
+        }
+
+        private void CpuDiagTestRomAdjust()
+        {
+            memory[0] = 0xc3;
+            memory[1] = 0x65;
+            memory[2] = 0x00;
+            // Fix the stack pointer from 0x6ad to 0x7ad
+            //  this 0x06 byte 112 in the code, which is
+            //  byte 112 + 0x100 = 368 in memory
+            memory[368] = 0x7;
+            // Skip DAA test
+            memory[0x59c] = 0xc3; // JMP
+            memory[0x59d] = 0xc2; // addr byte 1
+            memory[0x59e] = 0x05; // addr byte 2
         }
 
         public void Stop()
@@ -99,8 +118,6 @@ namespace Invaders.CPU
             bool interrupted = false;
             while (!interrupted && running)
             {
-                if(registers.PC == 0x0225)
-                { }
                 byte opcode = memory[registers.PC];
                 if (Test)
                 {
@@ -109,6 +126,8 @@ namespace Invaders.CPU
                     if (registers.PC == 0x05)
                         TestWriteOut();
                 }
+                if(registers.PC == 0x0239)
+                { }
                 CallOpcode(opcode);
                 registers.PC++;
                 if (stopwatch.ElapsedMilliseconds > 8.33 && running)
@@ -1122,46 +1141,75 @@ namespace Invaders.CPU
         private void OP_80()
         {
             var addr = (uint)registers.A + (uint)registers.B;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.B, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.B);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
+
         }
 
         private void OP_81()
         {
             var addr = (uint)registers.A + (uint)registers.C;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.C, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.C);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
+
         }
 
         private void OP_82()
         {
             var addr = (uint)registers.A + (uint)registers.D;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.D, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.D);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
+
         }
 
         private void OP_83()
         {
             var addr = (uint)registers.A + (uint)registers.E;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.E, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.E);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
+
         }
 
         private void OP_84()
         {
             var addr = (uint)registers.A + (uint)registers.H;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.H, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.H);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
+
         }
 
         private void OP_85()
         {
             var addr = (uint)registers.A + (uint)registers.L;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.L, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.L);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1170,6 +1218,10 @@ namespace Invaders.CPU
         private void OP_86()
         {
             var addr = (uint)registers.A + (uint)memory[registers.HL];
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, memory[registers.HL], 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, memory[registers.HL]);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1178,6 +1230,10 @@ namespace Invaders.CPU
         private void OP_87()
         {
             var addr = (uint)registers.A + (uint)registers.A;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.A, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.A);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1186,6 +1242,10 @@ namespace Invaders.CPU
         private void OP_88()
         {
             var addr = (uint)registers.A + (uint)registers.B + (uint)registers.Flags.CY;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.B, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.B);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1194,6 +1254,10 @@ namespace Invaders.CPU
         private void OP_89()
         {
             var addr = (uint)registers.A + (uint)registers.C + (uint)registers.Flags.CY;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.C, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.C);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1202,6 +1266,10 @@ namespace Invaders.CPU
         private void OP_8A()
         {
             var addr = (uint)registers.A + (uint)registers.D + (uint)registers.Flags.CY;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.D, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.D);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1210,6 +1278,10 @@ namespace Invaders.CPU
         private void OP_8B()
         {
             var addr = (uint)registers.A + (uint)registers.E + (uint)registers.Flags.CY;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.E, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.E);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1218,6 +1290,10 @@ namespace Invaders.CPU
         private void OP_8C()
         {
             var addr = (uint)registers.A + (uint)registers.H + (uint)registers.Flags.CY;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.H, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.H);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1226,6 +1302,10 @@ namespace Invaders.CPU
         private void OP_8D()
         {
             var addr = (uint)registers.A + (uint)registers.L + (uint)registers.Flags.CY;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.L, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.L);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1234,6 +1314,10 @@ namespace Invaders.CPU
         private void OP_8E()
         {
             var addr = (uint)registers.A + (uint)memory[registers.HL] + (uint)registers.Flags.CY;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, memory[registers.HL], 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, memory[registers.HL]);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1242,6 +1326,10 @@ namespace Invaders.CPU
         private void OP_8F()
         {
             var addr = (uint)registers.A + (uint)registers.A + (uint)registers.Flags.CY;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.A, 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, registers.A);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1250,129 +1338,177 @@ namespace Invaders.CPU
         private void OP_90()
         {
             var addr = (uint)registers.A - (uint)registers.B;
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)(~registers.B & 0xFF), 1);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
+            if (registers.Flags.CY == 1) registers.Flags.CY = 0; else registers.Flags.CY = 1;
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_91()
         {
             var addr = (uint)registers.A - (uint)registers.C;
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)(~registers.C & 0xFF), 1);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
+            if (registers.Flags.CY == 1) registers.Flags.CY = 0; else registers.Flags.CY = 1;
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_92()
         {
             var addr = (uint)registers.A - (uint)registers.D;
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)(~registers.D & 0xFF), 1);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
+            if (registers.Flags.CY == 1) registers.Flags.CY = 0; else registers.Flags.CY = 1;
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_93()
         {
             var addr = (uint)registers.A - (uint)registers.E;
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)(~registers.E & 0xFF), 1);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
+            if (registers.Flags.CY == 1) registers.Flags.CY = 0; else registers.Flags.CY = 1;
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_94()
         {
             var addr = (uint)registers.A - (uint)registers.H;
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)(~registers.H & 0xFF), 1);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
+            if (registers.Flags.CY == 1) registers.Flags.CY = 0; else registers.Flags.CY = 1;
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_95()
         {
             var addr = (uint)registers.A - (uint)registers.L;
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)(~registers.L & 0xFF), 1);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
+            if (registers.Flags.CY == 1) registers.Flags.CY = 0; else registers.Flags.CY = 1;
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_96()
         {
             var addr = (uint)registers.A - (uint)memory[registers.HL];
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)(~memory[registers.HL] & 0xFF), 1);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
+            if (registers.Flags.CY == 1) registers.Flags.CY = 0; else registers.Flags.CY = 1;
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_97()
         {
             var addr = (uint)registers.A - (uint)registers.A;
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)(~registers.A & 0xFF), 1);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
+            if (registers.Flags.CY == 1) registers.Flags.CY = 0; else registers.Flags.CY = 1;
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_98()
         {
-            var addr = (uint)registers.A - (uint)registers.B - (uint)registers.Flags.CY;
-            registers.Flags.UpdateZSP((byte)addr);
+            uint reg = registers.B;
+            uint addr = (uint)(registers.A - ((~reg & 0xff) + 1));
+            if (registers.Flags.CY == 1)
+                addr = (uint)(registers.A - (((~reg + 1) & 0xff) + 1));
             registers.Flags.UpdateCarryByte(addr);
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)((~reg & 0xff) & 0xFF), 1);
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_99()
         {
-            var addr = (uint)registers.A - (uint)registers.C - (uint)registers.Flags.CY;
-            registers.Flags.UpdateZSP((byte)addr);
+            uint reg = registers.C;
+            uint addr = (uint)(registers.A - ((~reg & 0xff) + 1));
+            if (registers.Flags.CY == 1)
+                addr = (uint)(registers.A - (((~reg + 1) & 0xff) + 1));
             registers.Flags.UpdateCarryByte(addr);
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)((~reg & 0xff) & 0xFF), 1);
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_9A()
         {
-            var addr = (uint)registers.A - (uint)registers.D - (uint)registers.Flags.CY;
-            registers.Flags.UpdateZSP((byte)addr);
+            uint reg = registers.D;
+            uint addr = (uint)(registers.A - ((~reg & 0xff) + 1));
+            if (registers.Flags.CY == 1)
+                addr = (uint)(registers.A - (((~reg + 1) & 0xff) + 1));
             registers.Flags.UpdateCarryByte(addr);
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)((~reg & 0xff) & 0xFF), 1);
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_9B()
         {
-            var addr = (uint)registers.A - (uint)registers.E - (uint)registers.Flags.CY;
-            registers.Flags.UpdateZSP((byte)addr);
+            uint reg = registers.E;
+            uint addr = (uint)(registers.A - ((~reg & 0xff) + 1));
+            if (registers.Flags.CY == 1)
+                addr = (uint)(registers.A - (((~reg + 1) & 0xff) + 1));
             registers.Flags.UpdateCarryByte(addr);
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)((~reg & 0xff) & 0xFF), 1);
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_9C()
         {
-            var addr = (uint)registers.A - (uint)registers.H - (uint)registers.Flags.CY;
-            registers.Flags.UpdateZSP((byte)addr);
+            uint reg = registers.H;
+            uint addr = (uint)(registers.A - ((~reg & 0xff) + 1));
+            if (registers.Flags.CY == 1)
+                addr = (uint)(registers.A - (((~reg + 1) & 0xff) + 1));
             registers.Flags.UpdateCarryByte(addr);
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)((~reg & 0xff) & 0xFF), 1);
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_9D()
         {
-            var addr = (uint)registers.A - (uint)registers.L - (uint)registers.Flags.CY;
-            registers.Flags.UpdateZSP((byte)addr);
+            uint reg = registers.L;
+            uint addr = (uint)(registers.A - ((~reg & 0xff) + 1));
+            if (registers.Flags.CY == 1)
+                addr = (uint)(registers.A - (((~reg + 1) & 0xff) + 1));
             registers.Flags.UpdateCarryByte(addr);
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)((~reg & 0xff) & 0xFF), 1);
             registers.A = (byte)(addr & 0xFF);
+
         }
 
         private void OP_9E()
         {
-            var addr2 = registers.HL;
-            var addr = (uint)registers.A - (uint)memory[addr2] - (uint)registers.Flags.CY;
-            registers.Flags.UpdateZSP((byte)addr);
+            uint reg = (uint)registers.HL;
+            uint addr = (uint)(registers.A - ((~reg & 0xff) + 1));
+            if (registers.Flags.CY == 1)
+                addr = (uint)(registers.A - (((~reg + 1) & 0xff) + 1));
             registers.Flags.UpdateCarryByte(addr);
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)((~reg & 0xff) & 0xFF), 1);
             registers.A = (byte)(addr & 0xFF);
         }
 
         private void OP_9F()
         {
-            var addr = (uint)registers.A - (uint)registers.A - (uint)registers.Flags.CY;
-            registers.Flags.UpdateZSP((byte)addr);
+            uint reg = (uint)registers.A;
+            uint addr = (uint)(registers.A - ((~reg & 0xff) + 1));
+            if (registers.Flags.CY == 1)
+                addr = (uint)(registers.A - (((~reg + 1) & 0xff) + 1));
             registers.Flags.UpdateCarryByte(addr);
+            registers.Flags.UpdateZSP((byte)addr);
+            registers.Flags.CalcAuxCarryFlag(registers.A, (byte)((~reg & 0xff) & 0xFF), 1);
             registers.A = (byte)(addr & 0xFF);
         }
 
@@ -1684,8 +1820,12 @@ namespace Invaders.CPU
 
         private void OP_C6()
         {
-            ulong addr = (ulong)registers.A + memory[registers.PC + 1];
-            registers.Flags.UpdateZSP(addr);
+            var addr = (uint)registers.A + (uint)memory[registers.PC + 1];
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, memory[registers.PC + 1], 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, memory[registers.PC + 1]);
+            registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
             registers.PC++;
@@ -1756,6 +1896,10 @@ namespace Invaders.CPU
             var addr = (ulong)registers.A;
             addr += memory[registers.PC + 1];
             addr += registers.Flags.CY;
+            if (registers.Flags.CY == 1)
+                registers.Flags.CalcAuxCarryFlag(registers.A, memory[registers.PC + 1], 1);
+            else
+                registers.Flags.CalcAuxCarryFlag(registers.A, memory[registers.PC + 1]);
             registers.Flags.UpdateCarryByte(addr);
             registers.Flags.UpdateZSP(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -2220,9 +2364,13 @@ namespace Invaders.CPU
 
         private void OP_FE()
         {
-            var addr = (ulong)(registers.A - memory[registers.PC + 1]);
-            registers.Flags.UpdateZSP(addr);
+            UInt16 addr = (UInt16)(registers.A - (~memory[registers.PC + 1] & 0xFF) - 1 );
             registers.Flags.UpdateCarryByte(addr);
+            if (registers.Flags.CY == 1) registers.Flags.CY = 0; else registers.Flags.CY = 1;
+            registers.Flags.UpdateZSP(addr);
+            if (registers.Flags.CY == 0)
+                registers.Flags.CalcAuxCarryFlag(registers.A, (byte)(~memory[registers.PC + 1] & 0xFF), 1);
+            registers.A = (byte)(addr & 0xFF);
             registers.PC++;
         }
 
