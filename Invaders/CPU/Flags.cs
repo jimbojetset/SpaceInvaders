@@ -92,7 +92,7 @@ namespace Invaders.CPU
              * 7 6 5 4 3 2 1 0
              * S Z 0 A 0 P 1 C
              */
-            var flags = 0b00000010;
+            var flags = 0b00000000;
 
             if (s == 1)
                 flags = flags | 0b10000000;

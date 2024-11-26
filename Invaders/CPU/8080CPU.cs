@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Security.Cryptography;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Invaders.CPU
 {
@@ -19,6 +20,13 @@ namespace Invaders.CPU
 
         public int V_Sync
         { get { return vSync; } }
+
+        private int @int = 1;
+
+        private bool Test = false;
+
+        public int Int
+        { get { return @int; } }
 
         private readonly byte[] video = new byte[0x1C00];
 
@@ -46,16 +54,19 @@ namespace Invaders.CPU
         private int hardwareShiftRegisterData = 0;
         private int hardwareShiftRegisterOffset = 0;
 
-        public _8080CPU(ushort pc)
+        public _8080CPU(ushort pc, bool test = false)
         {
-            memory = new byte[0x10000];//0000-1FFF 8K ROM    2000 - 23FF 1K RAM    2400 - 3FFF 7K Video RAM    4000+ Mirror RAM
+            memory = new byte[0x10000];
             registers = new Registers();
             registers.PC = pc;
+            Test = test;
         }
 
         public void LoadROM(string filePath, int addr, int length)
         {
             Array.Copy(File.ReadAllBytes(filePath), 0, memory, addr, length);
+            if (Test)
+                memory[0x05] = 0xC9;
         }
 
         public void Stop()
@@ -66,14 +77,15 @@ namespace Invaders.CPU
         public void Start()
         {
             running = true;
-            vSync = 1;
+            @int = 1;
             while (running)
             {
-                vSync = 1;
+                @int = 1;
                 Tick();
-                vSync = 2;
+                @int = 2;
                 Tick();
-                Buffer.BlockCopy(memory, 0x2400, video, 0, video.Length);
+                if (!Test)
+                    Array.Copy(memory, 0x2400, video, 0, video.Length);
             }
         }
 
@@ -81,17 +93,43 @@ namespace Invaders.CPU
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            bool hit_v_sync = false;
-            while (!hit_v_sync && running)
+            bool interrupted = false;
+            while (!interrupted && running)
             {
-                CallOpcode(memory[registers.PC]);
+                byte opcode = memory[registers.PC];
+                if (Test)
+                {
+                    if (registers.PC == 0x05)
+                        TestWriteOut();
+                    else
+                        Debug.WriteLine("PC: " + registers.PC.ToString("x4") + ", AF: " + ((registers.A << 8) | registers.Flags.ToByte()).ToString("x4") + " BC: " + registers.BC.ToString("x4") + ", DE: " + registers.DE.ToString("x4") + ", HL: " + registers.HL.ToString("x4") + ", SP: " + registers.SP.ToString("x4") + "  opcode:" + opcode.ToString("x2"));
+                }
+                CallOpcode(opcode);
                 registers.PC++;
                 if (stopwatch.ElapsedMilliseconds > 8.33 && running)
                 {
-                    Interrupt(vSync);
-                    hit_v_sync = true;
+                    Interrupt(@int);
+                    interrupted = true;
                 }
             }
+        }
+
+        private void TestWriteOut()
+        {
+            if (registers.C == 0x09)
+            {
+                string s = ((char)memory[registers.DE]).ToString();
+                ushort cnt = 0;
+                while (s != "$")
+                {
+                    Debug.Write(s);
+                    s = ((char)memory[registers.DE + cnt++]).ToString();
+                }
+            }
+            else if (registers.C == 0x02)
+                Debug.Write(((char)registers.E).ToString());
+            else if (memory[registers.PC] == 0x76)
+                Debug.Write("EXIT");
         }
 
         private void CallOpcode(byte opcode)
@@ -106,7 +144,6 @@ namespace Invaders.CPU
                 case 0x05: OP_05(); return;
                 case 0x06: OP_06(); return;
                 case 0x07: OP_07(); return;
-                case 0x08: OP_08(); return;
                 case 0x09: OP_09(); return;
                 case 0x0A: OP_0A(); return;
                 case 0x0B: OP_0B(); return;
@@ -114,7 +151,6 @@ namespace Invaders.CPU
                 case 0x0D: OP_0D(); return;
                 case 0x0E: OP_0E(); return;
                 case 0x0F: OP_0F(); return;
-                case 0x10: OP_10(); return;
                 case 0x11: OP_11(); return;
                 case 0x12: OP_12(); return;
                 case 0x13: OP_13(); return;
@@ -122,7 +158,6 @@ namespace Invaders.CPU
                 case 0x15: OP_15(); return;
                 case 0x16: OP_16(); return;
                 case 0x17: OP_17(); return;
-                case 0x18: OP_18(); return;
                 case 0x19: OP_19(); return;
                 case 0x1A: OP_1A(); return;
                 case 0x1B: OP_1B(); return;
@@ -130,7 +165,7 @@ namespace Invaders.CPU
                 case 0x1D: OP_1D(); return;
                 case 0x1E: OP_1E(); return;
                 case 0x1F: OP_1F(); return;
-                case 0x20: OP_20(); return;
+                case 0x20: OP_20(); return; // RIM	1		special
                 case 0x21: OP_21(); return;
                 case 0x22: OP_22(); return;
                 case 0x23: OP_23(); return;
@@ -138,7 +173,6 @@ namespace Invaders.CPU
                 case 0x25: OP_25(); return;
                 case 0x26: OP_26(); return;
                 case 0x27: OP_27(); return;
-                case 0x28: OP_28(); return;
                 case 0x29: OP_29(); return;
                 case 0x2A: OP_2A(); return;
                 case 0x2B: OP_2B(); return;
@@ -146,7 +180,7 @@ namespace Invaders.CPU
                 case 0x2D: OP_2D(); return;
                 case 0x2E: OP_2E(); return;
                 case 0x2F: OP_2F(); return;
-                case 0x30: OP_30(); return;
+                case 0x30: OP_30(); return;  // SIM	1		special
                 case 0x31: OP_31(); return;
                 case 0x32: OP_32(); return;
                 case 0x33: OP_33(); return;
@@ -154,7 +188,6 @@ namespace Invaders.CPU
                 case 0x35: OP_35(); return;
                 case 0x36: OP_36(); return;
                 case 0x37: OP_37(); return;
-                case 0x38: OP_38(); return;
                 case 0x39: OP_39(); return;
                 case 0x3A: OP_3A(); return;
                 case 0x3B: OP_3B(); return;
@@ -301,7 +334,6 @@ namespace Invaders.CPU
                 case 0xC8: OP_C8(); return;
                 case 0xC9: OP_C9(); return;
                 case 0xCA: OP_CA(); return;
-                case 0xCB: OP_CB(); return;
                 case 0xCC: OP_CC(); return;
                 case 0xCD: OP_CD(); return;
                 case 0xCE: OP_CE(); return;
@@ -315,11 +347,9 @@ namespace Invaders.CPU
                 case 0xD6: OP_D6(); return;
                 case 0xD7: OP_D7(); return;
                 case 0xD8: OP_D8(); return;
-                case 0xD9: OP_D9(); return;
                 case 0xDA: OP_DA(); return;
                 case 0xDB: OP_DB(); return;
                 case 0xDC: OP_DC(); return;
-                case 0xDD: OP_DD(); return;
                 case 0xDE: OP_DE(); return;
                 case 0xDF: OP_DF(); return;
                 case 0xE0: OP_E0(); return;
@@ -335,7 +365,6 @@ namespace Invaders.CPU
                 case 0xEA: OP_EA(); return;
                 case 0xEB: OP_EB(); return;
                 case 0xEC: OP_EC(); return;
-                case 0xED: OP_ED(); return;
                 case 0xEE: OP_EE(); return;
                 case 0xEF: OP_EF(); return;
                 case 0xF0: OP_F0(); return;
@@ -351,7 +380,6 @@ namespace Invaders.CPU
                 case 0xFA: OP_FA(); return;
                 case 0xFB: OP_FB(); return;
                 case 0xFC: OP_FC(); return;
-                case 0xFD: OP_FD(); return;
                 case 0xFE: OP_FE(); return;
                 case 0xFF: OP_FF(); return;
                 default: throw new NotImplementedException("INVALID OPCODE - " + opcode.ToString("X2"));
@@ -408,9 +436,6 @@ namespace Invaders.CPU
             registers.Flags.CY = (byte)bit7;
         }
 
-        private void OP_08()
-        { }
-
         private void OP_09()
         {
             var addr = registers.HL + registers.BC;
@@ -456,9 +481,6 @@ namespace Invaders.CPU
             registers.A |= (byte)(bit0 << 7);
             registers.Flags.CY = (byte)bit0;
         }
-
-        private void OP_10()
-        { }
 
         private void OP_11()
         {
@@ -506,9 +528,6 @@ namespace Invaders.CPU
             registers.Flags.CY = bit7;
         }
 
-        private void OP_18()
-        { }
-
         private void OP_19()
         {
             var addr = registers.DE + registers.HL;
@@ -555,7 +574,7 @@ namespace Invaders.CPU
             registers.Flags.CY = (byte)bit0;
         }
 
-        private void OP_20()
+        private void OP_20() // RIM	1		special
         { }
 
         private void OP_21()
@@ -600,20 +619,28 @@ namespace Invaders.CPU
 
         private void OP_27()
         {
-            if ((registers.A & 0x0F) > 9)
+            byte ls4 = (byte)(registers.A & 0x0F);
+
+            if ((registers.A & 0x0F) > 9)//|| registers.Flags.AC == 1)
             {
                 registers.A += 6;
+                if (ls4 + 0x06 > 0x10)
+                    registers.Flags.AC = 0x01;
+                else
+                    registers.Flags.AC = 0x00;
             }
-            if ((1 == registers.Flags.CY) || ((registers.A & 0xF0) > 0x90))
+            else
+                registers.Flags.AC = 0x00;
+
+
+            if ((registers.A & 0xF0) > 0x90)// || registers.Flags.C == 1 || (registers.A & 0xF0) > 0x90)
             {
-                registers.A += 0x60;
-                registers.Flags.CY = 1;
-                registers.Flags.UpdateZSP(registers.A);
+                ushort addr = (ushort)(registers.A + 0x60);
+                registers.Flags.UpdateZSP(addr);
+                registers.Flags.UpdateCarryByte(addr);
+                registers.A = (byte)(addr & 0xFF);
             }
         }
-
-        private void OP_28()
-        { }
 
         private void OP_29()
         {
@@ -660,7 +687,7 @@ namespace Invaders.CPU
             registers.A = (byte)~registers.A;
         }
 
-        private void OP_30()
+        private void OP_30()  // SIM	1		special
         { }
 
         private void OP_31()
@@ -712,9 +739,6 @@ namespace Invaders.CPU
             registers.Flags.CY = 1;
         }
 
-        private void OP_38()
-        { }
-
         private void OP_39()
         {
             var value = registers.HL + registers.SP;
@@ -759,7 +783,9 @@ namespace Invaders.CPU
         }
 
         private void OP_40()
-        { }
+        {
+            registers.B = registers.B;
+        }
 
         private void OP_41()
         {
@@ -987,7 +1013,9 @@ namespace Invaders.CPU
         }
 
         private void OP_6D()
-        { }
+        {
+            registers.L = registers.L;
+        }
 
         private void OP_6E()
         {
@@ -1037,7 +1065,9 @@ namespace Invaders.CPU
         }
 
         private void OP_76()
-        { }
+        {
+            running = false;
+        }
 
         private void OP_77()
         {
@@ -1082,7 +1112,9 @@ namespace Invaders.CPU
         }
 
         private void OP_7F()
-        { }
+        {
+            registers.A = registers.A;
+        }
 
         private void OP_80()
         {
@@ -1591,7 +1623,8 @@ namespace Invaders.CPU
         {
             if (registers.Flags.Z == 0)
             {
-                Ret();
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
                 registers.PC--;
             }
         }
@@ -1656,20 +1689,25 @@ namespace Invaders.CPU
         }
 
         private void OP_C7()
-        { }
+        {
+            Call(0x38, (ushort)(registers.PC + 2));
+            registers.PC--;
+        }
 
         private void OP_C8()
         {
             if (registers.Flags.Z == 1)
             {
-                Ret();
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
                 registers.PC--;
             }
         }
 
         private void OP_C9()
         {
-            Ret();
+            registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+            registers.SP += 2;
             registers.PC--;
         }
 
@@ -1686,9 +1724,6 @@ namespace Invaders.CPU
                 registers.PC += 2;
             }
         }
-
-        private void OP_CB()
-        { }
 
         private void OP_CC()
         {
@@ -1725,13 +1760,17 @@ namespace Invaders.CPU
         }
 
         private void OP_CF()
-        { }
+        {
+            Call(0x08, (ushort)(registers.PC + 2));
+            registers.PC--;
+        }
 
         private void OP_D0()
         {
             if (registers.Flags.CY == 0)
             {
-                Ret();
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
                 registers.PC--;
             }
         }
@@ -1814,19 +1853,20 @@ namespace Invaders.CPU
         }
 
         private void OP_D7()
-        { }
+        {
+            Call(0x10, (ushort)(registers.PC + 2));
+            registers.PC--;
+        }
 
         private void OP_D8()
         {
             if (registers.Flags.CY == 1)
             {
-                Ret();
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
                 registers.PC--;
             }
         }
-
-        private void OP_D9()
-        { }
 
         private void OP_DA()
         {
@@ -1881,9 +1921,6 @@ namespace Invaders.CPU
             }
         }
 
-        private void OP_DD()
-        { }
-
         private void OP_DE()
         {
             var data = memory[registers.PC + 1];
@@ -1895,13 +1932,17 @@ namespace Invaders.CPU
         }
 
         private void OP_DF()
-        { }
+        {
+            Call(0x18, (ushort)(registers.PC + 2));
+            registers.PC--;
+        }
 
         private void OP_E0()
         {
             if (registers.Flags.P == 0)
             {
-                Ret();
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
                 registers.PC--;
             }
         }
@@ -1969,13 +2010,17 @@ namespace Invaders.CPU
         }
 
         private void OP_E7()
-        { }
+        {
+            Call(0x20, (ushort)(registers.PC + 2));
+            registers.PC--;
+        }
 
         private void OP_E8()
         {
             if (registers.Flags.P == 1)
             {
-                Ret();
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
                 registers.PC--;
             }
         }
@@ -2025,9 +2070,6 @@ namespace Invaders.CPU
             }
         }
 
-        private void OP_ED()
-        { }
-
         private void OP_EE()
         {
             registers.A ^= memory[registers.PC + 1];
@@ -2037,13 +2079,17 @@ namespace Invaders.CPU
         }
 
         private void OP_EF()
-        { }
+        {
+            Call(0x28, (ushort)(registers.PC + 2));
+            registers.PC--;
+        }
 
         private void OP_F0()
         {
             if (registers.Flags.P == 1)
             {
-                Ret();
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
                 registers.PC--;
             }
         }
@@ -2108,13 +2154,17 @@ namespace Invaders.CPU
         }
 
         private void OP_F7()
-        { }
+        {
+            Call(0x30, (ushort)(registers.PC + 2));
+            registers.PC--;
+        }
 
         private void OP_F8()
         {
             if (registers.Flags.S == 1)
             {
-                Ret();
+                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.SP += 2;
                 registers.PC--;
             }
         }
@@ -2158,9 +2208,6 @@ namespace Invaders.CPU
             }
         }
 
-        private void OP_FD()
-        { }
-
         private void OP_FE()
         {
             var addr = (ulong)(registers.A - memory[registers.PC + 1]);
@@ -2188,22 +2235,12 @@ namespace Invaders.CPU
             registers.SP -= 2;
         }
 
-        private void Ret()
-        {
-            var sphi = memory[registers.SP + 1];
-            var splo = memory[registers.SP];
-            registers.PC = (ushort)(sphi << 8 | splo);
-            registers.SP += 2;
-        }
-
         private void Interrupt(int num)
         {
             if (!registers.INT_ENABLE)
                 return;
-            var pchi = (byte)((registers.PC >> 8) & 0xFF);
-            var pclo = (byte)(registers.PC & 0xFF);
-            memory[registers.SP - 1] = pchi;
-            memory[registers.SP - 2] = pclo;
+            memory[registers.SP - 1] = (byte)((registers.PC >> 8) & 0xFF);
+            memory[registers.SP - 2] = (byte)(registers.PC & 0xFF);
             registers.SP -= 2;
             if (num == 1)
                 registers.PC = 0x0008;
