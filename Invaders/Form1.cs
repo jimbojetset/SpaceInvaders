@@ -29,7 +29,6 @@ namespace Invaders
         private void Execute()
         {
             cpu = new _8080CPU(0x0100, true, true);
-            //cpu.LoadROM(appPath + @"ROMS\cputest.com", 0x0100, 0x4B00);
             cpu.LoadROM(appPath + @"ROMS\tst8080.com", 0x0100, 0x0600);
             //cpu.LoadROM(appPath + @"ROMS\cpudiag.bin", 0x0100, 0x05AD);
 

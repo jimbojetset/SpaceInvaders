@@ -71,7 +71,7 @@ namespace Invaders.CPU
         {
             z = (uint)(((value & 0xFF) == 0) ? 1 : 0);
             s = (uint)(((value & 0x80) == 0x80) ? 1 : 0);
-            p = (uint)CalculateParityFlag(value & 0xFF);
+            p = (uint)CalculateParityFlag((byte)value);
         }
 
         public void CalcAuxCarryFlag(byte a, byte b)
@@ -84,16 +84,15 @@ namespace Invaders.CPU
             ac = (uint)((((a & 0x0f) + (b & 0x0f) + (c & 0x0f)) > 0x0f) ? 1 : 0);
         }
 
-        public int CalculateParityFlag(ulong value)
+        public int CalculateParityFlag(byte value)
         {
-            int count = 0;
-            for (int i = 0; i < 8; i++)
-            {
-                if ((value & 0x01) == 1)
-                    count += 1;
-                value >>= 1;
-            }
-            return (0 == (count & 0x1)) ? 1 : 0;
+            // parity = 0 is odd
+            // parity = 1 is even
+            byte num = (byte)(value & 0xff);
+            byte total = 0;
+            for (total = 0; num > 0; total++)
+                num &= (byte)(num - 1);
+            return ((total % 2) == 0) ? 1 : 0;
         }
 
         public byte ToByte()
