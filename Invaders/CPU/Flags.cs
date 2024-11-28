@@ -84,15 +84,15 @@ namespace Invaders.CPU
             ac = (uint)((((a & 0x0f) + (b & 0x0f) + (c & 0x0f)) > 0x0f) ? 1 : 0);
         }
 
-        public int CalculateParityFlag(byte value)
+        public uint CalculateParityFlag(byte value)
         {
             // parity = 0 is odd
             // parity = 1 is even
             byte num = (byte)(value & 0xff);
-            byte total = 0;
+            byte total;
             for (total = 0; num > 0; total++)
                 num &= (byte)(num - 1);
-            return ((total % 2) == 0) ? 1 : 0;
+            return (uint)(((total % 2) == 0) ? 1 : 0);
         }
 
         public byte ToByte()

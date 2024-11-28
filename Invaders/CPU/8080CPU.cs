@@ -643,20 +643,17 @@ namespace Invaders.CPU
 
         private void OP_27()
         {
-            byte ls4 = (byte)(registers.A & 0x0F);
-
+            byte bits = (byte)(registers.A & 0x0F);
             if ((registers.A & 0x0F) > 9 || registers.Flags.AC == 1)
             {
                 registers.A += 6;
-                if (ls4 + 0x06 > 0x10)
+                if (bits + 0x06 > 0x10)
                     registers.Flags.AC = 0x01;
                 else
                     registers.Flags.AC = 0x00;
             }
             else
                 registers.Flags.AC = 0x00;
-
-
             if ((registers.A & 0xF0) > 0x90 || registers.Flags.CY == 1)
             {
                 ushort addr = (ushort)(registers.A + 0x60);
@@ -1234,11 +1231,7 @@ namespace Invaders.CPU
         private void OP_87()
         {
             var addr = (uint)registers.A + (uint)registers.A;
-            var reg = registers.A;
-            //if (registers.Flags.CY == 1)
-                //registers.Flags.CalcAuxCarryFlag(registers.A, reg, 1);
-            //else
-            registers.Flags.CalcAuxCarryFlag(registers.A, reg);
+            registers.Flags.CalcAuxCarryFlag(registers.A, registers.A);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1869,10 +1862,7 @@ namespace Invaders.CPU
         private void OP_C6()
         {
             var addr = (uint)registers.A + (uint)memory[registers.PC + 1];
-            //if (registers.Flags.CY == 1)
-            //    registers.Flags.CalcAuxCarryFlag(registers.A, memory[registers.PC + 1], 1);
-            //else
-                registers.Flags.CalcAuxCarryFlag(registers.A, memory[registers.PC + 1]);
+            registers.Flags.CalcAuxCarryFlag(registers.A, memory[registers.PC + 1]);
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -2242,12 +2232,8 @@ namespace Invaders.CPU
 
         private void OP_EB()
         {
-            var temp = registers.H;
-            registers.H = registers.D;
-            registers.D = temp;
-            temp = registers.L;
-            registers.L = registers.E;
-            registers.E = temp;
+            (registers.D, registers.H) = (registers.H, registers.D);
+            (registers.L, registers.E) = (registers.E, registers.L);
         }
 
         private void OP_EC()
@@ -2293,13 +2279,11 @@ namespace Invaders.CPU
         {
             registers.A = memory[registers.SP + 1];
             var flags = memory[registers.SP];
-
             if (0x01 == (flags & 0x01)) registers.Flags.Z = 0x01; else registers.Flags.Z = 0x00;
             if (0x02 == (flags & 0x02)) registers.Flags.S = 0x01; else registers.Flags.S = 0x00;
             if (0x04 == (flags & 0x04)) registers.Flags.P = 0x01; else registers.Flags.P = 0x00;
             if (0x08 == (flags & 0x08)) registers.Flags.CY = 0x01; else registers.Flags.CY = 0x00;
             if (0x10 == (flags & 0x10)) registers.Flags.AC = 0x01; else registers.Flags.AC = 0x00;
-
             registers.SP += 2;
         }
 
