@@ -79,11 +79,6 @@ namespace Invaders.CPU
                 memory[0x05] = 0xC9;
         }
 
-        public void Stop()
-        {
-            running = false;
-        }
-
         public void Start()
         {
             running = true;
@@ -117,6 +112,11 @@ namespace Invaders.CPU
                     interrupted = true;
                 }
             }
+        }
+
+        public void Stop()
+        {
+            running = false;
         }
 
         private void CallOpcode(byte opcode)
