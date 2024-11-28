@@ -1,6 +1,4 @@
-﻿using Microsoft.Win32;
-
-namespace Invaders.CPU
+﻿namespace Invaders.CPU
 {
     internal class Flags
     {
@@ -71,7 +69,7 @@ namespace Invaders.CPU
         {
             z = (uint)(((value & 0xFF) == 0) ? 1 : 0);
             s = (uint)(((value & 0x80) == 0x80) ? 1 : 0);
-            p = (uint)CalculateParityFlag((byte)value);
+            p = CalculateParityFlag((byte)value);
         }
 
         public void CalcAuxCarryFlag(byte a, byte b)
@@ -84,10 +82,9 @@ namespace Invaders.CPU
             ac = (uint)((((a & 0x0f) + (b & 0x0f) + (c & 0x0f)) > 0x0f) ? 1 : 0);
         }
 
-        public uint CalculateParityFlag(byte value)
+        public static uint CalculateParityFlag(byte value)
         {
-            // parity = 0 is odd
-            // parity = 1 is even
+            // 1 is even
             byte num = (byte)(value & 0xff);
             byte total;
             for (total = 0; num > 0; total++)
@@ -97,27 +94,22 @@ namespace Invaders.CPU
 
         public byte ToByte()
         {
-            /**
-             * 7 6 5 4 3 2 1 0
-             * S Z 0 A 0 P 1 C
-             */
+            /*       0   0   1
+            /*   7 6 5 4 3 2 1 0
+                 S Z   A   P   C 
+            */
+            
             var flags = 0b00000010;
-
             if (s == 1)
                 flags = flags | 0b10000010;
-
             if (z == 1)
                 flags = flags | 0b01000010;
-
             if (ac == 1)
                 flags = flags | 0b00010010;
-
             if (p == 1)
                 flags = flags | 0b00000110;
-
             if (cy == 1)
                 flags = flags | 0b00000011;
-
             return (byte)flags;
         }
     }

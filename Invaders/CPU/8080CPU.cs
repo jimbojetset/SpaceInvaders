@@ -1,8 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using Microsoft.Win32;
-using System.Diagnostics;
-using System.Security.Cryptography;
-using static System.Net.Mime.MediaTypeNames;
+﻿using System.Diagnostics;
 
 namespace Invaders.CPU
 {
@@ -18,15 +14,17 @@ namespace Invaders.CPU
             set { running = value; }
         }
 
-        private int vSync = 1;
+        private readonly int vSync = 1;
 
         public int V_Sync
         { get { return vSync; } }
 
         private int @int = 1;
 
-        private bool DebugOut = false;
-        private bool Test = false;
+        private readonly bool TestROM_Out = false;
+        private readonly bool TestROM_Running = false;
+        private int TestROM_Cycle = 1;
+
 
         public int Int
         { get { return @int; } }
@@ -44,12 +42,12 @@ namespace Invaders.CPU
             get { return portIn; }
         }
 
-        private byte[] portOut = new byte[7]; // 2,3,5,6
+        private readonly byte[] portOut = new byte[7]; // 2,3,5,6
 
         public byte[] PortOut
         { get { return portOut; } }
 
-        private byte[] memory;
+        private readonly byte[] memory;
 
         public byte[] Memory
         { get { return memory; } }
@@ -62,34 +60,16 @@ namespace Invaders.CPU
             memory = new byte[0x10000];
             registers = new Registers();
             registers.PC = pc;
-            Test = test;
-            DebugOut = debugOut;
-            if (debugOut) Test = true;
+            TestROM_Running = test;
+            TestROM_Out = debugOut;
+            if (debugOut) TestROM_Running = true;
         }
 
         public void LoadROM(string filePath, int addr, int length)
         {
             Array.Copy(File.ReadAllBytes(filePath), 0, memory, addr, length);
-            if (Test)
-            {
+            if (TestROM_Running) // start code for moset test ROMs
                 memory[0x05] = 0xC9;
-                //CpuDiagTestRomAdjust();
-            }
-        }
-
-        private void CpuDiagTestRomAdjust()
-        {
-            memory[0] = 0xc3;
-            memory[1] = 0x65;
-            memory[2] = 0x00;
-            // Fix the stack pointer from 0x6ad to 0x7ad
-            //  this 0x06 byte 112 in the code, which is
-            //  byte 112 + 0x100 = 368 in memory
-            memory[368] = 0x7;
-            // Skip DAA test
-            memory[0x59c] = 0xc3; // JMP
-            memory[0x59d] = 0xc2; // addr byte 1
-            memory[0x59e] = 0x05; // addr byte 2
         }
 
         public void Stop()
@@ -107,11 +87,9 @@ namespace Invaders.CPU
                 Tick();
                 @int = 2;
                 Tick();
-                if (!Test)
-                    Array.Copy(memory, 0x2400, video, 0, video.Length);
+                Array.Copy(memory, 0x2400, video, 0, video.Length);
             }
         }
-        int cycle = 2;
 
         private void Tick()
         {
@@ -121,13 +99,13 @@ namespace Invaders.CPU
             while (!interrupted && running)
             {
                 byte opcode = memory[registers.PC];
-                if (Test)
+                if (TestROM_Running)
                 {
-                    if (DebugOut)
-                        Debug.WriteLine(cycle + "  PC: " + registers.PC.ToString("x4") + ", AF: " + ((registers.A << 8) | registers.Flags.ToByte()).ToString("x4") + " BC: " + registers.BC.ToString("x4") + ", DE: " + registers.DE.ToString("x4") + ", HL: " + registers.HL.ToString("x4") + ", SP: " + registers.SP.ToString("x4") + "  opcode:" + opcode.ToString("x2"));
+                    if (TestROM_Out)
+                        Debug.WriteLine(TestROM_Cycle + "  PC: " + registers.PC.ToString("x4") + ", AF: " + ((registers.A << 8) | registers.Flags.ToByte()).ToString("x4") + " BC: " + registers.BC.ToString("x4") + ", DE: " + registers.DE.ToString("x4") + ", HL: " + registers.HL.ToString("x4") + ", SP: " + registers.SP.ToString("x4") + "  opcode:" + opcode.ToString("x2"));
                     if (registers.PC == 0x05)
                         TestWriteOut();
-                    cycle++;
+                    TestROM_Cycle++;
                 }
                 CallOpcode(opcode);
                 registers.PC++;
@@ -146,14 +124,20 @@ namespace Invaders.CPU
                 string ret = ((char)memory[registers.DE]).ToString();
                 ushort cnt = 0;
                 while (((char)memory[registers.DE + cnt]).ToString() != "$")
+                {
+                    if (memory[registers.DE + cnt] == 0x0A) TestROM_Cycle++;
                     ret += ((char)memory[registers.DE + cnt++]).ToString();
+                }
                 Debug.WriteLine(ret);
             }
             else if (registers.C == 0x02)
+            {
                 Debug.Write(((char)registers.E).ToString());
+                if (registers.E == 0x0A) TestROM_Cycle++;
+            }
             else if (memory[registers.PC] == 0x76)
                 Debug.Write("EXIT");
-            cycle += 3;
+            TestROM_Cycle++;
         }
 
         private void CallOpcode(byte opcode)
@@ -1795,7 +1779,7 @@ namespace Invaders.CPU
         {
             registers.Flags.Z = 1;
             registers.Flags.S = 0;
-            registers.Flags.P = (uint)registers.Flags.CalculateParityFlag(registers.A);
+            registers.Flags.P = (uint)Flags.CalculateParityFlag(registers.A);
             registers.Flags.CY = 0;
         }
 
