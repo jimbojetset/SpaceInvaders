@@ -14,6 +14,10 @@ namespace Invaders.CPU
             set { running = value; }
         }
 
+        private bool displayAvailable = false;
+        public bool DisplayAvailable
+        { get { return displayAvailable; } }
+
         private readonly int vSync = 1;
 
         public int V_Sync
@@ -25,17 +29,18 @@ namespace Invaders.CPU
         private readonly bool TestROM_Running = false;
         private int TestROM_Cycle = 1;
 
+        private uint videoStartAddress;
 
         public int Int
         { get { return @int; } }
 
-        private readonly byte[] video = new byte[0x1C00];
-
+        private byte[] video;
         public byte[] Video
-        { get { return video; } }
+        {
+            get { return video; }
+        }
 
         private byte[] portIn = new byte[4]; // 0,1,2,3
-
         public byte[] PortIn
         {
             set { portIn = value; }
@@ -43,21 +48,22 @@ namespace Invaders.CPU
         }
 
         private readonly byte[] portOut = new byte[7]; // 2,3,5,6
-
         public byte[] PortOut
         { get { return portOut; } }
 
         private readonly byte[] memory;
-
         public byte[] Memory
         { get { return memory; } }
 
         private int hardwareShiftRegisterData = 0;
         private int hardwareShiftRegisterOffset = 0;
 
-        public _8080CPU(ushort pc = 0x0000, bool test = false, bool debugOut = false)
+        public _8080CPU(ulong memorySize = 0x10000, ushort pc = 0x0000, ushort videoStartAddr = 0x2400, ushort videoLength = 0x1C00, bool test = false, bool debugOut = false)
         {
-            memory = new byte[0x10000];
+            memory = new byte[memorySize];
+            video = new byte[videoLength];
+            videoStartAddress = videoStartAddr;
+            if(videoLength != 0 && videoStartAddr != 0) displayAvailable = true;
             registers = new Registers();
             registers.PC = pc;
             TestROM_Running = test;
@@ -87,7 +93,8 @@ namespace Invaders.CPU
                 Tick();
                 @int = 2;
                 Tick();
-                Array.Copy(memory, 0x2400, video, 0, video.Length);
+                if(displayAvailable)
+                    Array.Copy(memory, videoStartAddress, video, 0, video.Length);
             }
         }
 
@@ -101,8 +108,17 @@ namespace Invaders.CPU
                 byte opcode = memory[registers.PC];
                 if (TestROM_Running)
                 {
+                    if (opcode == 0x00)
+                        running = false;
                     if (TestROM_Out)
-                        Debug.WriteLine(TestROM_Cycle + "  PC: " + registers.PC.ToString("x4") + ", AF: " + ((registers.A << 8) | registers.Flags.ToByte()).ToString("x4") + " BC: " + registers.BC.ToString("x4") + ", DE: " + registers.DE.ToString("x4") + ", HL: " + registers.HL.ToString("x4") + ", SP: " + registers.SP.ToString("x4") + "  opcode:" + opcode.ToString("x2"));
+                        Debug.WriteLine(TestROM_Cycle + 
+                                        "  PC: " + registers.PC.ToString("x4") + 
+                                        ", AF: " + ((registers.A << 8) | registers.Flags.ToByte()).ToString("x4") + 
+                                        ", BC: " + registers.BC.ToString("x4") + 
+                                        ", DE: " + registers.DE.ToString("x4") + 
+                                        ", HL: " + registers.HL.ToString("x4") + 
+                                        ", SP: " + registers.SP.ToString("x4") + 
+                                        "  opcode:" + opcode.ToString("x2"));
                     if (registers.PC == 0x05)
                         TestWriteOut();
                     TestROM_Cycle++;

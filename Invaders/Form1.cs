@@ -28,7 +28,7 @@ namespace Invaders
 
         private void Execute()
         {
-            //cpu = new _8080CPU(0x0100, true, true);
+            //cpu = new _8080CPU(0x10000, 0x0100, 0, 0, true, true);
             //cpu.LoadROM(appPath + @"ROMS\tst8080.com", 0x0100, 0x0600);
             //cpu.LoadROM(appPath + @"ROMS\cpudiag.bin", 0x0100, 0x05AD);
 
@@ -73,7 +73,7 @@ namespace Invaders
 
         private void DisplayThread()
         {
-            while (cpu != null && cpu.Running)
+            while (cpu != null && cpu.Running && cpu.DisplayAvailable)
             {
                 while (memcmp(video, cpu.Video, video.Length) == 0)
                     Thread.Sleep(8);
@@ -85,7 +85,7 @@ namespace Invaders
                     graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                     int ptr = 0;
                     for (int x = 0; x < SCREEN_WIDTH; x += 2)
-                        for (int y = 511; y > 0; y -= 16)
+                        for (int y = SCREEN_HEIGHT; y > 0; y -= 16)
                         {
                             Pen pen = GetPenColor(x, y);
                             byte value = video[ptr++];
