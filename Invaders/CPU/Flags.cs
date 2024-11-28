@@ -72,12 +72,12 @@
             p = CalculateParityFlag((byte)value);
         }
 
-        public void CalcAuxCarryFlag(byte a, byte b)
+        public void UpdateAuxCarryFlag(byte a, byte b)
         {
             ac = (uint)((((a & 0x0f) + (b & 0x0f)) > 0x0f) ? 1 : 0);
         }
 
-        public void CalcAuxCarryFlag(byte a, byte b, byte c)
+        public void UpdateAuxCarryFlag(byte a, byte b, byte c)
         {
             ac = (uint)((((a & 0x0f) + (b & 0x0f) + (c & 0x0f)) > 0x0f) ? 1 : 0);
         }
@@ -98,7 +98,6 @@
             /*   7 6 5 4 3 2 1 0
                  S Z   A   P   C 
             */
-            
             var flags = 0b00000010;
             if (s == 1)
                 flags = flags | 0b10000010;
