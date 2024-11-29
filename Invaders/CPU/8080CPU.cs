@@ -59,7 +59,7 @@ namespace Invaders.CPU
         private int hardwareShiftRegisterData = 0;
         private int hardwareShiftRegisterOffset = 0;
 
-        public _8080CPU(ulong memorySize = 0x10000, ushort pc = 0x0000, ushort videoStartAddr = 0x2400, ushort videoLength = 0x1C00, bool test = false, bool debugOut = false)
+        public _8080CPU(ulong memorySize = 0x10000, ushort pc = 0x0000, ushort videoStartAddr = 0x2400, ushort videoLength = 0x1C00, bool testROM = false, bool debugOut = false)
         {
             memory = new byte[memorySize];
             video = new byte[videoLength];
@@ -67,7 +67,7 @@ namespace Invaders.CPU
             if(videoLength != 0 && videoStartAddr != 0) displayAvailable = true;
             registers = new Registers();
             registers.PC = pc;
-            TestROM_Running = test;
+            TestROM_Running = testROM;
             TestROM_Out = debugOut;
             if (debugOut) TestROM_Running = true;
         }
