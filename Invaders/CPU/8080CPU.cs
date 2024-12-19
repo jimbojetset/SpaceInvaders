@@ -26,10 +26,6 @@ namespace Invaders.CPU
 
         private int @int = 1;
 
-        private readonly bool TestROM_Out = false;
-        private readonly bool TestROM_Running = false;
-        private int TestROM_Cycle = 1;
-
         private uint videoStartAddress;
 
         public int Int
@@ -67,16 +63,11 @@ namespace Invaders.CPU
             if(videoLength != 0 && videoStartAddr != 0) displayAvailable = true;
             registers = new Registers();
             registers.PC = pc;
-            TestROM_Running = test;
-            TestROM_Out = debugOut;
-            if (debugOut) TestROM_Running = true;
         }
 
         public void LoadROM(string filePath, int addr, int length)
         {
             Array.Copy(File.ReadAllBytes(filePath), 0, memory, addr, length);
-            if (TestROM_Running) // start code for moset test ROMs
-                memory[0x05] = 0xC9;
         }
 
         public void Start()
@@ -102,8 +93,6 @@ namespace Invaders.CPU
             while (!interrupted && running)
             {
                 byte opcode = memory[registers.PC];
-                if (TestROM_Running)
-                    DebugOutput(opcode);
                 CallOpcode(opcode);
                 registers.PC++;
                 if (stopwatch.ElapsedMilliseconds > 8.33 && running)
@@ -117,6 +106,32 @@ namespace Invaders.CPU
         public void Stop()
         {
             running = false;
+        }
+
+        private ushort ReadOpcodeWord()
+        {
+            return (ushort)(memory[registers.PC + 2] << 8 | memory[registers.PC + 1]);
+        }
+
+        private void Call(ushort address, ushort retAddress)
+        {
+            memory[registers.SP - 1] = (byte)((retAddress >> 8) & 0xFF);
+            memory[registers.SP - 2] = (byte)(retAddress & 0xFF);
+            registers.PC = address;
+            registers.SP -= 2;
+        }
+
+        private void Interrupt(int num)
+        {
+            if (!registers.INT_ENABLE)
+                return;
+            memory[registers.SP - 1] = (byte)((registers.PC >> 8) & 0xFF);
+            memory[registers.SP - 2] = (byte)(registers.PC & 0xFF);
+            registers.SP -= 2;
+            if (num == 1)
+                registers.PC = 0x0008;
+            if (num == 2)
+                registers.PC = 0x0010;
         }
 
         private void CallOpcode(byte opcode)
@@ -2372,71 +2387,5 @@ namespace Invaders.CPU
             Call(0x38, (ushort)(registers.PC + 2));
             registers.PC--;
         }
-
-        private ushort ReadOpcodeWord()
-        {
-            return (ushort)(memory[registers.PC + 2] << 8 | memory[registers.PC + 1]);
-        }
-
-        private void Call(ushort address, ushort retAddress)
-        {
-            memory[registers.SP - 1] = (byte)((retAddress >> 8) & 0xFF);
-            memory[registers.SP - 2] = (byte)(retAddress & 0xFF);
-            registers.PC = address;
-            registers.SP -= 2;
-        }
-
-        private void Interrupt(int num)
-        {
-            if (!registers.INT_ENABLE)
-                return;
-            memory[registers.SP - 1] = (byte)((registers.PC >> 8) & 0xFF);
-            memory[registers.SP - 2] = (byte)(registers.PC & 0xFF);
-            registers.SP -= 2;
-            if (num == 1)
-                registers.PC = 0x0008;
-            if (num == 2)
-                registers.PC = 0x0010;
-        }
-
-        private void DebugOutput(byte opcode)
-        {
-            if (opcode == 0x00)
-                running = false;
-            if (TestROM_Out)
-                Debug.WriteLine(TestROM_Cycle +
-                                "  PC: " + registers.PC.ToString("x4") +
-                                ", AF: " + ((registers.A << 8) | registers.Flags.ToByte()).ToString("x4") +
-                                ", BC: " + registers.BC.ToString("x4") +
-                                ", DE: " + registers.DE.ToString("x4") +
-                                ", HL: " + registers.HL.ToString("x4") +
-                                ", SP: " + registers.SP.ToString("x4") +
-                                "  opcode:" + opcode.ToString("x2"));
-            if (registers.PC == 0x05)
-            {
-                if (registers.C == 0x09)
-                {
-                    string ret = ((char)memory[registers.DE]).ToString();
-                    ushort cnt = 0;
-                    while (((char)memory[registers.DE + cnt]).ToString() != "$")
-                    {
-                        if (memory[registers.DE + cnt] == 0x0A) TestROM_Cycle++;
-                        ret += ((char)memory[registers.DE + cnt++]).ToString();
-                    }
-                    Debug.WriteLine(ret);
-                }
-                else if (registers.C == 0x02)
-                {
-                    Debug.Write(((char)registers.E).ToString());
-                    if (registers.E == 0x0A) TestROM_Cycle++;
-                }
-                else if (memory[registers.PC] == 0x76)
-                    Debug.Write("EXIT");
-                TestROM_Cycle++;
-            }
-            TestROM_Cycle++;
-        }
-
-
     }
 }
