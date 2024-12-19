@@ -19,11 +19,6 @@ namespace Invaders.CPU
         public bool DisplayAvailable
         { get { return displayAvailable; } }
 
-        private readonly int vSync = 1;
-
-        public int V_Sync
-        { get { return vSync; } }
-
         private int @int = 1;
 
         private uint videoStartAddress;
@@ -55,7 +50,7 @@ namespace Invaders.CPU
         private int hardwareShiftRegisterData = 0;
         private int hardwareShiftRegisterOffset = 0;
 
-        public _8080CPU(ulong memorySize = 0x10000, ushort pc = 0x0000, ushort videoStartAddr = 0x2400, ushort videoLength = 0x1C00, bool test = false, bool debugOut = false)
+        public _8080CPU(ulong memorySize = 0x10000, ushort pc = 0x0000, ushort videoStartAddr = 0x2400, ushort videoLength = 0x1C00)
         {
             memory = new byte[memorySize];
             video = new byte[videoLength];
