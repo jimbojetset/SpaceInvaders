@@ -88,7 +88,8 @@ namespace Invaders.CPU
             bool interrupted = false;
             while (!interrupted && running)
             {
-                CallOpcode(memory[registers.PC]++);
+                CallOpcode(memory[registers.PC]);
+                registers.PC++;
 
                 if (stopwatch.ElapsedMilliseconds > 8 && running)
                 {
