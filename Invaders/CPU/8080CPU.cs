@@ -106,9 +106,9 @@ namespace Invaders.CPU
 
         private void CallOpcode(byte opcode)
         {
-            string func = "OP_" + opcode.ToString("X2");
+            string OpcodeMethod = "OP_" + opcode.ToString("X2");
             Type thisType = this.GetType();
-            MethodInfo theMethod = thisType.GetMethod(func, BindingFlags.NonPublic | BindingFlags.Instance)!;
+            MethodInfo theMethod = thisType.GetMethod(OpcodeMethod, BindingFlags.NonPublic | BindingFlags.Instance)!;
             theMethod.Invoke(this, null);
         }
 
