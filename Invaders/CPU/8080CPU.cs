@@ -51,7 +51,7 @@ namespace Invaders.CPU
         private int hardwareShiftRegisterData = 0;
         private int hardwareShiftRegisterOffset = 0;
 
-        public _8080CPU(uint memorySize = 0x10000, uint pc = 0x0000, uint videoStartAddr = 0x2400, uint videoLength = 0x1C00, bool testROM = false, bool debugOut = false)
+        public _8080CPU(uint memorySize = 0x10000, uint pc = 0x0000, uint videoStartAddr = 0x2400, uint videoLength = 0x1C00)
         {
             memory = new byte[memorySize];
             video = new byte[videoLength];
@@ -88,9 +88,8 @@ namespace Invaders.CPU
             bool interrupted = false;
             while (!interrupted && running)
             {
-                byte opcode = memory[registers.PC];
-                CallOpcode(opcode);
-                registers.PC++;
+                CallOpcode(memory[registers.PC]++);
+
                 if (stopwatch.ElapsedMilliseconds > 8 && running)
                 {
                     Interrupt(@int);
@@ -106,10 +105,262 @@ namespace Invaders.CPU
 
         private void CallOpcode(byte opcode)
         {
-            string OpcodeMethod = "OP_" + opcode.ToString("X2");
-            Type thisType = this.GetType();
-            MethodInfo theMethod = thisType.GetMethod(OpcodeMethod, BindingFlags.NonPublic | BindingFlags.Instance)!;
-            theMethod.Invoke(this, null);
+            switch (opcode)
+            {
+                case 0x00:
+                case 0x10:
+                case 0x20:
+                case 0x30:
+                case 0x08:
+                case 0x18:
+                case 0x28:
+                case 0x38: OP_00(); return;
+                case 0x01: OP_01(); return;
+                case 0x02: OP_02(); return;
+                case 0x03: OP_03(); return;
+                case 0x04: OP_04(); return;
+                case 0x05: OP_05(); return;
+                case 0x06: OP_06(); return;
+                case 0x07: OP_07(); return;
+                case 0x09: OP_09(); return;
+                case 0x0A: OP_0A(); return;
+                case 0x0B: OP_0B(); return;
+                case 0x0C: OP_0C(); return;
+                case 0x0D: OP_0D(); return;
+                case 0x0E: OP_0E(); return;
+                case 0x0F: OP_0F(); return;
+                case 0x11: OP_11(); return;
+                case 0x12: OP_12(); return;
+                case 0x13: OP_13(); return;
+                case 0x14: OP_14(); return;
+                case 0x15: OP_15(); return;
+                case 0x16: OP_16(); return;
+                case 0x17: OP_17(); return;
+                case 0x19: OP_19(); return;
+                case 0x1A: OP_1A(); return;
+                case 0x1B: OP_1B(); return;
+                case 0x1C: OP_1C(); return;
+                case 0x1D: OP_1D(); return;
+                case 0x1E: OP_1E(); return;
+                case 0x1F: OP_1F(); return;
+                case 0x21: OP_21(); return;
+                case 0x22: OP_22(); return;
+                case 0x23: OP_23(); return;
+                case 0x24: OP_24(); return;
+                case 0x25: OP_25(); return;
+                case 0x26: OP_26(); return;
+                case 0x27: OP_27(); return;
+                case 0x29: OP_29(); return;
+                case 0x2A: OP_2A(); return;
+                case 0x2B: OP_2B(); return;
+                case 0x2C: OP_2C(); return;
+                case 0x2D: OP_2D(); return;
+                case 0x2E: OP_2E(); return;
+                case 0x2F: OP_2F(); return;
+                case 0x31: OP_31(); return;
+                case 0x32: OP_32(); return;
+                case 0x33: OP_33(); return;
+                case 0x34: OP_34(); return;
+                case 0x35: OP_35(); return;
+                case 0x36: OP_36(); return;
+                case 0x37: OP_37(); return;
+                case 0x39: OP_39(); return;
+                case 0x3A: OP_3A(); return;
+                case 0x3B: OP_3B(); return;
+                case 0x3C: OP_3C(); return;
+                case 0x3D: OP_3D(); return;
+                case 0x3E: OP_3E(); return;
+                case 0x3F: OP_3F(); return;
+                case 0x40: OP_40(); return;
+                case 0x41: OP_41(); return;
+                case 0x42: OP_42(); return;
+                case 0x43: OP_43(); return;
+                case 0x44: OP_44(); return;
+                case 0x45: OP_45(); return;
+                case 0x46: OP_46(); return;
+                case 0x47: OP_47(); return;
+                case 0x48: OP_48(); return;
+                case 0x49: OP_49(); return;
+                case 0x4A: OP_4A(); return;
+                case 0x4B: OP_4B(); return;
+                case 0x4C: OP_4C(); return;
+                case 0x4D: OP_4D(); return;
+                case 0x4E: OP_4E(); return;
+                case 0x4F: OP_4F(); return;
+                case 0x50: OP_50(); return;
+                case 0x51: OP_51(); return;
+                case 0x52: OP_52(); return;
+                case 0x53: OP_53(); return;
+                case 0x54: OP_54(); return;
+                case 0x55: OP_55(); return;
+                case 0x56: OP_56(); return;
+                case 0x57: OP_57(); return;
+                case 0x58: OP_58(); return;
+                case 0x59: OP_59(); return;
+                case 0x5A: OP_5A(); return;
+                case 0x5B: OP_5B(); return;
+                case 0x5C: OP_5C(); return;
+                case 0x5D: OP_5D(); return;
+                case 0x5E: OP_5E(); return;
+                case 0x5F: OP_5F(); return;
+                case 0x60: OP_60(); return;
+                case 0x61: OP_61(); return;
+                case 0x62: OP_62(); return;
+                case 0x63: OP_63(); return;
+                case 0x64: OP_64(); return;
+                case 0x65: OP_65(); return;
+                case 0x66: OP_66(); return;
+                case 0x67: OP_67(); return;
+                case 0x68: OP_68(); return;
+                case 0x69: OP_69(); return;
+                case 0x6A: OP_6A(); return;
+                case 0x6B: OP_6B(); return;
+                case 0x6C: OP_6C(); return;
+                case 0x6D: OP_6D(); return;
+                case 0x6E: OP_6E(); return;
+                case 0x6F: OP_6F(); return;
+                case 0x70: OP_70(); return;
+                case 0x71: OP_71(); return;
+                case 0x72: OP_72(); return;
+                case 0x73: OP_73(); return;
+                case 0x74: OP_74(); return;
+                case 0x75: OP_75(); return;
+                case 0x76: OP_76(); return;
+                case 0x77: OP_77(); return;
+                case 0x78: OP_78(); return;
+                case 0x79: OP_79(); return;
+                case 0x7A: OP_7A(); return;
+                case 0x7B: OP_7B(); return;
+                case 0x7C: OP_7C(); return;
+                case 0x7D: OP_7D(); return;
+                case 0x7E: OP_7E(); return;
+                case 0x7F: OP_7F(); return;
+                case 0x80: OP_80(); return;
+                case 0x81: OP_81(); return;
+                case 0x82: OP_82(); return;
+                case 0x83: OP_83(); return;
+                case 0x84: OP_84(); return;
+                case 0x85: OP_85(); return;
+                case 0x86: OP_86(); return;
+                case 0x87: OP_87(); return;
+                case 0x88: OP_88(); return;
+                case 0x89: OP_89(); return;
+                case 0x8A: OP_8A(); return;
+                case 0x8B: OP_8B(); return;
+                case 0x8C: OP_8C(); return;
+                case 0x8D: OP_8D(); return;
+                case 0x8E: OP_8E(); return;
+                case 0x8F: OP_8F(); return;
+                case 0x90: OP_90(); return;
+                case 0x91: OP_91(); return;
+                case 0x92: OP_92(); return;
+                case 0x93: OP_93(); return;
+                case 0x94: OP_94(); return;
+                case 0x95: OP_95(); return;
+                case 0x96: OP_96(); return;
+                case 0x97: OP_97(); return;
+                case 0x98: OP_98(); return;
+                case 0x99: OP_99(); return;
+                case 0x9A: OP_9A(); return;
+                case 0x9B: OP_9B(); return;
+                case 0x9C: OP_9C(); return;
+                case 0x9D: OP_9D(); return;
+                case 0x9E: OP_9E(); return;
+                case 0x9F: OP_9F(); return;
+                case 0xA0: OP_A0(); return;
+                case 0xA1: OP_A1(); return;
+                case 0xA2: OP_A2(); return;
+                case 0xA3: OP_A3(); return;
+                case 0xA4: OP_A4(); return;
+                case 0xA5: OP_A5(); return;
+                case 0xA6: OP_A6(); return;
+                case 0xA7: OP_A7(); return;
+                case 0xA8: OP_A8(); return;
+                case 0xA9: OP_A9(); return;
+                case 0xAA: OP_AA(); return;
+                case 0xAB: OP_AB(); return;
+                case 0xAC: OP_AC(); return;
+                case 0xAD: OP_AD(); return;
+                case 0xAE: OP_AE(); return;
+                case 0xAF: OP_AF(); return;
+                case 0xB0: OP_B0(); return;
+                case 0xB1: OP_B1(); return;
+                case 0xB2: OP_B2(); return;
+                case 0xB3: OP_B3(); return;
+                case 0xB4: OP_B4(); return;
+                case 0xB5: OP_B5(); return;
+                case 0xB6: OP_B6(); return;
+                case 0xB7: OP_B7(); return;
+                case 0xB8: OP_B8(); return;
+                case 0xB9: OP_B9(); return;
+                case 0xBA: OP_BA(); return;
+                case 0xBB: OP_BB(); return;
+                case 0xBC: OP_BC(); return;
+                case 0xBD: OP_BD(); return;
+                case 0xBE: OP_BE(); return;
+                case 0xBF: OP_BF(); return;
+                case 0xC0: OP_C0(); return;
+                case 0xC1: OP_C1(); return;
+                case 0xC2: OP_C2(); return;
+                case 0xC3: OP_C3(); return;
+                case 0xC4: OP_C4(); return;
+                case 0xC5: OP_C5(); return;
+                case 0xC6: OP_C6(); return;
+                case 0xC7: OP_C7(); return;
+                case 0xC8: OP_C8(); return;
+                case 0xC9: OP_C9(); return;
+                case 0xCA: OP_CA(); return;
+                case 0xCC: OP_CC(); return;
+                case 0xCD: OP_CD(); return;
+                case 0xCE: OP_CE(); return;
+                case 0xCF: OP_CF(); return;
+                case 0xD0: OP_D0(); return;
+                case 0xD1: OP_D1(); return;
+                case 0xD2: OP_D2(); return;
+                case 0xD3: OP_D3(); return;
+                case 0xD4: OP_D4(); return;
+                case 0xD5: OP_D5(); return;
+                case 0xD6: OP_D6(); return;
+                case 0xD7: OP_D7(); return;
+                case 0xD8: OP_D8(); return;
+                case 0xDA: OP_DA(); return;
+                case 0xDB: OP_DB(); return;
+                case 0xDC: OP_DC(); return;
+                case 0xDE: OP_DE(); return;
+                case 0xDF: OP_DF(); return;
+                case 0xE0: OP_E0(); return;
+                case 0xE1: OP_E1(); return;
+                case 0xE2: OP_E2(); return;
+                case 0xE3: OP_E3(); return;
+                case 0xE4: OP_E4(); return;
+                case 0xE5: OP_E5(); return;
+                case 0xE6: OP_E6(); return;
+                case 0xE7: OP_E7(); return;
+                case 0xE8: OP_E8(); return;
+                case 0xE9: OP_E9(); return;
+                case 0xEA: OP_EA(); return;
+                case 0xEB: OP_EB(); return;
+                case 0xEC: OP_EC(); return;
+                case 0xEE: OP_EE(); return;
+                case 0xEF: OP_EF(); return;
+                case 0xF0: OP_F0(); return;
+                case 0xF1: OP_F1(); return;
+                case 0xF2: OP_F2(); return;
+                case 0xF3: OP_F3(); return;
+                case 0xF4: OP_F4(); return;
+                case 0xF5: OP_F5(); return;
+                case 0xF6: OP_F6(); return;
+                case 0xF7: OP_F7(); return;
+                case 0xF8: OP_F8(); return;
+                case 0xF9: OP_F9(); return;
+                case 0xFA: OP_FA(); return;
+                case 0xFB: OP_FB(); return;
+                case 0xFC: OP_FC(); return;
+                case 0xFE: OP_FE(); return;
+                case 0xFF: OP_FF(); return;
+                default: throw new NotImplementedException("INVALID OPCODE - " + opcode.ToString("X2"));
+            }
+
         }
 
 #pragma warning disable IDE0051 // Remove unused private members
