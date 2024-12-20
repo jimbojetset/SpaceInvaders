@@ -113,10 +113,15 @@ namespace Invaders.CPU
         }
 
 #pragma warning disable IDE0051 // Remove unused private members
-        private void OP_00()
-        {
-            // NOP
-        }
+
+        private void OP_00() { } // NOP
+        private void OP_10() { } // NOP
+        private void OP_20() { } // NOP
+        private void OP_30() { } // NOP
+        private void OP_08() { } // NOP
+        private void OP_18() { } // NOP
+        private void OP_28() { } // NOP
+        private void OP_38() { } // NOP
 
         private void OP_01()
         {
@@ -301,9 +306,6 @@ namespace Invaders.CPU
             registers.Flags.CY = (byte)bit0;
         }
 
-        private static void OP_20() // RIM	1		special
-        { }
-
         private void OP_21()
         {
             registers.H = memory[registers.PC + 2];
@@ -412,9 +414,6 @@ namespace Invaders.CPU
         {
             registers.A = (byte)~registers.A;
         }
-
-        private static void OP_30()  // SIM	1		special
-        { }
 
         private void OP_31()
         {
