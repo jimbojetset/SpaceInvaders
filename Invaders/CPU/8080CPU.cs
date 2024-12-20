@@ -1,6 +1,4 @@
-﻿using Microsoft.Win32;
-using System.Diagnostics;
-using System.Reflection;
+﻿using System.Diagnostics;
 
 namespace Invaders.CPU
 {

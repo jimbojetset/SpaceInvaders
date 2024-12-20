@@ -1,9 +1,6 @@
 using Invaders.CPU;
-using System;
 using System.Media;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 namespace Invaders
 {
