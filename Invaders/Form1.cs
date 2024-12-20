@@ -1,6 +1,7 @@
 using Invaders.CPU;
 using System;
 using System.Media;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -94,7 +95,7 @@ namespace Invaders
                                     graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
                         }
                 }
-                try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
+                try { pictureBox1.Invoke((System.Windows.Forms.MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
             }
         }
 
@@ -174,7 +175,7 @@ namespace Invaders
             }
         }
 
-        private byte GetKeyValue(KeyEventArgs e)
+        private static byte GetKeyValue(KeyEventArgs e)
         {
             if (e.KeyCode == Keys.C) return 1;         // Coin
             if (e.KeyCode == Keys.D1) return 2;        // 1P Start

@@ -55,17 +55,17 @@
             set { pad = value; }
         }
 
-        public void UpdateCarryByte(ulong value)
+        public void UpdateCarryByte(uint value)
         {
             cy = (uint)((value > 0x00FF) ? 1 : 0);
         }
 
-        public void UpdateCarryWord(ulong value)
+        public void UpdateCarryWord(uint value)
         {
             cy = (uint)((value > 0xFFFF) ? 1 : 0);
         }
 
-        public void UpdateZSP(ulong value)
+        public void UpdateZSP(uint value)
         {
             z = (uint)(((value & 0xFF) == 0) ? 1 : 0);
             s = (uint)(((value & 0x80) == 0x80) ? 1 : 0);
