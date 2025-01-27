@@ -1,8 +1,6 @@
 using Invaders.CPU;
-using System;
 using System.Media;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 namespace Invaders
 {
@@ -29,6 +27,7 @@ namespace Invaders
         private void Execute()
         {
             cpu = new _8080CPU();
+
             cpu.LoadROM(appPath + @"ROMS\invaders.h", 0x0000, 0x800); // invaders.h 0000 - 07FF
             cpu.LoadROM(appPath + @"ROMS\invaders.g", 0x0800, 0x800); // invaders.g 0800 - 0FFF
             cpu.LoadROM(appPath + @"ROMS\invaders.f", 0x1000, 0x800); // invaders.f 1000 - 17FF
@@ -90,7 +89,7 @@ namespace Invaders
                                     graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
                         }
                 }
-                try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
+                try { pictureBox1.Invoke((System.Windows.Forms.MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
             }
         }
 
@@ -170,7 +169,7 @@ namespace Invaders
             }
         }
 
-        private byte GetKeyValue(KeyEventArgs e)
+        private static byte GetKeyValue(KeyEventArgs e)
         {
             if (e.KeyCode == Keys.C) return 1;         // Coin
             if (e.KeyCode == Keys.D1) return 2;        // 1P Start

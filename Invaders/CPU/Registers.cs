@@ -9,8 +9,8 @@
         private byte e = 0;
         private byte h = 0;
         private byte l = 0;
-        private ushort sp = 0;
-        private ushort pc = 0;
+        private uint sp = 0;
+        private uint pc = 0;
         private bool int_enable = false;
         private Flags? flags = new Flags();
 
@@ -71,13 +71,13 @@
             set { l = value; }
         }
 
-        public ushort SP
+        public uint SP
         {
             get { return sp; }
             set { sp = value; }
         }
 
-        public ushort PC
+        public uint PC
         {
             get { return pc; }
             set { pc = value; }
@@ -95,11 +95,11 @@
             set { int_enable = value; }
         }
 
-        public ulong HL
+        public uint HL
         {
             get
             {
-                return (ulong)h << 8 | (ulong)l;
+                return (uint)h << 8 | (uint)l;
             }
             set
             {
@@ -108,11 +108,11 @@
             }
         }
 
-        public ulong DE
+        public uint DE
         {
             get
             {
-                return (ulong)d << 8 | (ulong)e;
+                return (uint)d << 8 | (uint)e;
             }
             set
             {
@@ -121,11 +121,11 @@
             }
         }
 
-        public ulong BC
+        public uint BC
         {
             get
             {
-                return (ulong)b << 8 | (ulong)c;
+                return (uint)b << 8 | (uint)c;
             }
             set
             {
