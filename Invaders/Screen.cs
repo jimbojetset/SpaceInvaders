@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Invaders
 {
-    public partial class Form1 : Form
+    public partial class Screen : Form
     {
         private _8080CPU? cpu;
         private Thread? port_thread;
@@ -18,7 +18,7 @@ namespace Invaders
         private readonly string appPath = AppDomain.CurrentDomain.BaseDirectory;
         private readonly byte[] video = new byte[0x1C00];
 
-        public Form1()
+        public Screen()
         {
             InitializeComponent();
             Execute();

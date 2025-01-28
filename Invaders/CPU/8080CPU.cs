@@ -5,34 +5,13 @@ namespace Invaders.CPU
 {
     internal class _8080CPU
     {
-        private readonly Registers registers;
-
         private bool running = false;
-
         public bool Running
         {
             get { return running; }
             set { running = value; }
         }
-
-        private bool displayAvailable = false;
-        public bool DisplayAvailable
-        { get { return displayAvailable; } }
-
-        private int @int = 1;
-
-        private uint videoStartAddress;
-
-
-        public int Int
-        { get { return @int; } }
-
-        private byte[] video;
-        public byte[] Video
-        {
-            get { return video; }
-        }
-
+        
         private byte[] portIn = new byte[4]; // 0,1,2,3
         public byte[] PortIn
         {
@@ -42,12 +21,30 @@ namespace Invaders.CPU
 
         private readonly byte[] portOut = new byte[7]; // 2,3,5,6
         public byte[] PortOut
-        { get { return portOut; } }
+        { 
+            get { return portOut; } 
+        }
 
         private readonly byte[] memory;
         public byte[] Memory
-        { get { return memory; } }
+        { 
+            get { return memory; } 
+        }
 
+        private readonly bool displayAvailable = false;
+        public bool DisplayAvailable
+        {
+            get { return displayAvailable; }
+        }
+
+        private readonly byte[] video;
+        public byte[] Video
+        {
+            get { return video; }
+        }
+
+        private readonly Registers registers;
+        private readonly uint videoStartAddress;
         private int hardwareShiftRegisterData = 0;
         private int hardwareShiftRegisterOffset = 0;
 
@@ -56,9 +53,12 @@ namespace Invaders.CPU
             memory = new byte[memorySize];
             video = new byte[videoLength];
             videoStartAddress = videoStartAddr;
-            if (videoLength != 0 && videoStartAddr != 0) displayAvailable = true;
-            registers = new Registers();
-            registers.PC = pc;
+            if (videoLength != 0 && videoStartAddr != 0) 
+                displayAvailable = true;
+            registers = new Registers
+            {
+                PC = pc
+            };
         }
 
         public void LoadROM(string filePath, int addr, int length)
@@ -69,19 +69,20 @@ namespace Invaders.CPU
         public void Start()
         {
             running = true;
-            @int = 1;
             while (running)
             {
-                @int = 1;
-                Tick();
-                @int = 2;
-                Tick();
+                ExecuteFrame();
+                if(registers.INT_ENABLE)
+                    Interrupt(1);
+                ExecuteFrame();
+                if (registers.INT_ENABLE)
+                    Interrupt(2);
                 if (displayAvailable)
                     Array.Copy(memory, videoStartAddress, video, 0, video.Length);
             }
         }
 
-        private void Tick()
+        private void ExecuteFrame()
         {
             double cyclesThisFrame = 0;
             Stopwatch stopwatch = new();
@@ -92,8 +93,7 @@ namespace Invaders.CPU
                 int cycles = CallOpcode(opcode);
                 cyclesThisFrame += cycles * 0.00003; // 2Mhz div 60Hz = 0.00003 seconds per CPU cycle
                 registers.PC++;
-            }
-            Interrupt(@int);
+            }           
             while (running && stopwatch.ElapsedMilliseconds < 8.33)
             { /* here to keep the timing honest across different PC's */ }
         }
@@ -119,8 +119,6 @@ namespace Invaders.CPU
 
         private void Interrupt(int num)
         {
-            if (!registers.INT_ENABLE)
-                return;
             memory[registers.SP - 1] = (byte)((registers.PC >> 8) & 0xFF);
             memory[registers.SP - 2] = (byte)(registers.PC & 0xFF);
             registers.SP -= 2;
