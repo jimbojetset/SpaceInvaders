@@ -1954,7 +1954,7 @@ namespace Invaders.CPU
         {
             registers.Flags.Z = 1;
             registers.Flags.S = 0;
-            registers.Flags.P = (uint)Flags.CalculateParityFlag(registers.A);
+            registers.Flags.P = Flags.CalculateParityFlag(registers.A);
             registers.Flags.CY = 0;
             return 4;
         }
@@ -1963,7 +1963,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.Z == 0)
             {
-                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.PC = (uint)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
                 registers.SP += 2;
                 registers.PC--;
                 return 11;
@@ -2070,7 +2070,7 @@ namespace Invaders.CPU
             if (registers.Flags.Z == 1)
             {
                 var addr = ReadOpcodeWord();
-                registers.PC = (ushort)addr;
+                registers.PC = addr;
                 registers.PC--;
             }
             else
@@ -2249,7 +2249,7 @@ namespace Invaders.CPU
             if (registers.Flags.CY == 1)
             {
                 var addr = ReadOpcodeWord();
-                registers.PC = (ushort)addr;
+                registers.PC = addr;
                 registers.PC--;
             }
             else
@@ -2290,7 +2290,7 @@ namespace Invaders.CPU
             {
                 var addr = ReadOpcodeWord();
                 var retAddr = (ulong)(registers.PC + 3);
-                Call((ushort)addr, (ushort)retAddr);
+                Call(addr, (ushort)retAddr);
                 registers.PC--;
                 return 17;
             }
@@ -2344,7 +2344,7 @@ namespace Invaders.CPU
             if (registers.Flags.P == 0)
             {
                 var addr = ReadOpcodeWord();
-                registers.PC = (ushort)addr;
+                registers.PC = addr;
                 registers.PC--;
             }
             else
