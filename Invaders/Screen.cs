@@ -33,24 +33,31 @@ namespace Invaders
             cpu.LoadROM(appPath + @"ROMS\invaders.f", 0x1000, 0x800); // invaders.f 1000 - 17FF
             cpu.LoadROM(appPath + @"ROMS\invaders.e", 0x1800, 0x800); // invaders.e 1800 - 1FFF
 
-            cpu_thread = new Thread(() => cpu!.Start());
-            cpu_thread.IsBackground = true;
+            cpu_thread = new Thread(() => cpu!.Start())
+            {
+                IsBackground = true
+            };
             cpu_thread.Start();
 
             while (!cpu.Running) { }
 
-            port_thread = new Thread(() => PortThread());
-            port_thread.IsBackground = true;
+            port_thread = new Thread(PortThread)
+            {
+                IsBackground = true
+            };
             port_thread.Start();
 
-            display_thread = new Thread(() => DisplayThread());
-            display_thread.IsBackground = true;
+            display_thread = new Thread(DisplayThread)
+            {
+                IsBackground = true
+            };
             display_thread.Start();
 
-            sound_thread = new Thread(() => SoundThread());
-            sound_thread.IsBackground = true;
+            sound_thread = new Thread(SoundThread)
+            {
+                IsBackground = true
+            };
             sound_thread.Start();
-
         }
 
         private void PortThread()

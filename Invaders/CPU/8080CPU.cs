@@ -47,6 +47,10 @@ namespace Invaders.CPU
         private readonly uint videoStartAddress;
         private int hardwareShiftRegisterData = 0;
         private int hardwareShiftRegisterOffset = 0;
+        private static int CLOCK_SPEED = 2000000; // 2Mhz
+        private static int FREQUENCY = 60; //60 Hz
+        private double CPU_CYCLE_LENGTH = 1 / (double)(CLOCK_SPEED / FREQUENCY);
+        private double MAX_FRAME_LENGTH = 1 / (double)FREQUENCY / 2 * 1000; // 8.333 milliseconds
 
         public _8080CPU(ulong memorySize = 0x10000, ushort pc = 0x0000, ushort videoStartAddr = 0x2400, ushort videoLength = 0x1C00)
         {
@@ -84,17 +88,17 @@ namespace Invaders.CPU
 
         private void ExecuteFrame()
         {
-            double cyclesThisFrame = 0;
+            double thisFrameLength = 0;
             Stopwatch stopwatch = new();
             stopwatch.Start();
-            while (running && cyclesThisFrame < 8.33)
+            while (running && thisFrameLength < MAX_FRAME_LENGTH)
             {
                 byte opcode = memory[registers.PC];
                 int cycles = CallOpcode(opcode);
-                cyclesThisFrame += cycles * 0.00003; // 2Mhz div 60Hz = 0.00003 seconds per CPU cycle
+                thisFrameLength += cycles * CPU_CYCLE_LENGTH; // 2Mhz div 60Hz = 0.00003 seconds per CPU cycle
                 registers.PC++;
             }           
-            while (running && stopwatch.ElapsedMilliseconds < 8.33)
+            while (running && stopwatch.ElapsedMilliseconds < MAX_FRAME_LENGTH)
             { /* here to keep the timing honest across different PC's */ }
         }
         
