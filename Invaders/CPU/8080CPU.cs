@@ -47,21 +47,20 @@ namespace Invaders.CPU
         private readonly uint videoStartAddress;
         private int hardwareShiftRegisterData = 0;
         private int hardwareShiftRegisterOffset = 0;
-        private static int CLOCK_SPEED = 2000000; // 2 Mhz
-        private static int FREQUENCY = 60; //60 Hz
-        private double CPU_CYCLE_LENGTH = 1 / (double)(CLOCK_SPEED / FREQUENCY); // 2Mhz div 60Hz = 0.00003 seconds per CPU cycle
-        private double MAX_FRAME_LENGTH = 1 / (double)FREQUENCY / 2 * 1000; // 8.333 milliseconds
+        private static readonly int CLOCK_SPEED = 2000000; // 2 Mhz
+        private static readonly int FREQUENCY = 60; //60 Hz
+        private readonly double CPU_CYCLE_LENGTH = 1 / (double)(CLOCK_SPEED / FREQUENCY); // 2Mhz div 60Hz = 0.00003 seconds per CPU cycle
+        private readonly double MAX_FRAME_LENGTH = 1 / (double)FREQUENCY / 2 * 1000; // 8.333 milliseconds
 
-        public _8080CPU(ulong memorySize = 0x10000, ushort pc = 0x0000, ushort videoStartAddr = 0x2400, ushort videoLength = 0x1C00)
+        public _8080CPU()
         {
-            memory = new byte[memorySize];
-            video = new byte[videoLength];
-            videoStartAddress = videoStartAddr;
-            if (videoLength != 0 && videoStartAddr != 0) 
-                displayAvailable = true;
+            memory = new byte[0x10000];
+            video = new byte[0x1C00];
+            videoStartAddress = 0x2400;
+            displayAvailable = true;
             registers = new Registers
             {
-                PC = pc
+                PC = 0x0000
             };
         }
 
