@@ -120,20 +120,20 @@ namespace Invaders.CPU
             registers.SP -= 2;
         }
 
-        private void Interrupt(int num)
+        private void Interrupt(int addr)
         {
             memory[registers.SP - 1] = (byte)((registers.PC >> 8) & 0xFF);
             memory[registers.SP - 2] = (byte)(registers.PC & 0xFF);
             registers.SP -= 2;
-            if (num == 1)
+            if (addr == 1)
                 registers.PC = 0x0008;
-            if (num == 2)
+            if (addr == 2)
                 registers.PC = 0x0010;
         }
 
         private int CallOpcode(byte opcode)
         {
-            int cycles = 0;
+            int cycles;
             switch (opcode)
             {
                 case 0x00: cycles = OP_00(); return cycles;
@@ -386,7 +386,7 @@ namespace Invaders.CPU
             }
         }
 
-        private int OP_00()
+        private static int OP_00()
         {
             // NOP
             return 4;
@@ -402,7 +402,6 @@ namespace Invaders.CPU
 
         private int OP_02()
         {
-            var addr = registers.BC;
             memory[registers.BC] = registers.A;
             return 7;
         }
@@ -603,7 +602,7 @@ namespace Invaders.CPU
             return 4;
         }
 
-        private int OP_20() // RIM	1		special
+        private static int OP_20() // RIM	1		special
         { return 4; }
 
         private int OP_21()
@@ -729,7 +728,7 @@ namespace Invaders.CPU
             return 7;
         }
 
-        private int OP_30()  // SIM	1		special
+        private static int OP_30()  // SIM	1		special
         { return 4; }
 
         private int OP_31()
