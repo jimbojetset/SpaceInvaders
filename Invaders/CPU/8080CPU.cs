@@ -23,6 +23,7 @@ namespace Invaders.CPU
 
         private uint videoStartAddress;
 
+
         public int Int
         { get { return @int; } }
 
@@ -82,24 +83,21 @@ namespace Invaders.CPU
 
         private void Tick()
         {
-            var stopwatch = new Stopwatch();
+            double cyclesThisFrame = 0;
+            Stopwatch stopwatch = new();
             stopwatch.Start();
-            bool interrupted = false;
-            //int cyclesThisLoop = 0;
-            while (!interrupted && running)
+            while (running && cyclesThisFrame < 8.33)
             {
                 byte opcode = memory[registers.PC];
                 int cycles = CallOpcode(opcode);
-                //cyclesThisLoop += cycles;
+                cyclesThisFrame += cycles * 0.00003; // 2Mhz div 60Hz = 0.00003 seconds per CPU cycle
                 registers.PC++;
-
-                if (stopwatch.ElapsedMilliseconds > 8.33 && running)
-                {
-                    Interrupt(@int);
-                    interrupted = true;
-                }
             }
+            Interrupt(@int);
+            while (running && stopwatch.ElapsedMilliseconds < 8.33)
+            { /* here to keep the timing honest across different PC's */ }
         }
+        
 
         public void Stop()
         {
@@ -449,7 +447,7 @@ namespace Invaders.CPU
         {
             var addr = registers.HL + registers.BC;
             registers.Flags.UpdateCarryWord(addr);
-            registers.HL = (ulong)(addr & 0xFFFF);
+            registers.HL = addr & 0xFFFF;
             return 10;
         }
 
@@ -2110,7 +2108,7 @@ namespace Invaders.CPU
 
         private int OP_CE()
         {
-            var addr = (ulong)registers.A;
+            uint addr = registers.A;
             addr += memory[registers.PC + 1];
             addr += registers.Flags.CY;
             if (registers.Flags.CY == 1)
@@ -2218,8 +2216,8 @@ namespace Invaders.CPU
 
         private int OP_D6()
         {
-            var data = memory[registers.PC + 1];
-            var addr = (ulong)(registers.A - data);
+            uint data = memory[registers.PC + 1];
+            uint addr = registers.A - data;
             registers.Flags.UpdateCarryByte(addr);
             registers.Flags.UpdateZSP(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -2305,8 +2303,8 @@ namespace Invaders.CPU
 
         private int OP_DE()
         {
-            var data = memory[registers.PC + 1];
-            var addr = (ulong)(registers.A - data - registers.Flags.CY);
+            uint data = memory[registers.PC + 1];
+            uint addr = registers.A - data - registers.Flags.CY;
             registers.Flags.UpdateCarryByte(addr);
             registers.Flags.UpdateZSP(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -2394,7 +2392,7 @@ namespace Invaders.CPU
 
         private int OP_E6()
         {
-            var addr = (ulong)(registers.A & memory[registers.PC + 1]);
+            uint addr = (uint)(registers.A & memory[registers.PC + 1]);
             registers.Flags.UpdateZSP(addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -2557,8 +2555,8 @@ namespace Invaders.CPU
 
         private int OP_F6()
         {
-            var data = memory[registers.PC + 1];
-            var value = (ulong)(registers.A | data);
+            uint data = memory[registers.PC + 1];
+            uint value = registers.A | data;
             registers.Flags.UpdateCarryByte(value);
             registers.Flags.UpdateZSP(value);
             registers.A = (byte)value;

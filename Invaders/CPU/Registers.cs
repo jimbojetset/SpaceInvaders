@@ -12,7 +12,7 @@
         private uint sp = 0;
         private uint pc = 0;
         private bool int_enable = false;
-        private Flags? flags = new Flags();
+        private Flags? flags = new();
 
         public Registers()
         {
@@ -26,7 +26,7 @@
             sp = 0;
             pc = 0;
             int_enable = false;
-            Flags? flags = new Flags();
+            Flags? flags = new();
         }
 
         public byte A
