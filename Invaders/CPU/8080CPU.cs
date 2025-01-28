@@ -394,8 +394,8 @@ namespace Invaders.CPU
 
         private int OP_01()
         {
-            registers.C = memory[(uint)(registers.PC + 1)];
-            registers.B = memory[(uint)(registers.PC + 2)];
+            registers.C = memory[registers.PC + 1];
+            registers.B = memory[registers.PC + 2];
             registers.PC += 2;
             return 10;
         }
