@@ -107,7 +107,7 @@ namespace Invaders.CPU
             running = false;
         }
 
-        private ushort ReadOpcodeWord()
+        private ushort ReadOpcodeDataWord()
         {
             return (ushort)(memory[registers.PC + 2] << 8 | memory[registers.PC + 1]);
         }
@@ -615,7 +615,7 @@ namespace Invaders.CPU
 
         private int OP_22()
         {
-            var addr = ReadOpcodeWord();
+            var addr = ReadOpcodeDataWord();
             memory[addr] = registers.L;
             memory[addr + 1] = registers.H;
             registers.PC += 2;
@@ -686,7 +686,7 @@ namespace Invaders.CPU
 
         private int OP_2A()
         {
-            var addr = ReadOpcodeWord();
+            var addr = ReadOpcodeDataWord();
             registers.L = memory[addr];
             registers.H = memory[addr + 1];
             registers.PC += 2;
@@ -733,14 +733,14 @@ namespace Invaders.CPU
 
         private int OP_31()
         {
-            registers.SP = ReadOpcodeWord();
+            registers.SP = ReadOpcodeDataWord();
             registers.PC += 2;
             return 10;
         }
 
         private int OP_32()
         {
-            ushort addr = ReadOpcodeWord();
+            ushort addr = ReadOpcodeDataWord();
             memory[addr] = registers.A;
             registers.PC += 2;
             return 15;
@@ -797,7 +797,7 @@ namespace Invaders.CPU
 
         private int OP_3A()
         {
-            var addr = ReadOpcodeWord();
+            var addr = ReadOpcodeDataWord();
             registers.A = memory[addr];
             registers.PC += 2;
             return 13;
@@ -1983,7 +1983,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.Z == 0)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 registers.PC = addr;
                 registers.PC--;
             }
@@ -1996,7 +1996,7 @@ namespace Invaders.CPU
 
         private int OP_C3()
         {
-            var addr = ReadOpcodeWord();
+            var addr = ReadOpcodeDataWord();
             registers.PC = addr;
             registers.PC--;
             return 10;
@@ -2006,7 +2006,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.Z == 0)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 var retAddr = (ushort)(registers.PC + 3);
                 Call(addr, retAddr);
                 registers.PC--;
@@ -2069,7 +2069,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.Z == 1)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 registers.PC = addr;
                 registers.PC--;
             }
@@ -2084,7 +2084,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.Z == 1)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 var retAddr = (ulong)(registers.PC + 3);
                 Call((ushort)addr, (ushort)retAddr);
                 registers.PC--;
@@ -2099,7 +2099,7 @@ namespace Invaders.CPU
 
         private int OP_CD()
         {
-            var addr = ReadOpcodeWord();
+            var addr = ReadOpcodeDataWord();
             var retAddr = (ulong)(registers.PC + 3);
             Call((ushort)addr, (ushort)retAddr);
             registers.PC--;
@@ -2153,7 +2153,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.CY == 0)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 registers.PC = (ushort)addr;
                 registers.PC--;
             }
@@ -2193,7 +2193,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.CY == 0)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 var retAddr = (ulong)(registers.PC + 3);
                 Call((ushort)addr, (ushort)retAddr);
                 registers.PC--;
@@ -2248,7 +2248,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.CY == 1)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 registers.PC = addr;
                 registers.PC--;
             }
@@ -2288,7 +2288,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.CY == 1)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 var retAddr = (ulong)(registers.PC + 3);
                 Call(addr, (ushort)retAddr);
                 registers.PC--;
@@ -2343,7 +2343,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.P == 0)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 registers.PC = addr;
                 registers.PC--;
             }
@@ -2369,7 +2369,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.P == 0)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 var retAddr = (ushort)(registers.PC + 3);
                 Call(addr, retAddr);
                 registers.PC--;
@@ -2430,7 +2430,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.P == 1)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 registers.PC = addr;
                 registers.PC--;
             }
@@ -2452,7 +2452,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.P == 1)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 var retAddr = (ushort)(registers.PC + 3);
                 Call(addr, retAddr);
                 registers.PC--;
@@ -2510,7 +2510,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.P == 1)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 registers.PC = addr;
                 registers.PC--;
             }
@@ -2531,7 +2531,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.S == 0)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 var retAddr = (ushort)(registers.PC + 3);
                 Call(addr, retAddr);
                 registers.PC--;
@@ -2593,7 +2593,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.S == 1)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 registers.PC = addr;
                 registers.PC--;
             }
@@ -2614,7 +2614,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.S == 1)
             {
-                var addr = ReadOpcodeWord();
+                var addr = ReadOpcodeDataWord();
                 var retAddr = (ushort)(registers.PC + 3);
                 Call(addr, retAddr);
                 registers.PC--;
