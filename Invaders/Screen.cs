@@ -12,7 +12,7 @@ namespace Invaders
         private Thread? display_thread;
         private Thread? sound_thread;
         private Bitmap? videoBitmap;
-        private readonly byte[] inputPorts = new byte[4] { 0x0E, 0x08, 0x00, 0x00 };
+        private readonly byte[] inputPorts = [0x0E, 0x08, 0x00, 0x00];
         private readonly int SCREEN_WIDTH = 448;
         private readonly int SCREEN_HEIGHT = 512;
         private readonly string appPath = AppDomain.CurrentDomain.BaseDirectory;
@@ -70,16 +70,10 @@ namespace Invaders
             }
         }
 
-        [DllImport("msvcrt.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern int memcmp(byte[] b1, byte[] b2, long count);
-
         private void DisplayThread()
         {
             while (cpu != null && cpu.Running && cpu.DisplayAvailable)
             {
-                while (memcmp(video, cpu.Video, video.Length) == 0)
-                    Thread.Sleep(8);
-
                 Array.Copy(cpu.Video, 0, video, 0, video.Length);
                 videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
                 using (Graphics graphics = Graphics.FromImage(videoBitmap))
