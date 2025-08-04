@@ -90,7 +90,7 @@ namespace Invaders
                                     graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
                         }
                 }
-                try { pictureBox1.Invoke((System.Windows.Forms.MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
+                try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
             }
         }
 

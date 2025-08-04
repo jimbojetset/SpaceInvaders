@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace Invaders.CPU
 {
@@ -49,9 +50,9 @@ namespace Invaders.CPU
         private int hardwareShiftRegisterOffset = 0;
         private static readonly int CLOCK_SPEED = 2000000; // 2 Mhz
         private static readonly int FREQUENCY = 60; //60 Hz
-        private readonly double CPU_CYCLE_LENGTH = 1 / (double)(CLOCK_SPEED / FREQUENCY); // 2Mhz div 60Hz = 0.00003 seconds per CPU cycle
-        private readonly double MAX_FRAME_LENGTH = 1 / (double)FREQUENCY / 2 * 1000; // 8.333 milliseconds
-        private int intCnt = 1;
+        private static readonly int HALF_FRAME_CYCLES_MAX = (CLOCK_SPEED / FREQUENCY) / 2;// 2,000,000/60 = 33,333/2 = 16,666
+        private readonly int FRAME_TIME_MS = 1000 / FREQUENCY; // 1/60 = 16.7ms
+        private readonly Stopwatch frameTiming = new();
 
         public _8080CPU()
         {
@@ -75,30 +76,28 @@ namespace Invaders.CPU
             running = true;
             while (running)
             {
-                ExecuteFrame();
-                Interrupt(intCnt++);
-                if (displayAvailable)
-                    Array.Copy(memory, videoStartAddress, video, 0, video.Length);
-                if (intCnt > 2) intCnt = 1;
+                frameTiming.Restart();// frame start
+                ExecuteCycles();// 1st half of frame
+                Interrupt(1);// mid screen Interrupt
+                ExecuteCycles(); // 2nd half of frame
+                Interrupt(2);// full screen interrupt
+                Array.Copy(memory, videoStartAddress, video, 0, video.Length); // draw the video
+                while (running && frameTiming.ElapsedMilliseconds < FRAME_TIME_MS)
+                { /* maintain acurate frame timing */}
             }
         }
 
-        private void ExecuteFrame()
+        private void ExecuteCycles()
         {
-            double thisFrameLength = 0;
-            Stopwatch stopwatch = new();
-            stopwatch.Start();
-            while (running && thisFrameLength < MAX_FRAME_LENGTH)
+            int cycles = 0;
+            while (running && cycles < HALF_FRAME_CYCLES_MAX)
             {
                 byte opcode = memory[registers.PC];
-                int cycles = CallOpcode(opcode);
-                thisFrameLength += cycles * CPU_CYCLE_LENGTH; 
+                cycles += CallOpcode(opcode);
                 registers.PC++;
-            }           
-            while (running && stopwatch.ElapsedMilliseconds < MAX_FRAME_LENGTH)
-            { /* here to keep the timing honest across different PC's */ }
+            }
         }
-        
+
 
         public void Stop()
         {
@@ -386,7 +385,7 @@ namespace Invaders.CPU
             };
         }
 
-        private static int OP_00()
+        private int OP_00()
         {
             // NOP
             return 4;
