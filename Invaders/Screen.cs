@@ -72,7 +72,7 @@ namespace Invaders
 
         private void DisplayThread()
         {
-            while (cpu != null && cpu.Running && cpu.DisplayAvailable)
+            while (cpu != null && cpu.Running)
             {
                 Array.Copy(cpu.Video, 0, video, 0, video.Length);
                 videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);

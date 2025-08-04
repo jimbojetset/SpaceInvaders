@@ -32,12 +32,6 @@ namespace Invaders.CPU
             get { return memory; } 
         }
 
-        private readonly bool displayAvailable = false;
-        public bool DisplayAvailable
-        {
-            get { return displayAvailable; }
-        }
-
         private readonly byte[] video;
         public byte[] Video
         {
@@ -59,7 +53,6 @@ namespace Invaders.CPU
             memory = new byte[0x10000];
             video = new byte[0x1C00];
             videoStartAddress = 0x2400;
-            displayAvailable = true;
             registers = new Registers
             {
                 PC = 0x0000
