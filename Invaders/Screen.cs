@@ -15,17 +15,17 @@ namespace Invaders
         private readonly byte[] inputPorts = [0x0E, 0x08, 0x00, 0x00];
         private readonly int SCREEN_WIDTH = 448;
         private readonly int SCREEN_HEIGHT = 512;
-        private readonly string appPath = AppDomain.CurrentDomain.BaseDirectory;
+        private static readonly string appPath = AppDomain.CurrentDomain.BaseDirectory;
         private readonly byte[] video = new byte[0x1C00];
 
-        CachedSound ufo_lowpitch = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\ufo_lowpitch.wav");
-        CachedSound shoot = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\shoot.wav");
-        CachedSound invaderkilled = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\invaderkilled.wav");
-        CachedSound fastinvader1 = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\fastinvader1.wav");
-        CachedSound fastinvader2 = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\fastinvader2.wav");
-        CachedSound fastinvader3 = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\fastinvader3.wav");
-        CachedSound fastinvader4 = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\fastinvader4.wav");
-        CachedSound explosion = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\explosion.wav");
+        private readonly CachedSound ufo_lowpitch = new CachedSound(appPath + @"\Sound\ufo_lowpitch.wav");
+        private readonly CachedSound shoot = new CachedSound(appPath + @"\Sound\shoot.wav");
+        private readonly CachedSound invaderkilled = new CachedSound(appPath + @"\Sound\invaderkilled.wav");
+        private readonly CachedSound fastinvader1 = new CachedSound(appPath + @"\Sound\fastinvader1.wav");
+        private readonly CachedSound fastinvader2 = new CachedSound(appPath + @"\Sound\fastinvader2.wav");
+        private readonly CachedSound fastinvader3 = new CachedSound(appPath + @"\Sound\fastinvader3.wav");
+        private readonly CachedSound fastinvader4 = new CachedSound(appPath + @"\Sound\fastinvader4.wav");
+        private readonly CachedSound explosion = new CachedSound(appPath + @"\Sound\explosion.wav");
 
 
         public Screen()
@@ -62,7 +62,6 @@ namespace Invaders
                 IsBackground = true
             };
             display_thread.Start();
-
 
             sound_thread = new Thread(SoundThread)
             {
