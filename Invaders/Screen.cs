@@ -26,7 +26,7 @@ namespace Invaders
         CachedSound fastinvader3 = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\fastinvader3.wav");
         CachedSound fastinvader4 = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\fastinvader4.wav");
         CachedSound explosion = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\explosion.wav");
-
+        CachedSound coin = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\coin.wav");
 
         public Screen()
         {
@@ -183,6 +183,7 @@ namespace Invaders
             {
                 case 1: // Coin
                     inputPorts[1] |= 0x01;
+                    AudioPlaybackEngine.Instance.PlaySound(coin);
                     break;
 
                 case 2: // 1P Start
