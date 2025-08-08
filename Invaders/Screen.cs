@@ -1,6 +1,6 @@
 using Invaders.CPU;
-using System.Media;
-using System.Runtime.InteropServices;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 
 namespace Invaders
 {
@@ -17,6 +17,16 @@ namespace Invaders
         private readonly int SCREEN_HEIGHT = 512;
         private readonly string appPath = AppDomain.CurrentDomain.BaseDirectory;
         private readonly byte[] video = new byte[0x1C00];
+
+        CachedSound ufo_lowpitch = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\ufo_lowpitch.wav");
+        CachedSound shoot = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\shoot.wav");
+        CachedSound invaderkilled = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\invaderkilled.wav");
+        CachedSound fastinvader1 = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\fastinvader1.wav");
+        CachedSound fastinvader2 = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\fastinvader2.wav");
+        CachedSound fastinvader3 = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\fastinvader3.wav");
+        CachedSound fastinvader4 = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\fastinvader4.wav");
+        CachedSound explosion = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\explosion.wav");
+
 
         public Screen()
         {
@@ -52,6 +62,7 @@ namespace Invaders
                 IsBackground = true
             };
             display_thread.Start();
+
 
             sound_thread = new Thread(SoundThread)
             {
@@ -104,12 +115,17 @@ namespace Invaders
 
         private void SoundThread()
         {
-            SoundPlayer player = new();
             byte prevPort3 = new();
             byte prevPort5 = new();
 
             while (cpu != null && cpu.Running)
             {
+                IWavePlayer  outputDevice = new WaveOutEvent();
+                MixingSampleProvider  mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(11025, 1));
+                mixer.ReadFully = true;
+                outputDevice.Init(mixer);
+                outputDevice.Play();
+
                 while (prevPort3 == cpu.PortOut[3] && prevPort5 == cpu.PortOut[5])
                     Thread.Sleep(8);
 
@@ -117,53 +133,47 @@ namespace Invaders
                 {
                     if (((cpu.PortOut[3] & 0x01) == 0x01) && ((cpu.PortOut[3] & 0x01) != (prevPort3 & 0x01)))
                     {
-                        player.SoundLocation = Application.StartupPath + @"\Sound\ufo_lowpitch.wav";
-                        player.PlaySync();
+                        AudioPlaybackEngine.Instance.PlaySound(ufo_lowpitch);
                     }
                     if (((cpu.PortOut[3] & 0x02) == 0x02) && ((cpu.PortOut[3] & 0x02) != (prevPort3 & 0x02)))
                     {
-                        player.SoundLocation = Application.StartupPath + @"\Sound\shoot.wav";
-                        player.PlaySync();
+                        AudioPlaybackEngine.Instance.PlaySound(shoot);
                     }
                     if (((cpu.PortOut[3] & 0x04) == 0x04) && ((cpu.PortOut[3] & 0x04) != (prevPort3 & 0x04)))
                     {
-                        player.SoundLocation = Application.StartupPath + @"\Sound\explosion.wav";
-                        player.PlaySync();
+                        AudioPlaybackEngine.Instance.PlaySound(explosion);
                     }
                     if (((cpu.PortOut[3] & 0x08) == 0x08) && ((cpu.PortOut[3] & 0x08) != (prevPort3 & 0x08)))
                     {
-                        player.SoundLocation = Application.StartupPath + @"\Sound\invaderkilled.wav";
-                        player.PlaySync();
+                        AudioPlaybackEngine.Instance.PlaySound(invaderkilled);
                     }
                     prevPort3 = cpu!.PortOut[3];
                 }
+
+
+
 
                 if (prevPort5 != cpu.PortOut[5])
                 {
                     if (((cpu.PortOut[5] & 0x01) == 0x01) && ((cpu.PortOut[5] & 0x01) != (prevPort5 & 0x01)))
                     {
-                        player.SoundLocation = Application.StartupPath + @"\Sound\fastinvader1.wav";
-                        player.PlaySync();
+                        AudioPlaybackEngine.Instance.PlaySound(fastinvader1);
                     }
                     if (((cpu.PortOut[5] & 0x02) == 0x02) && ((cpu.PortOut[5] & 0x02) != (prevPort5 & 0x02)))
                     {
-                        player.SoundLocation = Application.StartupPath + @"\Sound\fastinvader2.wav";
-                        player.PlaySync();
+                        AudioPlaybackEngine.Instance.PlaySound(fastinvader2);
                     }
                     if (((cpu.PortOut[5] & 0x04) == 0x04) && ((cpu.PortOut[5] & 0x04) != (prevPort5 & 0x04)))
                     {
-                        player.SoundLocation = Application.StartupPath + @"\Sound\fastinvader3.wav";
-                        player.PlaySync();
+                        AudioPlaybackEngine.Instance.PlaySound(fastinvader3);
                     }
                     if (((cpu.PortOut[5] & 0x08) == 0x08) && ((cpu.PortOut[5] & 0x08) != (prevPort5 & 0x08)))
                     {
-                        player.SoundLocation = Application.StartupPath + @"\Sound\fastinvader4.wav";
-                        player.PlaySync();
+                        AudioPlaybackEngine.Instance.PlaySound(fastinvader4);
                     }
                     if (((cpu.PortOut[5] & 0x10) == 0x10) && ((cpu.PortOut[5] & 0x10) != (prevPort5 & 0x10)))
                     {
-                        player.SoundLocation = Application.StartupPath + @"\Sound\explosion.wav";
-                        player.PlaySync();
+                        AudioPlaybackEngine.Instance.PlaySound(explosion);
                     }
                     prevPort5 = cpu!.PortOut[5];
                 }

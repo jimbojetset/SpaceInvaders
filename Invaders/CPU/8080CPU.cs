@@ -70,9 +70,9 @@ namespace Invaders.CPU
             while (running)
             {
                 frameTiming.Restart();// frame start
-                ExecuteCycles();// 1st half of frame
+                ExecuteCycles(HALF_FRAME_CYCLES_MAX);// 1st half of frame
                 Interrupt(1);// mid screen Interrupt
-                ExecuteCycles(); // 2nd half of frame
+                ExecuteCycles(HALF_FRAME_CYCLES_MAX); // 2nd half of frame
                 Interrupt(2);// full screen interrupt
                 Array.Copy(memory, videoStartAddress, video, 0, video.Length); // draw the video
                 while (running && frameTiming.ElapsedMilliseconds < FRAME_TIME_MS)
@@ -80,10 +80,10 @@ namespace Invaders.CPU
             }
         }
 
-        private void ExecuteCycles()
+        private void ExecuteCycles(int maxCycles)
         {
             int cycles = 0;
-            while (running && cycles < HALF_FRAME_CYCLES_MAX)
+            while (running && cycles < maxCycles)
             {
                 byte opcode = memory[registers.PC];
                 cycles += CallOpcode(opcode);
