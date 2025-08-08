@@ -28,6 +28,7 @@ namespace Invaders
         CachedSound explosion = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\explosion.wav");
         CachedSound coin = new CachedSound(AppDomain.CurrentDomain.BaseDirectory + @"\Sound\coin.wav");
 
+
         public Screen()
         {
             InitializeComponent();
