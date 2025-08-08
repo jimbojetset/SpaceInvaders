@@ -1,6 +1,4 @@
-﻿using Microsoft.Win32;
-using System.Diagnostics;
-using System.Reflection;
+﻿using System.Diagnostics;
 
 namespace Invaders.CPU
 {
@@ -12,7 +10,7 @@ namespace Invaders.CPU
             get { return running; }
             set { running = value; }
         }
-        
+
         private byte[] portIn = new byte[4]; // 0,1,2,3
         public byte[] PortIn
         {
@@ -22,14 +20,14 @@ namespace Invaders.CPU
 
         private readonly byte[] portOut = new byte[7]; // 2,3,5,6
         public byte[] PortOut
-        { 
-            get { return portOut; } 
+        {
+            get { return portOut; }
         }
 
         private readonly byte[] memory;
         public byte[] Memory
-        { 
-            get { return memory; } 
+        {
+            get { return memory; }
         }
 
         private readonly byte[] video;

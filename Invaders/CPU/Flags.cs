@@ -75,7 +75,7 @@
         }
 
         public static uint CalculateParityFlag(byte value) // 1 is even
-        {            
+        {
             byte num = (byte)(value & 0xff);
             byte total;
             for (total = 0; num > 0; total++)
@@ -88,7 +88,7 @@
             //       0   0   1
             //   7 6 5 4 3 2 1 0
             //   S Z   A   P   C 
-            
+
             var flags = 0b00000010;
             if (s == 1)
                 flags = flags | 0b10000010;

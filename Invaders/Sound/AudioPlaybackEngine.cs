@@ -52,73 +52,73 @@ class AudioPlaybackEngine : IDisposable
     //SampleRate & Channel count values must match .wav samples
     public static readonly AudioPlaybackEngine Instance = new AudioPlaybackEngine(11025, 1);
 }
-    class CachedSound
+class CachedSound
+{
+    public float[] AudioData { get; private set; }
+    public WaveFormat WaveFormat { get; private set; }
+    public CachedSound(string audioFileName)
     {
-        public float[] AudioData { get; private set; }
-        public WaveFormat WaveFormat { get; private set; }
-        public CachedSound(string audioFileName)
+        using (var audioFileReader = new AudioFileReader(audioFileName))
         {
-            using (var audioFileReader = new AudioFileReader(audioFileName))
+            // TODO: could add resampling in here if required
+            WaveFormat = audioFileReader.WaveFormat;
+            var wholeFile = new List<float>((int)(audioFileReader.Length / 4));
+            var readBuffer = new float[audioFileReader.WaveFormat.SampleRate * audioFileReader.WaveFormat.Channels];
+            int samplesRead;
+            while ((samplesRead = audioFileReader.Read(readBuffer, 0, readBuffer.Length)) > 0)
             {
-                // TODO: could add resampling in here if required
-                WaveFormat = audioFileReader.WaveFormat;
-                var wholeFile = new List<float>((int)(audioFileReader.Length / 4));
-                var readBuffer = new float[audioFileReader.WaveFormat.SampleRate * audioFileReader.WaveFormat.Channels];
-                int samplesRead;
-                while ((samplesRead = audioFileReader.Read(readBuffer, 0, readBuffer.Length)) > 0)
-                {
-                    wholeFile.AddRange(readBuffer.Take(samplesRead));
-                }
-                AudioData = wholeFile.ToArray();
+                wholeFile.AddRange(readBuffer.Take(samplesRead));
             }
+            AudioData = wholeFile.ToArray();
         }
     }
+}
 
-    class CachedSoundSampleProvider : ISampleProvider
+class CachedSoundSampleProvider : ISampleProvider
+{
+    private readonly CachedSound cachedSound;
+    private long position;
+
+    public CachedSoundSampleProvider(CachedSound cachedSound)
     {
-        private readonly CachedSound cachedSound;
-        private long position;
-
-        public CachedSoundSampleProvider(CachedSound cachedSound)
-        {
-            this.cachedSound = cachedSound;
-        }
-
-        public int Read(float[] buffer, int offset, int count)
-        {
-            var availableSamples = cachedSound.AudioData.Length - position;
-            var samplesToCopy = Math.Min(availableSamples, count);
-            Array.Copy(cachedSound.AudioData, position, buffer, offset, samplesToCopy);
-            position += samplesToCopy;
-            return (int)samplesToCopy;
-        }
-
-        public WaveFormat WaveFormat { get { return cachedSound.WaveFormat; } }
+        this.cachedSound = cachedSound;
     }
 
-    class AutoDisposeFileReader : ISampleProvider
+    public int Read(float[] buffer, int offset, int count)
     {
-        private readonly AudioFileReader reader;
-        private bool isDisposed;
-        public AutoDisposeFileReader(AudioFileReader reader)
-        {
-            this.reader = reader;
-            this.WaveFormat = reader.WaveFormat;
-        }
-
-        public int Read(float[] buffer, int offset, int count)
-        {
-            if (isDisposed)
-                return 0;
-            int read = reader.Read(buffer, offset, count);
-            if (read == 0)
-            {
-                reader.Dispose();
-                isDisposed = true;
-            }
-            return read;
-        }
-
-        public WaveFormat WaveFormat { get; private set; }
+        var availableSamples = cachedSound.AudioData.Length - position;
+        var samplesToCopy = Math.Min(availableSamples, count);
+        Array.Copy(cachedSound.AudioData, position, buffer, offset, samplesToCopy);
+        position += samplesToCopy;
+        return (int)samplesToCopy;
     }
+
+    public WaveFormat WaveFormat { get { return cachedSound.WaveFormat; } }
+}
+
+class AutoDisposeFileReader : ISampleProvider
+{
+    private readonly AudioFileReader reader;
+    private bool isDisposed;
+    public AutoDisposeFileReader(AudioFileReader reader)
+    {
+        this.reader = reader;
+        this.WaveFormat = reader.WaveFormat;
+    }
+
+    public int Read(float[] buffer, int offset, int count)
+    {
+        if (isDisposed)
+            return 0;
+        int read = reader.Read(buffer, offset, count);
+        if (read == 0)
+        {
+            reader.Dispose();
+            isDisposed = true;
+        }
+        return read;
+    }
+
+    public WaveFormat WaveFormat { get; private set; }
+}
 
