@@ -118,66 +118,46 @@ namespace Invaders
             byte prevPort3 = new();
             byte prevPort5 = new();
 
+            IWavePlayer outputDevice = new WaveOutEvent();
+            //SampleRate & Channel count values must match .wav samples
+            MixingSampleProvider mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(11025, 1));
+            mixer.ReadFully = true;
+            outputDevice.Init(mixer);
+            outputDevice.Play();
+
             while (cpu != null && cpu.Running)
             {
-                IWavePlayer  outputDevice = new WaveOutEvent();
-                MixingSampleProvider  mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(11025, 1));
-                mixer.ReadFully = true;
-                outputDevice.Init(mixer);
-                outputDevice.Play();
-
-                while (prevPort3 == cpu.PortOut[3] && prevPort5 == cpu.PortOut[5])
-                    Thread.Sleep(8);
 
                 if (prevPort3 != cpu.PortOut[3])
                 {
                     if (((cpu.PortOut[3] & 0x01) == 0x01) && ((cpu.PortOut[3] & 0x01) != (prevPort3 & 0x01)))
-                    {
                         AudioPlaybackEngine.Instance.PlaySound(ufo_lowpitch);
-                    }
                     if (((cpu.PortOut[3] & 0x02) == 0x02) && ((cpu.PortOut[3] & 0x02) != (prevPort3 & 0x02)))
-                    {
                         AudioPlaybackEngine.Instance.PlaySound(shoot);
-                    }
                     if (((cpu.PortOut[3] & 0x04) == 0x04) && ((cpu.PortOut[3] & 0x04) != (prevPort3 & 0x04)))
-                    {
                         AudioPlaybackEngine.Instance.PlaySound(explosion);
-                    }
                     if (((cpu.PortOut[3] & 0x08) == 0x08) && ((cpu.PortOut[3] & 0x08) != (prevPort3 & 0x08)))
-                    {
                         AudioPlaybackEngine.Instance.PlaySound(invaderkilled);
-                    }
                     prevPort3 = cpu!.PortOut[3];
                 }
-
-
-
 
                 if (prevPort5 != cpu.PortOut[5])
                 {
                     if (((cpu.PortOut[5] & 0x01) == 0x01) && ((cpu.PortOut[5] & 0x01) != (prevPort5 & 0x01)))
-                    {
                         AudioPlaybackEngine.Instance.PlaySound(fastinvader1);
-                    }
                     if (((cpu.PortOut[5] & 0x02) == 0x02) && ((cpu.PortOut[5] & 0x02) != (prevPort5 & 0x02)))
-                    {
                         AudioPlaybackEngine.Instance.PlaySound(fastinvader2);
-                    }
                     if (((cpu.PortOut[5] & 0x04) == 0x04) && ((cpu.PortOut[5] & 0x04) != (prevPort5 & 0x04)))
-                    {
                         AudioPlaybackEngine.Instance.PlaySound(fastinvader3);
-                    }
                     if (((cpu.PortOut[5] & 0x08) == 0x08) && ((cpu.PortOut[5] & 0x08) != (prevPort5 & 0x08)))
-                    {
                         AudioPlaybackEngine.Instance.PlaySound(fastinvader4);
-                    }
                     if (((cpu.PortOut[5] & 0x10) == 0x10) && ((cpu.PortOut[5] & 0x10) != (prevPort5 & 0x10)))
-                    {
                         AudioPlaybackEngine.Instance.PlaySound(explosion);
-                    }
                     prevPort5 = cpu!.PortOut[5];
                 }
             }
+            outputDevice.Stop();
+            outputDevice.Dispose();
         }
 
         private static byte GetKeyValue(KeyEventArgs e)
