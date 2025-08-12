@@ -376,7 +376,7 @@ namespace Invaders.CPU
             };
         }
 
-        private int OP_00()
+        private static int OP_00()
         {
             // NOP
             return 4;

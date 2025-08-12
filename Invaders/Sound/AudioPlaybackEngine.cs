@@ -9,8 +9,10 @@ class AudioPlaybackEngine : IDisposable
     public AudioPlaybackEngine(int sampleRate, int channelCount)
     {
         outputDevice = new WaveOutEvent();
-        mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channelCount));
-        mixer.ReadFully = true;
+        mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channelCount))
+        {
+            ReadFully = true
+        };
         outputDevice.Init(mixer);
         outputDevice.Play();
     }
@@ -50,7 +52,7 @@ class AudioPlaybackEngine : IDisposable
     }
 
     //SampleRate & Channel count values must match .wav samples
-    public static readonly AudioPlaybackEngine Instance = new AudioPlaybackEngine(11025, 1);
+    public static readonly AudioPlaybackEngine Instance = new(11025, 1);
 }
 class CachedSound
 {

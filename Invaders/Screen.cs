@@ -18,14 +18,15 @@ namespace Invaders
         private static readonly string appPath = AppDomain.CurrentDomain.BaseDirectory;
         private readonly byte[] video = new byte[0x1C00];
 
-        private readonly CachedSound ufo_lowpitch = new CachedSound(appPath + @"\Sound\ufo_lowpitch.wav");
-        private readonly CachedSound shoot = new CachedSound(appPath + @"\Sound\shoot.wav");
-        private readonly CachedSound invaderkilled = new CachedSound(appPath + @"\Sound\invaderkilled.wav");
-        private readonly CachedSound fastinvader1 = new CachedSound(appPath + @"\Sound\fastinvader1.wav");
-        private readonly CachedSound fastinvader2 = new CachedSound(appPath + @"\Sound\fastinvader2.wav");
-        private readonly CachedSound fastinvader3 = new CachedSound(appPath + @"\Sound\fastinvader3.wav");
-        private readonly CachedSound fastinvader4 = new CachedSound(appPath + @"\Sound\fastinvader4.wav");
-        private readonly CachedSound explosion = new CachedSound(appPath + @"\Sound\explosion.wav");
+        private readonly CachedSound ufo_lowpitch = new(appPath + @"\Sound\ufo_lowpitch.wav");
+        private readonly CachedSound shoot = new(appPath + @"\Sound\shoot.wav");
+        private readonly CachedSound invaderkilled = new(appPath + @"\Sound\invaderkilled.wav");
+        private readonly CachedSound fastinvader1 = new(appPath + @"\Sound\fastinvader1.wav");
+        private readonly CachedSound fastinvader2 = new(appPath + @"\Sound\fastinvader2.wav");
+        private readonly CachedSound fastinvader3 = new(appPath + @"\Sound\fastinvader3.wav");
+        private readonly CachedSound fastinvader4 = new(appPath + @"\Sound\fastinvader4.wav");
+        private readonly CachedSound explosion = new(appPath + @"\Sound\explosion.wav");
+        private readonly CachedSound coin = new(appPath + @"\Sound\coin.wav");
 
 
         public Screen()
@@ -117,10 +118,12 @@ namespace Invaders
             byte prevPort3 = new();
             byte prevPort5 = new();
 
-            IWavePlayer outputDevice = new WaveOutEvent();
+            WaveOutEvent outputDevice = new();
             //SampleRate & Channel count values must match .wav samples
-            MixingSampleProvider mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(11025, 1));
-            mixer.ReadFully = true;
+            MixingSampleProvider mixer = new(WaveFormat.CreateIeeeFloatWaveFormat(11025, 1))
+            {
+                ReadFully = true
+            };
             outputDevice.Init(mixer);
             outputDevice.Play();
 
