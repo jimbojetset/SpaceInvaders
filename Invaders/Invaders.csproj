@@ -47,6 +47,9 @@
     <None Update="ROMS\invaders.h">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Sound\coin.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Sound\explosion.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

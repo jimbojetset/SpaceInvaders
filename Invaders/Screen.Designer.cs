@@ -37,13 +37,13 @@
             // 
             pictureBox1.BackColor = Color.Transparent;
             pictureBox1.BackgroundImageLayout = ImageLayout.Stretch;
-            pictureBox1.Location = new Point(113, 0);
+            pictureBox1.Location = new Point(111, 0);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(395, 567);
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             // 
-            // Form1
+            // Screen
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -57,7 +57,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
-            Name = "Form1";
+            Name = "Screen";
             Text = "Space Invaders by Jim Booth";
             FormClosing += Form1_FormClosing;
             KeyDown += Form1_KeyDown;

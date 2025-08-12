@@ -182,6 +182,7 @@ namespace Invaders
             {
                 case 1: // Coin
                     inputPorts[1] |= 0x01;
+                    AudioPlaybackEngine.Instance.PlaySound(coin);
                     break;
 
                 case 2: // 1P Start
