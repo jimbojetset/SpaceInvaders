@@ -12,6 +12,7 @@ namespace Invaders
         private Thread? display_thread;
         private Thread? sound_thread;
         private Bitmap? videoBitmap;
+       
         private readonly byte[] inputPorts = [0x0E, 0x08, 0x00, 0x00];
         private readonly int SCREEN_WIDTH = 448;
         private readonly int SCREEN_HEIGHT = 512;
@@ -27,7 +28,6 @@ namespace Invaders
         private readonly CachedSound fastinvader4 = new(appPath + @"\Sound\fastinvader4.wav");
         private readonly CachedSound explosion = new(appPath + @"\Sound\explosion.wav");
         private readonly CachedSound coin = new(appPath + @"\Sound\coin.wav");
-
 
         public Screen()
         {
@@ -118,8 +118,7 @@ namespace Invaders
             byte prevPort3 = new();
             byte prevPort5 = new();
 
-            WaveOutEvent outputDevice = new();
-            //SampleRate & Channel count values must match .wav samples
+            WaveOutEvent outputDevice = new(); //SampleRate & Channel count values must match .wav samples
             MixingSampleProvider mixer = new(WaveFormat.CreateIeeeFloatWaveFormat(11025, 1))
             {
                 ReadFully = true
@@ -185,7 +184,6 @@ namespace Invaders
             {
                 case 1: // Coin
                     inputPorts[1] |= 0x01;
-                    AudioPlaybackEngine.Instance.PlaySound(coin);
                     break;
 
                 case 2: // 1P Start
@@ -240,6 +238,7 @@ namespace Invaders
             {
                 case 1: // Coin
                     inputPorts[1] &= 0xFE;
+                    AudioPlaybackEngine.Instance.PlaySound(coin);
                     break;
 
                 case 2: // 1P Start
