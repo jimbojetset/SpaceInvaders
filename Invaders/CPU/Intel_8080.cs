@@ -2,7 +2,7 @@
 
 namespace Invaders.CPU
 {
-    internal class _8080CPU
+    internal class Intel_8080
     {
         private bool running = false;
         public bool Running
@@ -46,7 +46,7 @@ namespace Invaders.CPU
         private readonly int FRAME_TIME_MS = 1000 / FREQUENCY; // 1/60 = 16.7ms
         private readonly Stopwatch frameTiming = new();
 
-        public _8080CPU()
+        public Intel_8080()
         {
             memory = new byte[0x10000];
             video = new byte[0x1C00];
@@ -73,8 +73,11 @@ namespace Invaders.CPU
                 ExecuteCycles(HALF_FRAME_CYCLES_MAX); // 2nd half of frame
                 Interrupt(2);// full screen interrupt
                 Array.Copy(memory, videoStartAddress, video, 0, video.Length); // draw the video
-                while (running && frameTiming.ElapsedMilliseconds < FRAME_TIME_MS)
-                { /* maintain acurate frame timing */}
+                try
+                {
+                    Thread.Sleep((FRAME_TIME_MS - (int)frameTiming.ElapsedMilliseconds) / 2);
+                }
+                catch { }
             }
         }
 
@@ -88,7 +91,6 @@ namespace Invaders.CPU
                 registers.PC++;
             }
         }
-
 
         public void Stop()
         {

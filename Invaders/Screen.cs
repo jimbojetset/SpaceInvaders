@@ -6,7 +6,7 @@ namespace Invaders
 {
     public partial class Screen : Form
     {
-        private _8080CPU? cpu;
+        private Intel_8080? cpu;
         private Thread? port_thread;
         private Thread? cpu_thread;
         private Thread? display_thread;
@@ -37,7 +37,7 @@ namespace Invaders
 
         private void Execute()
         {
-            cpu = new _8080CPU();
+            cpu = new Intel_8080();
 
             cpu.LoadROM(appPath + @"ROMS\invaders.h", 0x0000, 0x800); // invaders.h 0000 - 07FF
             cpu.LoadROM(appPath + @"ROMS\invaders.g", 0x0800, 0x800); // invaders.g 0800 - 0FFF
@@ -76,7 +76,7 @@ namespace Invaders
             while (cpu != null && cpu.Running)
             {
                 while (cpu.PortIn == inputPorts)
-                    Thread.Sleep(8);
+                    Thread.Sleep(4);
                 cpu.PortIn = inputPorts;
             }
         }
@@ -102,6 +102,7 @@ namespace Invaders
                         }
                 }
                 try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
+                Thread.Sleep(8);
             }
         }
 
@@ -156,6 +157,7 @@ namespace Invaders
                         AudioPlaybackEngine.Instance.PlaySound(explosion);
                     prevPort5 = cpu!.PortOut[5];
                 }
+                Thread.Sleep(4);
             }
             outputDevice.Stop();
             outputDevice.Dispose();
