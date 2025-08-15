@@ -37,12 +37,11 @@ namespace Invaders
 
         private void Execute()
         {
-            cpu = new Intel_8080();
-
-            cpu.LoadROM(appPath + @"ROMS\invaders.h", 0x0000, 0x800); // invaders.h 0000 - 07FF
-            cpu.LoadROM(appPath + @"ROMS\invaders.g", 0x0800, 0x800); // invaders.g 0800 - 0FFF
-            cpu.LoadROM(appPath + @"ROMS\invaders.f", 0x1000, 0x800); // invaders.f 1000 - 17FF
-            cpu.LoadROM(appPath + @"ROMS\invaders.e", 0x1800, 0x800); // invaders.e 1800 - 1FFF
+            cpu = new Intel_8080(new Memory(0x10000));
+            cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.h", 0x0000, 0x800); // invaders.h 0000 - 07FF
+            cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.g", 0x0800, 0x800); // invaders.g 0800 - 0FFF
+            cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.f", 0x1000, 0x800); // invaders.f 1000 - 17FF
+            cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.e", 0x1800, 0x800); // invaders.e 1800 - 1FFF
 
             cpu_thread = new Thread(() => cpu!.Start())
             {

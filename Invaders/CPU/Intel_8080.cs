@@ -24,8 +24,8 @@ namespace Invaders.CPU
             get { return portOut; }
         }
 
-        private readonly byte[] memory;
-        public byte[] Memory
+        private readonly Memory memory;
+        public Memory Memory
         {
             get { return memory; }
         }
@@ -46,20 +46,15 @@ namespace Invaders.CPU
         private readonly int FRAME_TIME_MS = 1000 / FREQUENCY; // 1/60 = 16.7ms
         private readonly Stopwatch frameTiming = new();
 
-        public Intel_8080()
+        public Intel_8080(Memory memory)
         {
-            memory = new byte[0x10000];
+            this.memory = memory;
             video = new byte[0x1C00];
             videoStartAddress = 0x2400;
             registers = new Registers
             {
                 PC = 0x0000
             };
-        }
-
-        public void LoadROM(string filePath, int addr, int length)
-        {
-            Array.Copy(File.ReadAllBytes(filePath), 0, memory, addr, length);
         }
 
         public void Start()
@@ -72,7 +67,7 @@ namespace Invaders.CPU
                 Interrupt(1);// mid screen Interrupt
                 ExecuteCycles(HALF_FRAME_CYCLES_MAX); // 2nd half of frame
                 Interrupt(2);// full screen interrupt
-                Array.Copy(memory, videoStartAddress, video, 0, video.Length); // draw the video
+                Array.Copy(memory.GetMemory, videoStartAddress, video, 0, video.Length); // draw the video
                 try
                 {
                     Thread.Sleep((FRAME_TIME_MS - (int)frameTiming.ElapsedMilliseconds) / 2);
@@ -86,7 +81,7 @@ namespace Invaders.CPU
             int cycles = 0;
             while (running && cycles < maxCycles)
             {
-                byte opcode = memory[registers.PC];
+                byte opcode = memory.ReadByte(registers.PC);
                 cycles += CallOpcode(opcode);
                 registers.PC++;
             }
@@ -99,13 +94,13 @@ namespace Invaders.CPU
 
         private ushort ReadOpcodeDataWord()
         {
-            return (ushort)(memory[registers.PC + 2] << 8 | memory[registers.PC + 1]);
+            return (ushort)(memory.ReadByte(registers.PC + 2) << 8 | memory.ReadByte(registers.PC + 1));
         }
 
         private void Call(ushort address, ushort retAddress)
         {
-            memory[registers.SP - 1] = (byte)((retAddress >> 8) & 0xFF);
-            memory[registers.SP - 2] = (byte)(retAddress & 0xFF);
+            memory.WriteByte(registers.SP - 1, (byte)((retAddress >> 8) & 0xFF));
+            memory.WriteByte(registers.SP - 2, (byte)(retAddress & 0xFF));
             registers.PC = address;
             registers.SP -= 2;
         }
@@ -114,8 +109,8 @@ namespace Invaders.CPU
         {
             if (registers.INT_ENABLE)
             {
-                memory[registers.SP - 1] = (byte)((registers.PC >> 8) & 0xFF);
-                memory[registers.SP - 2] = (byte)(registers.PC & 0xFF);
+                memory.WriteByte(registers.SP - 1, (byte)((registers.PC >> 8) & 0xFF));
+                memory.WriteByte(registers.SP - 2, (byte)(registers.PC & 0xFF));
                 registers.SP -= 2;
                 if (addr == 1)
                     registers.PC = 0x0008;
@@ -386,15 +381,15 @@ namespace Invaders.CPU
 
         private int OP_01()
         {
-            registers.C = memory[registers.PC + 1];
-            registers.B = memory[registers.PC + 2];
+            registers.C = memory.ReadByte(registers.PC + 1);
+            registers.B = memory.ReadByte(registers.PC + 2);
             registers.PC += 2;
             return 10;
         }
 
         private int OP_02()
         {
-            memory[registers.BC] = registers.A;
+            memory.WriteByte(registers.BC, registers.A);
             return 7;
         }
 
@@ -422,7 +417,7 @@ namespace Invaders.CPU
 
         private int OP_06()
         {
-            registers.B = memory[registers.PC + 1];
+            registers.B = memory.ReadByte(registers.PC + 1);
             registers.PC++;
             return 7;
         }
@@ -446,7 +441,7 @@ namespace Invaders.CPU
         private int OP_0A()
         {
             var addr = registers.BC;
-            registers.A = memory[addr];
+            registers.A = memory.ReadByte(addr);
             return 7;
         }
 
@@ -474,7 +469,7 @@ namespace Invaders.CPU
 
         private int OP_0E()
         {
-            registers.C = memory[registers.PC + 1];
+            registers.C = memory.ReadByte(registers.PC + 1);
             registers.PC++;
             return 7;
         }
@@ -490,8 +485,8 @@ namespace Invaders.CPU
 
         private int OP_11()
         {
-            registers.D = memory[registers.PC + 2];
-            registers.E = memory[registers.PC + 1];
+            registers.D = memory.ReadByte(registers.PC + 2);
+            registers.E = memory.ReadByte(registers.PC + 1);
             registers.PC += 2;
             return 10;
         }
@@ -499,7 +494,7 @@ namespace Invaders.CPU
         private int OP_12()
         {
             var addr = registers.DE;
-            memory[addr] = registers.A;
+            memory.WriteByte(addr, registers.A);
             return 7;
         }
 
@@ -527,7 +522,7 @@ namespace Invaders.CPU
 
         private int OP_16()
         {
-            registers.D = memory[registers.PC + 1];
+            registers.D = memory.ReadByte(registers.PC + 1);
             registers.PC++;
             return 7;
         }
@@ -552,7 +547,7 @@ namespace Invaders.CPU
         private int OP_1A()
         {
             var addr = registers.DE;
-            registers.A = memory[addr];
+            registers.A = memory.ReadByte(addr);
             return 7;
         }
 
@@ -580,7 +575,7 @@ namespace Invaders.CPU
 
         private int OP_1E()
         {
-            registers.E = memory[registers.PC + 1];
+            registers.E = memory.ReadByte(registers.PC + 1);
             registers.PC++;
             return 7;
         }
@@ -599,8 +594,8 @@ namespace Invaders.CPU
 
         private int OP_21()
         {
-            registers.H = memory[registers.PC + 2];
-            registers.L = memory[registers.PC + 1];
+            registers.H = memory.ReadByte(registers.PC + 2);
+            registers.L = memory.ReadByte(registers.PC + 1);
             registers.PC += 2;
             return 10;
         }
@@ -608,8 +603,8 @@ namespace Invaders.CPU
         private int OP_22()
         {
             var addr = ReadOpcodeDataWord();
-            memory[addr] = registers.L;
-            memory[addr + 1] = registers.H;
+            memory.WriteByte(addr, registers.L);
+            memory.WriteByte((uint)addr + 1, registers.H);
             registers.PC += 2;
             return 16;
         }
@@ -638,7 +633,7 @@ namespace Invaders.CPU
 
         private int OP_26()
         {
-            registers.H = memory[registers.PC + 1];
+            registers.H = memory.ReadByte(registers.PC + 1);
             registers.PC++;
             return 7;
         }
@@ -679,8 +674,8 @@ namespace Invaders.CPU
         private int OP_2A()
         {
             var addr = ReadOpcodeDataWord();
-            registers.L = memory[addr];
-            registers.H = memory[addr + 1];
+            registers.L = memory.ReadByte(addr);
+            registers.H = memory.ReadByte((uint)addr + 1);
             registers.PC += 2;
             return 16;
         }
@@ -709,7 +704,7 @@ namespace Invaders.CPU
 
         private int OP_2E()
         {
-            registers.L = memory[registers.PC + 1];
+            registers.L = memory.ReadByte(registers.PC + 1);
             registers.PC++;
             return 7;
         }
@@ -733,7 +728,7 @@ namespace Invaders.CPU
         private int OP_32()
         {
             ushort addr = ReadOpcodeDataWord();
-            memory[addr] = registers.A;
+            memory.WriteByte(addr, registers.A);
             registers.PC += 2;
             return 15;
         }
@@ -747,28 +742,28 @@ namespace Invaders.CPU
         private int OP_34()
         {
             var addr = registers.HL;
-            var value = memory[addr];
+            var value = memory.ReadByte(addr);
             value++;
             registers.Flags.UpdateZSP(value);
-            memory[addr] = (byte)(value & 0xFF);
+            memory.WriteByte(addr, (byte)(value & 0xFF));
             return 10;
         }
 
         private int OP_35()
         {
             var addr = registers.HL;
-            var value = memory[addr];
+            var value = memory.ReadByte(addr);
             value--;
             registers.Flags.UpdateZSP(value);
-            memory[addr] = (byte)(value & 0xFF);
+            memory.WriteByte(addr, (byte)(value & 0xFF));
             return 10;
         }
 
         private int OP_36()
         {
             var addr = registers.HL;
-            var value = memory[registers.PC + 1];
-            memory[addr] = value;
+            var value = memory.ReadByte(registers.PC + 1);
+            memory.WriteByte(addr, value);
             registers.PC++;
             return 10;
         }
@@ -790,7 +785,7 @@ namespace Invaders.CPU
         private int OP_3A()
         {
             var addr = ReadOpcodeDataWord();
-            registers.A = memory[addr];
+            registers.A = memory.ReadByte(addr);
             registers.PC += 2;
             return 13;
         }
@@ -817,7 +812,7 @@ namespace Invaders.CPU
 
         private int OP_3E()
         {
-            var addr = memory[registers.PC + 1];
+            var addr = memory.ReadByte(registers.PC + 1);
             registers.A = addr;
             registers.PC++;
             return 7;
@@ -868,7 +863,7 @@ namespace Invaders.CPU
         private int OP_46()
         {
             var addr = registers.HL;
-            registers.B = memory[addr];
+            registers.B = memory.ReadByte(addr);
             return 7;
         }
 
@@ -917,7 +912,7 @@ namespace Invaders.CPU
         private int OP_4E()
         {
             var addr = registers.HL;
-            registers.C = memory[addr];
+            registers.C = memory.ReadByte(addr);
             return 7;
         }
 
@@ -966,7 +961,7 @@ namespace Invaders.CPU
         private int OP_56()
         {
             var addr = registers.HL;
-            registers.D = memory[addr];
+            registers.D = memory.ReadByte(addr);
             return 7;
         }
 
@@ -1015,7 +1010,7 @@ namespace Invaders.CPU
         private int OP_5E()
         {
             var addr = registers.HL;
-            registers.E = memory[addr];
+            registers.E = memory.ReadByte(addr);
             return 7;
         }
 
@@ -1064,7 +1059,7 @@ namespace Invaders.CPU
         private int OP_66()
         {
             var addr = registers.HL;
-            registers.H = memory[addr];
+            registers.H = memory.ReadByte(addr);
             return 7;
         }
 
@@ -1113,7 +1108,7 @@ namespace Invaders.CPU
         private int OP_6E()
         {
             var addr = registers.HL;
-            registers.L = memory[addr];
+            registers.L = memory.ReadByte(addr);
             return 7;
         }
 
@@ -1125,43 +1120,43 @@ namespace Invaders.CPU
 
         private int OP_70()
         {
-            ulong addr = registers.HL;
-            memory[addr] = registers.B;
+            uint addr = registers.HL;
+            memory.WriteByte(addr, registers.B);
             return 7;
         }
 
         private int OP_71()
         {
-            ulong addr = registers.HL;
-            memory[addr] = registers.C;
+            uint addr = registers.HL;
+            memory.WriteByte(addr, registers.C);
             return 7;
         }
 
         private int OP_72()
         {
-            ulong addr = registers.HL;
-            memory[addr] = registers.D;
+            uint addr = registers.HL;
+            memory.WriteByte(addr, registers.D);
             return 7;
         }
 
         private int OP_73()
         {
-            ulong addr = registers.HL;
-            memory[addr] = registers.E;
+            uint addr = registers.HL;
+            memory.WriteByte(addr, registers.E);
             return 7;
         }
 
         private int OP_74()
         {
-            ulong addr = registers.HL;
-            memory[addr] = registers.H;
+            uint addr = registers.HL;
+            memory.WriteByte(addr, registers.H);
             return 7;
         }
 
         private int OP_75()
         {
-            ulong addr = registers.HL;
-            memory[addr] = registers.L;
+            uint addr = registers.HL;
+            memory.WriteByte(addr, registers.L);
             return 7;
         }
 
@@ -1173,8 +1168,8 @@ namespace Invaders.CPU
 
         private int OP_77()
         {
-            ulong addr = registers.HL;
-            memory[addr] = registers.A;
+            uint addr = registers.HL;
+            memory.WriteByte(addr, registers.A);
             return 7;
         }
 
@@ -1217,7 +1212,7 @@ namespace Invaders.CPU
         private int OP_7E()
         {
             var addr = registers.HL;
-            registers.A = memory[addr];
+            registers.A = memory.ReadByte(addr);
             return 7;
         }
 
@@ -1312,11 +1307,11 @@ namespace Invaders.CPU
 
         private int OP_86()
         {
-            var addr = (uint)registers.A + (uint)memory[registers.HL];
+            uint addr = (uint)registers.A + memory.ReadByte(registers.HL);
             if (registers.Flags.CY == 1)
-                registers.Flags.UpdateAuxCarryFlag(registers.A, memory[registers.HL], 1);
+                registers.Flags.UpdateAuxCarryFlag(registers.A, memory.ReadByte(registers.HL), 1);
             else
-                registers.Flags.UpdateAuxCarryFlag(registers.A, memory[registers.HL]);
+                registers.Flags.UpdateAuxCarryFlag(registers.A, memory.ReadByte(registers.HL));
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1413,11 +1408,11 @@ namespace Invaders.CPU
 
         private int OP_8E()
         {
-            var addr = (uint)registers.A + (uint)memory[registers.HL] + (uint)registers.Flags.CY;
+            var addr = (uint)registers.A + memory.ReadByte(registers.HL) + (uint)registers.Flags.CY;
             if (registers.Flags.CY == 1)
-                registers.Flags.UpdateAuxCarryFlag(registers.A, memory[registers.HL], 1);
+                registers.Flags.UpdateAuxCarryFlag(registers.A, memory.ReadByte(registers.HL), 1);
             else
-                registers.Flags.UpdateAuxCarryFlag(registers.A, memory[registers.HL]);
+                registers.Flags.UpdateAuxCarryFlag(registers.A, memory.ReadByte(registers.HL));
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -1515,7 +1510,7 @@ namespace Invaders.CPU
 
         private int OP_96()
         {
-            uint reg = (uint)memory[registers.HL];
+            uint reg = memory.ReadByte(registers.HL);
             var addr = (uint)(registers.A + (~reg & 0xff) + 1);
             registers.Flags.UpdateCarryByte(addr);
             if (registers.Flags.CY == 0) registers.Flags.CY = 1; else registers.Flags.CY = 0;
@@ -1623,7 +1618,7 @@ namespace Invaders.CPU
 
         private int OP_9E()
         {
-            uint reg = memory[registers.HL];
+            uint reg = memory.ReadByte(registers.HL);
             if (registers.Flags.CY == 1)
                 reg += 1;
             UInt16 addr = (UInt16)(registers.A + (byte)(~reg & 0xff) + 1);
@@ -1705,7 +1700,7 @@ namespace Invaders.CPU
 
         private int OP_A6()
         {
-            registers.A = (byte)(registers.A & memory[registers.HL]);
+            registers.A = (byte)(registers.A & memory.ReadByte(registers.HL));
             registers.Flags.UpdateZSP(registers.A);
             registers.Flags.CY = 0;
             registers.Flags.AC = 0;
@@ -1777,7 +1772,7 @@ namespace Invaders.CPU
 
         private int OP_AE()
         {
-            registers.A = (byte)(registers.A ^ memory[registers.HL]);
+            registers.A = (byte)(registers.A ^ memory.ReadByte(registers.HL));
             registers.Flags.UpdateZSP(registers.A);
             registers.Flags.CY = 0;
             registers.Flags.AC = 0;
@@ -1849,7 +1844,7 @@ namespace Invaders.CPU
 
         private int OP_B6()
         {
-            registers.A = (byte)(registers.A | memory[registers.HL]);
+            registers.A = (byte)(registers.A | memory.ReadByte(registers.HL));
             registers.Flags.UpdateZSP(registers.A);
             registers.Flags.CY = 0;
             registers.Flags.AC = 0;
@@ -1933,9 +1928,9 @@ namespace Invaders.CPU
 
         private int OP_BE()
         {
-            var addr = (byte)(registers.A - memory[registers.HL]);
+            var addr = (byte)(registers.A - memory.ReadByte(registers.HL));
             registers.Flags.UpdateZSP(addr);
-            if (registers.A < memory[registers.HL])
+            if (registers.A < memory.ReadByte(registers.HL))
                 registers.Flags.CY = 1;
             else
                 registers.Flags.CY = 0;
@@ -1955,7 +1950,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.Z == 0)
             {
-                registers.PC = (uint)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.PC = (uint)(memory.ReadByte(registers.SP + 1) << 8 | memory.ReadByte(registers.SP));
                 registers.SP += 2;
                 registers.PC--;
                 return 11;
@@ -1965,8 +1960,8 @@ namespace Invaders.CPU
 
         private int OP_C1()
         {
-            registers.C = memory[registers.SP];
-            registers.B = memory[registers.SP + 1];
+            registers.C = memory.ReadByte(registers.SP);
+            registers.B = memory.ReadByte(registers.SP + 1);
             registers.SP += 2;
             return 10;
         }
@@ -2013,16 +2008,16 @@ namespace Invaders.CPU
 
         private int OP_C5()
         {
-            memory[registers.SP - 2] = registers.C;
-            memory[registers.SP - 1] = registers.B;
+            memory.WriteByte(registers.SP - 2, registers.C);
+            memory.WriteByte(registers.SP - 1, registers.B);
             registers.SP -= 2;
             return 11;
         }
 
         private int OP_C6()
         {
-            var addr = (uint)registers.A + (uint)memory[registers.PC + 1];
-            registers.Flags.UpdateAuxCarryFlag(registers.A, memory[registers.PC + 1]);
+            var addr = (uint)registers.A + memory.ReadByte(registers.PC + 1);
+            registers.Flags.UpdateAuxCarryFlag(registers.A, memory.ReadByte(registers.PC + 1));
             registers.Flags.UpdateZSP((byte)addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -2041,7 +2036,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.Z == 1)
             {
-                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.PC = (ushort)(memory.ReadByte(registers.SP + 1) << 8 | memory.ReadByte(registers.SP));
                 registers.SP += 2;
                 registers.PC--;
                 return 11;
@@ -2051,7 +2046,7 @@ namespace Invaders.CPU
 
         private int OP_C9()
         {
-            registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+            registers.PC = (ushort)(memory.ReadByte(registers.SP + 1) << 8 | memory.ReadByte(registers.SP));
             registers.SP += 2;
             registers.PC--;
             return 10;
@@ -2101,12 +2096,12 @@ namespace Invaders.CPU
         private int OP_CE()
         {
             uint addr = registers.A;
-            addr += memory[registers.PC + 1];
+            addr += memory.ReadByte(registers.PC + 1);
             addr += registers.Flags.CY;
             if (registers.Flags.CY == 1)
-                registers.Flags.UpdateAuxCarryFlag(registers.A, memory[registers.PC + 1], 1);
+                registers.Flags.UpdateAuxCarryFlag(registers.A, memory.ReadByte(registers.PC + 1), 1);
             else
-                registers.Flags.UpdateAuxCarryFlag(registers.A, memory[registers.PC + 1]);
+                registers.Flags.UpdateAuxCarryFlag(registers.A, memory.ReadByte(registers.PC + 1));
             registers.Flags.UpdateCarryByte(addr);
             registers.Flags.UpdateZSP(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -2125,7 +2120,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.CY == 0)
             {
-                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.PC = (ushort)(memory.ReadByte(registers.SP + 1) << 8 | memory.ReadByte(registers.SP));
                 registers.SP += 2;
                 registers.PC--;
                 return 11;
@@ -2135,8 +2130,8 @@ namespace Invaders.CPU
 
         private int OP_D1()
         {
-            registers.E = memory[registers.SP];
-            registers.D = memory[registers.SP + 1];
+            registers.E = memory.ReadByte(registers.SP);
+            registers.D = memory.ReadByte(registers.SP + 1);
             registers.SP += 2;
             return 10;
         }
@@ -2158,7 +2153,7 @@ namespace Invaders.CPU
 
         private int OP_D3()
         {
-            var port = memory[registers.PC + 1];
+            var port = memory.ReadByte(registers.PC + 1);
             switch (port)
             {
                 case 2:
@@ -2200,15 +2195,15 @@ namespace Invaders.CPU
 
         private int OP_D5()
         {
-            memory[registers.SP - 2] = registers.E;
-            memory[registers.SP - 1] = registers.D;
+            memory.WriteByte(registers.SP - 2, registers.E);
+            memory.WriteByte(registers.SP - 1, registers.D);
             registers.SP -= 2;
             return 11;
         }
 
         private int OP_D6()
         {
-            uint data = memory[registers.PC + 1];
+            uint data = memory.ReadByte(registers.PC + 1);
             uint addr = registers.A - data;
             registers.Flags.UpdateCarryByte(addr);
             registers.Flags.UpdateZSP(addr);
@@ -2228,7 +2223,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.CY == 1)
             {
-                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.PC = (ushort)(memory.ReadByte(registers.SP + 1) << 8 | memory.ReadByte(registers.SP));
                 registers.SP += 2;
                 registers.PC--;
                 return 11;
@@ -2253,7 +2248,7 @@ namespace Invaders.CPU
 
         private int OP_DB()
         {
-            var port = memory[registers.PC + 1];
+            var port = memory.ReadByte(registers.PC + 1);
             switch (port)
             {
                 case 0:
@@ -2295,7 +2290,7 @@ namespace Invaders.CPU
 
         private int OP_DE()
         {
-            uint data = memory[registers.PC + 1];
+            uint data = memory.ReadByte(registers.PC + 1);
             uint addr = registers.A - data - registers.Flags.CY;
             registers.Flags.UpdateCarryByte(addr);
             registers.Flags.UpdateZSP(addr);
@@ -2315,7 +2310,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.P == 0)
             {
-                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.PC = (ushort)(memory.ReadByte(registers.SP + 1) << 8 | memory.ReadByte(registers.SP));
                 registers.SP += 2;
                 registers.PC--;
                 return 11;
@@ -2325,8 +2320,8 @@ namespace Invaders.CPU
 
         private int OP_E1()
         {
-            registers.L = memory[registers.SP];
-            registers.H = memory[registers.SP + 1];
+            registers.L = memory.ReadByte(registers.SP);
+            registers.H = memory.ReadByte(registers.SP + 1);
             registers.SP += 2;
             return 10;
         }
@@ -2350,10 +2345,10 @@ namespace Invaders.CPU
         {
             var l = registers.L;
             var h = registers.H;
-            registers.L = memory[registers.SP];
-            registers.H = memory[registers.SP + 1];
-            memory[registers.SP] = l;
-            memory[registers.SP + 1] = h;
+            registers.L = memory.ReadByte(registers.SP);
+            registers.H = memory.ReadByte(registers.SP + 1);
+            memory.WriteByte(registers.SP, l);
+            memory.WriteByte(registers.SP + 1, h);
             return 18;
         }
 
@@ -2376,15 +2371,15 @@ namespace Invaders.CPU
 
         private int OP_E5()
         {
-            memory[registers.SP - 2] = registers.L;
-            memory[registers.SP - 1] = registers.H;
+            memory.WriteByte(registers.SP - 2, registers.L);
+            memory.WriteByte(registers.SP - 1, registers.H);
             registers.SP -= 2;
             return 11;
         }
 
         private int OP_E6()
         {
-            uint addr = (uint)(registers.A & memory[registers.PC + 1]);
+            uint addr = (uint)(registers.A & memory.ReadByte(registers.PC + 1));
             registers.Flags.UpdateZSP(addr);
             registers.Flags.UpdateCarryByte(addr);
             registers.A = (byte)(addr & 0xFF);
@@ -2403,7 +2398,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.P == 1)
             {
-                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.PC = (ushort)(memory.ReadByte(registers.SP + 1) << 8 | memory.ReadByte(registers.SP));
                 registers.SP += 2;
                 registers.PC--;
                 return 11;
@@ -2459,7 +2454,7 @@ namespace Invaders.CPU
 
         private int OP_EE()
         {
-            registers.A ^= memory[registers.PC + 1];
+            registers.A ^= memory.ReadByte(registers.PC + 1);
             registers.Flags.UpdateCarryByte(registers.A);
             registers.Flags.UpdateZSP(registers.A);
             registers.PC++;
@@ -2477,7 +2472,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.P == 1)
             {
-                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.PC = (ushort)(memory.ReadByte(registers.SP + 1) << 8 | memory.ReadByte(registers.SP));
                 registers.SP += 2;
                 registers.PC--;
                 return 11;
@@ -2487,8 +2482,8 @@ namespace Invaders.CPU
 
         private int OP_F1()
         {
-            registers.A = memory[registers.SP + 1];
-            var flags = memory[registers.SP];
+            registers.A = memory.ReadByte(registers.SP + 1);
+            var flags = memory.ReadByte(registers.SP);
             if (0x01 == (flags & 0x01)) registers.Flags.Z = 0x01; else registers.Flags.Z = 0x00;
             if (0x02 == (flags & 0x02)) registers.Flags.S = 0x01; else registers.Flags.S = 0x00;
             if (0x04 == (flags & 0x04)) registers.Flags.P = 0x01; else registers.Flags.P = 0x00;
@@ -2538,16 +2533,16 @@ namespace Invaders.CPU
 
         private int OP_F5()
         {
-            memory[registers.SP - 1] = registers.A;
+            memory.WriteByte(registers.SP - 1, registers.A);
             byte addr = ((byte)(registers.Flags.Z | registers.Flags.S << 1 | registers.Flags.P << 2 | registers.Flags.CY << 3 | registers.Flags.AC << 4));
-            memory[registers.SP - 2] = addr;
+            memory.WriteByte(registers.SP - 2, addr);
             registers.SP -= 2;
             return 11;
         }
 
         private int OP_F6()
         {
-            uint data = memory[registers.PC + 1];
+            uint data = memory.ReadByte(registers.PC + 1);
             uint value = registers.A | data;
             registers.Flags.UpdateCarryByte(value);
             registers.Flags.UpdateZSP(value);
@@ -2567,7 +2562,7 @@ namespace Invaders.CPU
         {
             if (registers.Flags.S == 1)
             {
-                registers.PC = (ushort)(memory[registers.SP + 1] << 8 | memory[registers.SP]);
+                registers.PC = (ushort)(memory.ReadByte(registers.SP + 1) << 8 | memory.ReadByte(registers.SP));
                 registers.SP += 2;
                 registers.PC--;
                 return 11;
@@ -2621,11 +2616,11 @@ namespace Invaders.CPU
 
         private int OP_FE()
         {
-            UInt16 addr = (UInt16)(registers.A + (byte)(~(memory[registers.PC + 1]) & 0xFF) + 1);
+            UInt16 addr = (UInt16)(registers.A + (byte)(~(memory.ReadByte(registers.PC + 1)) & 0xFF) + 1);
             registers.Flags.UpdateCarryByte(addr);
             if (registers.Flags.CY == 0) registers.Flags.CY = 1; else registers.Flags.CY = 0;
             registers.Flags.UpdateZSP(addr);
-            registers.Flags.UpdateAuxCarryFlag(registers.A, (byte)(~(memory[registers.PC + 1]) & 0xFF), 1);
+            registers.Flags.UpdateAuxCarryFlag(registers.A, (byte)(~(memory.ReadByte(registers.PC + 1)) & 0xFF), 1);
             registers.PC++;
             return 7;
         }
