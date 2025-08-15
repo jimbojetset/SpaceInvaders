@@ -12,7 +12,6 @@
         private uint sp = 0;
         private uint pc = 0;
         private bool int_enable = false;
-        private Flags? flags = new();
 
         public Registers()
         {
@@ -26,7 +25,6 @@
             sp = 0;
             pc = 0;
             int_enable = false;
-            Flags? flags = new();
         }
 
         public byte A
@@ -81,12 +79,6 @@
         {
             get { return pc; }
             set { pc = value; }
-        }
-
-        public Flags Flags
-        {
-            get { return flags!; }
-            set { flags = value; }
         }
 
         public bool INT_ENABLE
