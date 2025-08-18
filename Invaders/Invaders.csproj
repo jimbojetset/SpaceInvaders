@@ -47,31 +47,31 @@
     <None Update="ROMS\invaders.h">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\coin.wav">
+    <None Update="SOUNDS\coin.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\explosion.wav">
+    <None Update="SOUNDS\explosion.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\fastinvader1.wav">
+    <None Update="SOUNDS\fastinvader1.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\fastinvader2.wav">
+    <None Update="SOUNDS\fastinvader2.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\fastinvader3.wav">
+    <None Update="SOUNDS\fastinvader3.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\fastinvader4.wav">
+    <None Update="SOUNDS\fastinvader4.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\invaderkilled.wav">
+    <None Update="SOUNDS\invaderkilled.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\shoot.wav">
+    <None Update="SOUNDS\shoot.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\ufo_lowpitch.wav">
+    <None Update="SOUNDS\ufo_lowpitch.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

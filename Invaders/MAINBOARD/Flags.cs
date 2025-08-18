@@ -1,4 +1,4 @@
-﻿namespace Invaders.CPU
+﻿namespace Invaders.MAINBOARD
 {
     internal class Flags
     {
@@ -91,15 +91,15 @@
 
             var flags = 0b00000010;
             if (s == 1)
-                flags = flags | 0b10000010;
+                flags |= 0b10000010;
             if (z == 1)
-                flags = flags | 0b01000010;
+                flags |= 0b01000010;
             if (ac == 1)
-                flags = flags | 0b00010010;
+                flags |= 0b00010010;
             if (p == 1)
-                flags = flags | 0b00000110;
+                flags |= 0b00000110;
             if (cy == 1)
-                flags = flags | 0b00000011;
+                flags |= 0b00000011;
             return (byte)flags;
         }
     }

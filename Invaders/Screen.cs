@@ -1,4 +1,4 @@
-using Invaders.CPU;
+using Invaders.MAINBOARD;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
@@ -19,15 +19,15 @@ namespace Invaders
         private static readonly string appPath = AppDomain.CurrentDomain.BaseDirectory;
         private readonly byte[] video = new byte[0x1C00];
 
-        private readonly CachedSound ufo_lowpitch = new(appPath + @"\Sound\ufo_lowpitch.wav");
-        private readonly CachedSound shoot = new(appPath + @"\Sound\shoot.wav");
-        private readonly CachedSound invaderkilled = new(appPath + @"\Sound\invaderkilled.wav");
-        private readonly CachedSound fastinvader1 = new(appPath + @"\Sound\fastinvader1.wav");
-        private readonly CachedSound fastinvader2 = new(appPath + @"\Sound\fastinvader2.wav");
-        private readonly CachedSound fastinvader3 = new(appPath + @"\Sound\fastinvader3.wav");
-        private readonly CachedSound fastinvader4 = new(appPath + @"\Sound\fastinvader4.wav");
-        private readonly CachedSound explosion = new(appPath + @"\Sound\explosion.wav");
-        private readonly CachedSound coin = new(appPath + @"\Sound\coin.wav");
+        private readonly CachedSound ufo_lowpitch = new(appPath + @"\Sounds\ufo_lowpitch.wav");
+        private readonly CachedSound shoot = new(appPath + @"\Sounds\shoot.wav");
+        private readonly CachedSound invaderkilled = new(appPath + @"\Sounds\invaderkilled.wav");
+        private readonly CachedSound fastinvader1 = new(appPath + @"\Sounds\fastinvader1.wav");
+        private readonly CachedSound fastinvader2 = new(appPath + @"\Sounds\fastinvader2.wav");
+        private readonly CachedSound fastinvader3 = new(appPath + @"\Sounds\fastinvader3.wav");
+        private readonly CachedSound fastinvader4 = new(appPath + @"\Sounds\fastinvader4.wav");
+        private readonly CachedSound explosion = new(appPath + @"\Sounds\explosion.wav");
+        private readonly CachedSound coin = new(appPath + @"\Sounds\coin.wav");
 
         public Screen()
         {

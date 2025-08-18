@@ -1,4 +1,4 @@
-﻿namespace Invaders.CPU
+﻿namespace Invaders.MAINBOARD
 {
     internal class Registers
     {

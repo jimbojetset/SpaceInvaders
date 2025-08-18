@@ -58,7 +58,7 @@
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "Screen";
-            Text = "Space Invaders by Jim Booth";
+            Text = "Space Invaders";
             FormClosing += Form1_FormClosing;
             KeyDown += Form1_KeyDown;
             KeyUp += Form1_KeyUp;

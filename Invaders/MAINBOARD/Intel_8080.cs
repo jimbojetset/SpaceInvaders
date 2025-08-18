@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Invaders.CPU
+namespace Invaders.MAINBOARD
 {
     internal class Intel_8080
     {
@@ -36,8 +36,8 @@ namespace Invaders.CPU
             get { return video; }
         }
 
-        private readonly Registers registers;
-        private Flags? flags = new();
+        private readonly Registers registers = new ();
+        private readonly Flags flags = new();
         private readonly uint videoStartAddress;
         private int hardwareShiftRegisterData = 0;
         private int hardwareShiftRegisterOffset = 0;
@@ -52,10 +52,7 @@ namespace Invaders.CPU
             this.memory = memory;
             video = new byte[0x1C00];
             videoStartAddress = 0x2400;
-            registers = new Registers
-            {
-                PC = 0x0000
-            };
+            registers.PC = 0x0000;
         }
 
         public void Start()
