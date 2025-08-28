@@ -4,7 +4,7 @@ using NAudio.Wave.SampleProviders;
 
 namespace Invaders
 {
-    public partial class Screen : Form
+    public partial class Cabinet : Form
     {
         private Intel_8080? cpu;
         private Thread? port_thread;
@@ -14,7 +14,7 @@ namespace Invaders
         private Bitmap? videoBitmap;
        
         private readonly byte[] inputPorts = [0x0E, 0x08, 0x00, 0x00];
-        private readonly int SCREEN_WIDTH = 448;
+        private readonly int SCREEN_WIDTH = 446;
         private readonly int SCREEN_HEIGHT = 512;
         private static readonly string appPath = AppDomain.CurrentDomain.BaseDirectory;
         private readonly byte[] video = new byte[0x1C00];
@@ -28,8 +28,13 @@ namespace Invaders
         private readonly CachedSound fastinvader4 = new(appPath + @"\Sounds\fastinvader4.wav");
         private readonly CachedSound explosion = new(appPath + @"\Sounds\explosion.wav");
         private readonly CachedSound coin = new(appPath + @"\Sounds\coin.wav");
+        private readonly CachedSound extendedplay = new(appPath + @"\Sounds\extendedPlay.wav");
 
-        public Screen()
+        private static readonly Pen greenPen = new Pen(Color.FromArgb(0xC0, 0x0F, 0xDF, 0x0F));
+        private static readonly Pen whitePen = new Pen(Color.FromArgb(0xE0, 0xEF, 0xEF, 0xFF));
+        private static readonly Pen redPen = new Pen(Color.FromArgb(0xE0, 0xFF, 0x00, 0x40));
+
+        public Cabinet()
         {
             InitializeComponent();
             Execute();
@@ -107,10 +112,10 @@ namespace Invaders
 
         private static Pen GetPenColor(int screenPos_X, int screenPos_Y)
         {
-            if (screenPos_Y < 478 && screenPos_Y > 390) return new Pen(Color.FromArgb(0xE0, 0x0F, 0xDF, 0x0F));
-            if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 0 && screenPos_X < 254)) return new Pen(Color.FromArgb(0xE0, 0x0F, 0xDF, 0x0F));
-            if (screenPos_Y < 128 && screenPos_Y > 64) return new Pen(Color.FromArgb(0xE0, 0xFF, 0x40, 0x00));
-            return new Pen(Color.FromArgb(0xE0, 0xEF, 0xEF, 0xFF));
+            if (screenPos_Y < 478 && screenPos_Y > 390) return greenPen;
+            if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 0 && screenPos_X < 254)) return greenPen;
+            if (screenPos_Y < 128 && screenPos_Y > 64) return redPen;
+            return whitePen;
         }
 
         private void SoundThread()
@@ -139,6 +144,8 @@ namespace Invaders
                         AudioPlaybackEngine.Instance.PlaySound(explosion);
                     if (((cpu.PortOut[3] & 0x08) == 0x08) && ((cpu.PortOut[3] & 0x08) != (prevPort3 & 0x08)))
                         AudioPlaybackEngine.Instance.PlaySound(invaderkilled);
+                    if (((cpu.PortOut[3] & 0x08) == 0x08) && ((cpu.PortOut[3] & 0x10) != (prevPort3 & 0x10)))
+                        AudioPlaybackEngine.Instance.PlaySound(extendedplay);
                     prevPort3 = cpu!.PortOut[3];
                 }
 
