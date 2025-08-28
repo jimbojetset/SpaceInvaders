@@ -30,9 +30,9 @@ namespace Invaders
         private readonly CachedSound coin = new(appPath + @"\Sounds\coin.wav");
         private readonly CachedSound extendedplay = new(appPath + @"\Sounds\extendedPlay.wav");
 
-        private static readonly Pen greenPen = new Pen(Color.FromArgb(0xC0, 0x0F, 0xDF, 0x0F));
-        private static readonly Pen whitePen = new Pen(Color.FromArgb(0xE0, 0xEF, 0xEF, 0xFF));
-        private static readonly Pen redPen = new Pen(Color.FromArgb(0xE0, 0xFF, 0x00, 0x40));
+        private static readonly Pen greenPen = new (Color.FromArgb(0xC0, 0x0F, 0xDF, 0x0F));
+        private static readonly Pen whitePen = new (Color.FromArgb(0xE0, 0xEF, 0xEF, 0xFF));
+        private static readonly Pen redPen = new (Color.FromArgb(0xE0, 0xFF, 0x00, 0x40));
 
         public Cabinet()
         {
