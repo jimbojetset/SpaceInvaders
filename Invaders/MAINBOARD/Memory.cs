@@ -6,7 +6,7 @@
 
         public byte[] GetMemory
         {
-            get{ return memory; }
+            get { return memory; }
         }
 
         public void LoadFromFile(string filePath, int addr, int length)
@@ -19,9 +19,9 @@
             return memory[addr];
         }
 
-        public void WriteByte(uint addr, byte value) 
+        public void WriteByte(uint addr, byte value)
         {
-            memory[addr] = value; 
+            memory[addr] = value;
         }
     }
 }

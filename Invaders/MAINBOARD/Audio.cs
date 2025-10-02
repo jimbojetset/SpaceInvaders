@@ -1,7 +1,7 @@
 ﻿using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
-class AudioPlaybackEngine : IDisposable
+internal class AudioPlaybackEngine : IDisposable
 {
     private readonly WaveOutEvent outputDevice = new();
     private readonly MixingSampleProvider mixer;
@@ -53,10 +53,12 @@ class AudioPlaybackEngine : IDisposable
     //SampleRate & Channel count values must match .wav samples
     public static readonly AudioPlaybackEngine Instance = new(11025, 1);
 }
-class CachedSound
+
+internal class CachedSound
 {
     public float[] AudioData { get; private set; }
     public WaveFormat WaveFormat { get; private set; }
+
     public CachedSound(string audioFileName)
     {
         using var audioFileReader = new AudioFileReader(audioFileName);
@@ -73,7 +75,7 @@ class CachedSound
     }
 }
 
-class CachedSoundSampleProvider(CachedSound cachedSound) : ISampleProvider
+internal class CachedSoundSampleProvider(CachedSound cachedSound) : ISampleProvider
 {
     private readonly CachedSound cachedSound = cachedSound;
     private long position;
@@ -87,10 +89,11 @@ class CachedSoundSampleProvider(CachedSound cachedSound) : ISampleProvider
         return (int)samplesToCopy;
     }
 
-    public WaveFormat WaveFormat { get { return cachedSound.WaveFormat; } }
+    public WaveFormat WaveFormat
+    { get { return cachedSound.WaveFormat; } }
 }
 
-class AutoDisposeFileReader(AudioFileReader reader) : ISampleProvider
+internal class AutoDisposeFileReader(AudioFileReader reader) : ISampleProvider
 {
     private readonly AudioFileReader reader = reader;
     private bool isDisposed;
@@ -110,4 +113,3 @@ class AutoDisposeFileReader(AudioFileReader reader) : ISampleProvider
 
     public WaveFormat WaveFormat { get; private set; } = reader.WaveFormat;
 }
-
