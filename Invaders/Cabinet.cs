@@ -112,7 +112,7 @@ namespace Invaders
                     }
                     catch { }
                 }
-                GC.Collect();
+                //GC.Collect();
                 Thread.Sleep(8);
             }
         }
