@@ -11,7 +11,6 @@ namespace Invaders
         private Thread? cpu_thread;
         private Thread? display_thread;
         private Thread? sound_thread;
-        private Bitmap? videoBitmap;
 
         private readonly byte[] inputPorts = [0x0E, 0x08, 0x00, 0x00];
         private readonly int SCREEN_WIDTH = 446;
@@ -90,7 +89,7 @@ namespace Invaders
             while (cpu != null && cpu.Running)
             {
                 Array.Copy(cpu.Video, 0, video, 0, video.Length);
-                videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+                Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
                 using (Graphics graphics = Graphics.FromImage(videoBitmap))
                 {
                     graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
@@ -104,8 +103,16 @@ namespace Invaders
                                 if ((value & (1 << b)) != 0)
                                     graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
                         }
+                    try
+                    {
+                        pictureBox1.Invoke((MethodInvoker)delegate
+                        {
+                            pictureBox1.BackgroundImage = videoBitmap;
+                        });
+                    }
+                    catch { }
                 }
-                try { pictureBox1.Invoke((MethodInvoker)delegate { pictureBox1.BackgroundImage = videoBitmap; }); } catch { }
+                GC.Collect();
                 Thread.Sleep(8);
             }
         }
