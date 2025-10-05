@@ -86,36 +86,70 @@ namespace Invaders
 
         private void DisplayThread()
         {
+            Bitmap previousBitmap = null;
+        
             while (cpu != null && cpu.Running)
             {
                 Array.Copy(cpu.Video, 0, video, 0, video.Length);
-                Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
-                using (Graphics graphics = Graphics.FromImage(videoBitmap))
+        
+                using (Bitmap videoBitmap = new Bitmap(SCREEN_WIDTH, SCREEN_HEIGHT))
                 {
-                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                    int ptr = 0;
-                    for (int x = 0; x < SCREEN_WIDTH; x += 2)
-                        for (int y = SCREEN_HEIGHT; y > 0; y -= 16)
-                        {
-                            Pen pen = GetPenColor(x, y);
-                            byte value = video[ptr++];
-                            for (int b = 0; b < 8; b++)
-                                if ((value & (1 << b)) != 0)
-                                    graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
-                        }
-                    try
+                    using (Graphics graphics = Graphics.FromImage(videoBitmap))
                     {
+                        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        int ptr = 0;
+        
+                        for (int x = 0; x < SCREEN_WIDTH; x += 2)
+                        {
+                            for (int y = SCREEN_HEIGHT; y > 0; y -= 16)
+                            {
+                                Pen pen = GetPenColor(x, y);
+                                byte value = video[ptr++];
+                                for (int b = 0; b < 8; b++)
+                                {
+                                    if ((value & (1 << b)) != 0)
+                                        graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
+                                }
+                            }
+                        }
+        
+                        // Dispose of the previous bitmap if it exists
+                        if (previousBitmap != null)
+                        {
+                            pictureBox1.Invoke((MethodInvoker)delegate
+                            {
+                                if (pictureBox1.BackgroundImage != null)
+                                {
+                                    pictureBox1.BackgroundImage.Dispose();
+                                }
+                            });
+                        }
+        
+                        // Set the new bitmap as the background image
                         pictureBox1.Invoke((MethodInvoker)delegate
                         {
                             pictureBox1.BackgroundImage = videoBitmap;
+                            previousBitmap = videoBitmap; // Reference the new bitmap
                         });
                     }
-                    catch { }
                 }
-                //GC.Collect();
+        
                 Thread.Sleep(8);
             }
+        
+            // Dispose of the final bitmap if it exists
+            if (previousBitmap != null)
+            {
+                pictureBox1.Invoke((MethodInvoker)delegate
+                {
+                    if (pictureBox1.BackgroundImage != null)
+                    {
+                        pictureBox1.BackgroundImage.Dispose();
+                    }
+                });
+            }
         }
+
 
         private static Pen GetPenColor(int screenPos_X, int screenPos_Y)
         {
