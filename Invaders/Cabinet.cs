@@ -86,67 +86,38 @@ namespace Invaders
 
         private void DisplayThread()
         {
-            Bitmap previousBitmap = null;
-        
             while (cpu != null && cpu.Running)
             {
                 Array.Copy(cpu.Video, 0, video, 0, video.Length);
-        
-                using (Bitmap videoBitmap = new Bitmap(SCREEN_WIDTH, SCREEN_HEIGHT))
+                Bitmap videoBitmap = new (SCREEN_WIDTH, SCREEN_HEIGHT);
+                using (Graphics graphics = Graphics.FromImage(videoBitmap))
                 {
-                    using (Graphics graphics = Graphics.FromImage(videoBitmap))
+                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    int ptr = 0;
+                    for (int x = 0; x < SCREEN_WIDTH; x += 2)
                     {
-                        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                        int ptr = 0;
-        
-                        for (int x = 0; x < SCREEN_WIDTH; x += 2)
+                        for (int y = SCREEN_HEIGHT; y > 0; y -= 16)
                         {
-                            for (int y = SCREEN_HEIGHT; y > 0; y -= 16)
+                            Pen pen = GetPenColor(x, y);
+                            byte value = video[ptr++];
+                            for (int b = 0; b < 8; b++)
                             {
-                                Pen pen = GetPenColor(x, y);
-                                byte value = video[ptr++];
-                                for (int b = 0; b < 8; b++)
-                                {
-                                    if ((value & (1 << b)) != 0)
-                                        graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
-                                }
+                                if ((value & (1 << b)) != 0)
+                                    graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
                             }
                         }
-        
-                        // Dispose of the previous bitmap if it exists
-                        if (previousBitmap != null)
-                        {
-                            pictureBox1.Invoke((MethodInvoker)delegate
-                            {
-                                if (pictureBox1.BackgroundImage != null)
-                                {
-                                    pictureBox1.BackgroundImage.Dispose();
-                                }
-                            });
-                        }
-        
-                        // Set the new bitmap as the background image
+                    }
+                    try
+                    {
                         pictureBox1.Invoke((MethodInvoker)delegate
                         {
+                            pictureBox1.BackgroundImage?.Dispose();
                             pictureBox1.BackgroundImage = videoBitmap;
-                            previousBitmap = videoBitmap; // Reference the new bitmap
                         });
                     }
+                    catch { }
                 }
-        
                 Thread.Sleep(8);
-            }
-        
-            // Dispose of the final bitmap if it exists
-            if (previousBitmap != null)
-            {
-                pictureBox1.Invoke((MethodInvoker)delegate
-                {
-                    if (pictureBox1.BackgroundImage != null)
-                    {
-                        pictureBox1.BackgroundImage.Dispose();
-                    }
-                });
             }
         }
 
