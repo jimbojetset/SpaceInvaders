@@ -90,7 +90,6 @@ namespace Invaders
         {
             while (cpu != null && cpu.Running)
             {
-                Array.Copy(cpu.Video, 0, video, 0, video.Length);
                 Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
                 using (Graphics graphics = Graphics.FromImage(videoBitmap))
                 {
@@ -101,7 +100,7 @@ namespace Invaders
                         for (int y = SCREEN_HEIGHT; y > 0; y -= 16)
                         {
                             Pen pen = GetPenColor(x, y);
-                            byte value = video[ptr++];
+                            byte value = cpu.Video[ptr++];
                             for (int b = 0; b < 8; b++)
                             {
                                 if ((value & (1 << b)) != 0)

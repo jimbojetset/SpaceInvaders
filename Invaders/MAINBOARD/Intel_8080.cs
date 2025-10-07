@@ -5,7 +5,6 @@ namespace Invaders.MAINBOARD
     internal class Intel_8080
     {
         private bool running = false;
-
         public bool Running
         {
             get { return running; }
@@ -13,7 +12,6 @@ namespace Invaders.MAINBOARD
         }
 
         private byte[] portIn = new byte[4]; // 0,1,2,3
-
         public byte[] PortIn
         {
             set { portIn = value; }
@@ -21,21 +19,18 @@ namespace Invaders.MAINBOARD
         }
 
         private readonly byte[] portOut = new byte[7]; // 2,3,5,6
-
         public byte[] PortOut
         {
             get { return portOut; }
         }
 
         private readonly Memory memory;
-
         public Memory Memory
         {
             get { return memory; }
         }
 
         private readonly byte[] video;
-
         public byte[] Video
         {
             get { return video; }
