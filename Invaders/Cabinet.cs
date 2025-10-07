@@ -49,7 +49,7 @@ namespace Invaders
 
             cpu_thread = new Thread(() => cpu!.Start())
             {
-                IsBackground = true
+                Priority = ThreadPriority.Highest
             };
             cpu_thread.Start();
 
@@ -79,7 +79,9 @@ namespace Invaders
             while (cpu != null && cpu.Running)
             {
                 while (cpu.PortIn == inputPorts)
+                {
                     Thread.Sleep(4);
+                }
                 cpu.PortIn = inputPorts;
             }
         }
@@ -107,16 +109,17 @@ namespace Invaders
                             }
                         }
                     }
-                    try
-                    {
-                        pictureBox1.Invoke((MethodInvoker)delegate
-                        {
-                            pictureBox1.BackgroundImage?.Dispose();
-                            pictureBox1.BackgroundImage = videoBitmap;
-                        });
-                    }
-                    catch { }
                 }
+                try
+                {
+                    pictureBox1.Invoke((MethodInvoker)delegate
+                    {
+                        pictureBox1.BackgroundImage?.Dispose();
+                        pictureBox1.BackgroundImage = videoBitmap;
+                    });
+                }
+                catch { }
+
                 Thread.Sleep(8);
             }
         }
