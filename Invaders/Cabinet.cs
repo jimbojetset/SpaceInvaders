@@ -102,10 +102,8 @@ namespace Invaders
                             Pen pen = GetPenColor(x, y);
                             byte value = cpu.Video[ptr++];
                             for (int b = 0; b < 8; b++)
-                            {
                                 if ((value & (1 << b)) != 0)
                                     graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
-                            }
                         }
                     }
                 }
@@ -122,7 +120,6 @@ namespace Invaders
                 Thread.Sleep(8);
             }
         }
-
 
         private static Pen GetPenColor(int screenPos_X, int screenPos_Y)
         {
