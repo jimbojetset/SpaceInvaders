@@ -54,11 +54,11 @@
             ClientSize = new Size(525, 653);
             Controls.Add(pictureBox2);
             DoubleBuffered = true;
-            FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "Cabinet";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Space Invaders";
             FormClosing += Form1_FormClosing;
             KeyDown += Form1_KeyDown;
