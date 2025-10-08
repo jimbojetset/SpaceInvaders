@@ -109,10 +109,10 @@ namespace Invaders
                 }
                 try
                 {
-                    pictureBox1.Invoke((MethodInvoker)delegate
+                    pictureBox2.Invoke((MethodInvoker)delegate
                     {
-                        pictureBox1.BackgroundImage?.Dispose();
-                        pictureBox1.BackgroundImage = videoBitmap;
+                        pictureBox2.Image?.Dispose();
+                        pictureBox2.Image = videoBitmap;
                     });
                 }
                 catch { }
