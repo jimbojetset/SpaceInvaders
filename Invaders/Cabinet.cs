@@ -30,21 +30,65 @@ namespace Invaders
 
         private static readonly Pen greenPen = new(Color.FromArgb(0xC0, 0x0F, 0xDF, 0x0F));
         private static readonly Pen whitePen = new(Color.FromArgb(0xC0, 0xEF, 0xEF, 0xFF));
+        private static readonly Pen whitePen2 = new(Color.FromArgb(0xF0, 0xEF, 0xEF, 0xFF));
         private static readonly Pen redPen = new(Color.FromArgb(0xC0, 0xFF, 0x00, 0x40));
 
         public Cabinet()
         {
             InitializeComponent();
-            Execute();
+            ExecuteSpaceInvaders();
+            //ExecuteSuperInvaders();
         }
 
-        private void Execute()
+        private void ExecuteSpaceInvaders()
         {
+
             cpu = new Intel_8080(new Memory(0x10000));
             cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.h", 0x0000, 0x800); // invaders.h 0000 - 07FF
             cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.g", 0x0800, 0x800); // invaders.g 0800 - 0FFF
             cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.f", 0x1000, 0x800); // invaders.f 1000 - 17FF
             cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.e", 0x1800, 0x800); // invaders.e 1800 - 1FFF
+
+            cpu_thread = new Thread(() => cpu!.Start())
+            {
+                Priority = ThreadPriority.Highest
+            };
+            cpu_thread.Start();
+
+            while (!cpu.Running) { }
+
+            port_thread = new Thread(PortThread)
+            {
+                IsBackground = true
+            };
+            port_thread.Start();
+
+            display_thread = new Thread(DisplayThread)
+            {
+                IsBackground = true
+            };
+            display_thread.Start();
+
+            sound_thread = new Thread(SoundThread)
+            {
+                IsBackground = true
+            };
+            sound_thread.Start();
+        }
+
+        private void ExecuteSuperInvaders()
+        {
+
+            cpu = new Intel_8080(new Memory(0x10000));
+
+            cpu.Memory.LoadFromFile(appPath + @"ROMS\1.bin", 0x0000, 0x400); // invaders.h 0000 - 07FF
+            cpu.Memory.LoadFromFile(appPath + @"ROMS\2.bin", 0x0400, 0x400); // invaders.g 0800 - 0FFF
+            cpu.Memory.LoadFromFile(appPath + @"ROMS\3.bin", 0x0800, 0x400); // invaders.f 1000 - 17FF
+            cpu.Memory.LoadFromFile(appPath + @"ROMS\4.bin", 0x0C00, 0x400); // invaders.e 1800 - 1FFF
+            cpu.Memory.LoadFromFile(appPath + @"ROMS\5.bin", 0x1000, 0x400); // invaders.h 0000 - 07FF
+            cpu.Memory.LoadFromFile(appPath + @"ROMS\6.bin", 0x1400, 0x400); // invaders.g 0800 - 0FFF
+            cpu.Memory.LoadFromFile(appPath + @"ROMS\7.bin", 0x1800, 0x400); // invaders.f 1000 - 17FF
+            cpu.Memory.LoadFromFile(appPath + @"ROMS\8.bin", 0x1C00, 0x400); // invaders.e 1800 - 1FFF
 
             cpu_thread = new Thread(() => cpu!.Start())
             {
@@ -94,18 +138,23 @@ namespace Invaders
                 {
                     graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                     int ptr = 0;
-                    for (int x = 0; x < SCREEN_WIDTH; x += 2)
+                    try
                     {
-                        for (int y = SCREEN_HEIGHT; y > 0; y -= 16)
+                        for (int x = 0; x < SCREEN_WIDTH; x += 2)
                         {
-                            Pen pen = GetPenColor(x, y);
-                            byte value = cpu.Video[ptr++];
-                            for (int b = 0; b < 8; b++)
-                                if ((value & (1 << b)) != 0)
-                                    graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
+                            for (int y = SCREEN_HEIGHT; y > 0; y -= 16)
+                            {
+                                Pen pen = GetPenColor(x, y);
+                                byte value = cpu.Video[ptr++];
+                                for (int b = 0; b < 8; b++)
+                                    if ((value & (1 << b)) != 0)
+                                        graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
+                            }
                         }
                     }
+                    catch { }
                 }
+
                 try
                 {
                     pictureBox2.Invoke((MethodInvoker)delegate
@@ -123,6 +172,7 @@ namespace Invaders
         private static Pen GetPenColor(int screenPos_X, int screenPos_Y)
         {
             if (screenPos_Y < 478 && screenPos_Y > 390) return greenPen;
+            if (screenPos_Y < 512 && screenPos_Y > 480) return whitePen2;
             if ((screenPos_Y < 512 && screenPos_Y > 480) && (screenPos_X > 0 && screenPos_X < 254)) return greenPen;
             if (screenPos_Y < 128 && screenPos_Y > 64) return redPen;
             return whitePen;
@@ -322,5 +372,6 @@ namespace Invaders
         {
             cpu!.Running = false;
         }
+
     }
 }

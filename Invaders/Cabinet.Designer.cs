@@ -28,15 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Cabinet));
             pictureBox2 = new PictureBox();
+            contextMenuStrip1 = new ContextMenuStrip(components);
+            playSpaceInvadersToolStripMenuItem = new ToolStripMenuItem();
+            playSuperInvadersToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
+            contextMenuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // pictureBox2
             // 
             pictureBox2.BackgroundImage = (Image)resources.GetObject("pictureBox2.BackgroundImage");
             pictureBox2.BackgroundImageLayout = ImageLayout.Stretch;
+            pictureBox2.ContextMenuStrip = contextMenuStrip1;
             pictureBox2.Dock = DockStyle.Fill;
             pictureBox2.Location = new Point(0, 0);
             pictureBox2.Name = "pictureBox2";
@@ -64,10 +70,14 @@
             KeyDown += Form1_KeyDown;
             KeyUp += Form1_KeyUp;
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
+            contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
         }
 
         #endregion
         private PictureBox pictureBox2;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem playSpaceInvadersToolStripMenuItem;
+        private ToolStripMenuItem playSuperInvadersToolStripMenuItem;
     }
 }
