@@ -37,7 +37,6 @@ namespace Invaders
         {
             InitializeComponent();
             ExecuteSpaceInvaders();
-            //ExecuteSuperInvaders();
         }
 
         private void ExecuteSpaceInvaders()
@@ -48,47 +47,6 @@ namespace Invaders
             cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.g", 0x0800, 0x800); // invaders.g 0800 - 0FFF
             cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.f", 0x1000, 0x800); // invaders.f 1000 - 17FF
             cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.e", 0x1800, 0x800); // invaders.e 1800 - 1FFF
-
-            cpu_thread = new Thread(() => cpu!.Start())
-            {
-                Priority = ThreadPriority.Highest
-            };
-            cpu_thread.Start();
-
-            while (!cpu.Running) { }
-
-            port_thread = new Thread(PortThread)
-            {
-                IsBackground = true
-            };
-            port_thread.Start();
-
-            display_thread = new Thread(DisplayThread)
-            {
-                IsBackground = true
-            };
-            display_thread.Start();
-
-            sound_thread = new Thread(SoundThread)
-            {
-                IsBackground = true
-            };
-            sound_thread.Start();
-        }
-
-        private void ExecuteSuperInvaders()
-        {
-
-            cpu = new Intel_8080(new Memory(0x10000));
-
-            cpu.Memory.LoadFromFile(appPath + @"ROMS\1.bin", 0x0000, 0x400); // invaders.h 0000 - 07FF
-            cpu.Memory.LoadFromFile(appPath + @"ROMS\2.bin", 0x0400, 0x400); // invaders.g 0800 - 0FFF
-            cpu.Memory.LoadFromFile(appPath + @"ROMS\3.bin", 0x0800, 0x400); // invaders.f 1000 - 17FF
-            cpu.Memory.LoadFromFile(appPath + @"ROMS\4.bin", 0x0C00, 0x400); // invaders.e 1800 - 1FFF
-            cpu.Memory.LoadFromFile(appPath + @"ROMS\5.bin", 0x1000, 0x400); // invaders.h 0000 - 07FF
-            cpu.Memory.LoadFromFile(appPath + @"ROMS\6.bin", 0x1400, 0x400); // invaders.g 0800 - 0FFF
-            cpu.Memory.LoadFromFile(appPath + @"ROMS\7.bin", 0x1800, 0x400); // invaders.f 1000 - 17FF
-            cpu.Memory.LoadFromFile(appPath + @"ROMS\8.bin", 0x1C00, 0x400); // invaders.e 1800 - 1FFF
 
             cpu_thread = new Thread(() => cpu!.Start())
             {
