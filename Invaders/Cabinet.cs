@@ -37,8 +37,6 @@ namespace Invaders
         private static readonly Pen whitePen2 = new(Color.FromArgb(0xF0, 0xEF, 0xEF, 0xFF));
         private static readonly Pen redPen = new(Color.FromArgb(0xC0, 0xFF, 0x00, 0x40));
 
-        private byte[] videoFrame = new byte[0x1C00];
-
         public Cabinet()
         {
             InitializeComponent();
