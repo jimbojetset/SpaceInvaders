@@ -17,7 +17,6 @@ namespace Invaders
         private static readonly CancellationToken soundLoop = CancellationTokenSource.Token;
         private static readonly CancellationToken portLoop = CancellationTokenSource.Token;
 
-
         private readonly byte[] inputPorts = [0x0E, 0x08, 0x00, 0x00];
         private readonly int SCREEN_WIDTH = 446;
         private readonly int SCREEN_HEIGHT = 512;
@@ -49,7 +48,6 @@ namespace Invaders
 
         private void ExecuteSpaceInvaders()
         {
-
             cpu = new Intel_8080(new Memory(0x10000));
             cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.h", 0x0000, 0x800); // invaders.h 0000 - 07FF
             cpu.Memory.LoadFromFile(appPath + @"ROMS\invaders.g", 0x0800, 0x800); // invaders.g 0800 - 0FFF
@@ -118,7 +116,6 @@ namespace Invaders
                                         graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
                             }
                         }
-
                     }
                     pictureBox2.Invoke((MethodInvoker)delegate
                     {
@@ -335,6 +332,5 @@ namespace Invaders
             CancellationTokenSource.Cancel();
             cpu!.Running = false;
         }
-
     }
 }

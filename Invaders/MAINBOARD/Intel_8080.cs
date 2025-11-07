@@ -5,6 +5,7 @@ namespace Invaders.MAINBOARD
     internal class Intel_8080
     {
         private bool running = false;
+
         public bool Running
         {
             get { return running; }
@@ -12,6 +13,7 @@ namespace Invaders.MAINBOARD
         }
 
         private byte[] portIn = new byte[4]; // 0,1,2,3
+
         public byte[] PortIn
         {
             set { portIn = value; }
@@ -19,30 +21,35 @@ namespace Invaders.MAINBOARD
         }
 
         private readonly byte[] portOut = new byte[7]; // 2,3,5,6
+
         public byte[] PortOut
         {
             get { return portOut; }
         }
 
         private readonly Memory memory;
+
         public Memory Memory
         {
             get { return memory; }
         }
 
         private readonly byte[] video;
+
         public byte[] Video
         {
             get { return video; }
         }
 
         private readonly AutoResetEvent displayTiming = new(false);
+
         public AutoResetEvent DisplayTiming
         {
             get { return displayTiming; }
         }
 
         private readonly AutoResetEvent soundTiming = new(false);
+
         public AutoResetEvent SoundTiming
         {
             get { return soundTiming; }
@@ -57,7 +64,8 @@ namespace Invaders.MAINBOARD
         private static readonly int FREQUENCY = 60; //60 Hz
         private static readonly int HALF_FRAME_CYCLES_MAX = (CLOCK_SPEED / FREQUENCY) / 2;// 2,000,000/60 = 33,333/2 = 16,666
         private readonly int FRAME_TIME_MS = 1000 / FREQUENCY; // 1/60 = 16.7ms
-        public int FrameTiming { get { return FRAME_TIME_MS; } }
+        public int FrameTiming
+        { get { return FRAME_TIME_MS; } }
         private readonly Stopwatch frameTiming = new();
 
         public Intel_8080(Memory memory)
