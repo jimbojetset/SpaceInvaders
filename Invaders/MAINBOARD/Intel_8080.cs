@@ -73,7 +73,7 @@ namespace Invaders.MAINBOARD
                 ExecuteCycles(HALF_FRAME_CYCLES_MAX); // 2nd half of frame
                 Interrupt(2);// full screen interrupt
                 Array.Copy(memory.GetMemory, videoStartAddress, video, 0, video.Length); // draw the video
-                displayTiming.Set();
+                displayTiming.Set();// signal the display to draw (non blocking)
                 int mS = (FRAME_TIME_MS - (int)frameTiming.ElapsedMilliseconds) / 2;
                 if (mS > 0)
                     Thread.Sleep(mS);
