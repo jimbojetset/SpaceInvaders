@@ -12,8 +12,11 @@ namespace Invaders
         private Thread? display_thread;
         private Thread? sound_thread;
 
-        private static readonly CancellationTokenSource cancellationTokenSource = new();
-        private static readonly CancellationToken threadLoop = cancellationTokenSource.Token;
+        private static readonly CancellationTokenSource CancellationTokenSource = new();
+        private static readonly CancellationToken displayLoop = CancellationTokenSource.Token;
+        private static readonly CancellationToken soundLoop = CancellationTokenSource.Token;
+        private static readonly CancellationToken portLoop = CancellationTokenSource.Token;
+
 
         private readonly byte[] inputPorts = [0x0E, 0x08, 0x00, 0x00];
         private readonly int SCREEN_WIDTH = 446;
@@ -82,7 +85,7 @@ namespace Invaders
 
         private void PortThread()
         {
-            while (!threadLoop.IsCancellationRequested)
+            while (!portLoop.IsCancellationRequested)
             {
                 while (cpu!.PortIn == inputPorts)
                 {
@@ -94,7 +97,7 @@ namespace Invaders
 
         public void DisplayThread()
         {
-            while (!threadLoop.IsCancellationRequested)
+            while (!displayLoop.IsCancellationRequested)
             {
                 cpu!.DisplayTiming.WaitOne();
                 try
@@ -149,8 +152,9 @@ namespace Invaders
             outputDevice.Init(mixer);
             outputDevice.Play();
 
-            while (!threadLoop.IsCancellationRequested)
+            while (!soundLoop.IsCancellationRequested)
             {
+                cpu!.SoundTiming.WaitOne();
                 if (prevPort3 != cpu!.PortOut[3])
                 {
                     if (((cpu.PortOut[3] & 0x01) == 0x01) && ((cpu.PortOut[3] & 0x01) != (prevPort3 & 0x01)))
@@ -328,7 +332,7 @@ namespace Invaders
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            cancellationTokenSource.Cancel();
+            CancellationTokenSource.Cancel();
             cpu!.Running = false;
         }
 

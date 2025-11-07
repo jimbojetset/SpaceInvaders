@@ -36,10 +36,16 @@ namespace Invaders.MAINBOARD
             get { return video; }
         }
 
-        private AutoResetEvent displayTiming = new AutoResetEvent(false);
+        private readonly AutoResetEvent displayTiming = new(false);
         public AutoResetEvent DisplayTiming
         {
             get { return displayTiming; }
+        }
+
+        private readonly AutoResetEvent soundTiming = new(false);
+        public AutoResetEvent SoundTiming
+        {
+            get { return soundTiming; }
         }
 
         private readonly Registers registers = new();
@@ -2177,6 +2183,7 @@ namespace Invaders.MAINBOARD
                     break;
             }
             registers.PC++;
+            soundTiming.Set();
             return 10;
         }
 
