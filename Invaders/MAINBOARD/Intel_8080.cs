@@ -36,6 +36,12 @@ namespace Invaders.MAINBOARD
             get { return video; }
         }
 
+        private AutoResetEvent displayTiming = new AutoResetEvent(false);
+        public AutoResetEvent DisplayTiming
+        {
+            get { return displayTiming; }
+        }
+
         private readonly Registers registers = new();
         private readonly Flags flags = new();
         private readonly uint videoStartAddress;
@@ -45,6 +51,7 @@ namespace Invaders.MAINBOARD
         private static readonly int FREQUENCY = 60; //60 Hz
         private static readonly int HALF_FRAME_CYCLES_MAX = (CLOCK_SPEED / FREQUENCY) / 2;// 2,000,000/60 = 33,333/2 = 16,666
         private readonly int FRAME_TIME_MS = 1000 / FREQUENCY; // 1/60 = 16.7ms
+        public int FrameTiming { get { return FRAME_TIME_MS; } }
         private readonly Stopwatch frameTiming = new();
 
         public Intel_8080(Memory memory)
@@ -66,11 +73,10 @@ namespace Invaders.MAINBOARD
                 ExecuteCycles(HALF_FRAME_CYCLES_MAX); // 2nd half of frame
                 Interrupt(2);// full screen interrupt
                 Array.Copy(memory.GetMemory, videoStartAddress, video, 0, video.Length); // draw the video
-                try
-                {
-                    Thread.Sleep((FRAME_TIME_MS - (int)frameTiming.ElapsedMilliseconds) / 2);
-                }
-                catch { }
+                displayTiming.Set();
+                int mS = (FRAME_TIME_MS - (int)frameTiming.ElapsedMilliseconds) / 2;
+                if (mS > 0)
+                    Thread.Sleep(mS);
             }
         }
 

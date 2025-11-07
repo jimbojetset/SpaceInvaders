@@ -12,6 +12,9 @@ namespace Invaders
         private Thread? display_thread;
         private Thread? sound_thread;
 
+        private static readonly CancellationTokenSource cancellationTokenSource = new();
+        private static readonly CancellationToken threadLoop = cancellationTokenSource.Token;
+
         private readonly byte[] inputPorts = [0x0E, 0x08, 0x00, 0x00];
         private readonly int SCREEN_WIDTH = 446;
         private readonly int SCREEN_HEIGHT = 512;
@@ -32,6 +35,8 @@ namespace Invaders
         private static readonly Pen whitePen = new(Color.FromArgb(0xC0, 0xEF, 0xEF, 0xFF));
         private static readonly Pen whitePen2 = new(Color.FromArgb(0xF0, 0xEF, 0xEF, 0xFF));
         private static readonly Pen redPen = new(Color.FromArgb(0xC0, 0xFF, 0x00, 0x40));
+
+        private byte[] videoFrame = new byte[0x1C00];
 
         public Cabinet()
         {
@@ -77,9 +82,9 @@ namespace Invaders
 
         private void PortThread()
         {
-            while (cpu != null && cpu.Running)
+            while (!threadLoop.IsCancellationRequested)
             {
-                while (cpu.PortIn == inputPorts)
+                while (cpu!.PortIn == inputPorts)
                 {
                     Thread.Sleep(4);
                 }
@@ -87,17 +92,18 @@ namespace Invaders
             }
         }
 
-        private void DisplayThread()
+        public void DisplayThread()
         {
-            while (cpu != null && cpu.Running)
+            while (!threadLoop.IsCancellationRequested)
             {
-                Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
-                using (Graphics graphics = Graphics.FromImage(videoBitmap))
+                cpu!.DisplayTiming.WaitOne();
+                try
                 {
-                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                    int ptr = 0;
-                    try
+                    Bitmap videoBitmap = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+                    using (Graphics graphics = Graphics.FromImage(videoBitmap))
                     {
+                        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        int ptr = 0;
                         for (int x = 0; x < SCREEN_WIDTH; x += 2)
                         {
                             for (int y = SCREEN_HEIGHT; y > 0; y -= 16)
@@ -109,12 +115,8 @@ namespace Invaders
                                         graphics.DrawRectangle(pen, x, y - (b * 2), 1, 1);
                             }
                         }
-                    }
-                    catch { }
-                }
 
-                try
-                {
+                    }
                     pictureBox2.Invoke((MethodInvoker)delegate
                     {
                         pictureBox2.Image?.Dispose();
@@ -122,8 +124,6 @@ namespace Invaders
                     });
                 }
                 catch { }
-
-                Thread.Sleep(8);
             }
         }
 
@@ -149,9 +149,9 @@ namespace Invaders
             outputDevice.Init(mixer);
             outputDevice.Play();
 
-            while (cpu != null && cpu.Running)
+            while (!threadLoop.IsCancellationRequested)
             {
-                if (prevPort3 != cpu.PortOut[3])
+                if (prevPort3 != cpu!.PortOut[3])
                 {
                     if (((cpu.PortOut[3] & 0x01) == 0x01) && ((cpu.PortOut[3] & 0x01) != (prevPort3 & 0x01)))
                         AudioPlaybackEngine.Instance.PlaySound(ufo_lowpitch);
@@ -328,6 +328,7 @@ namespace Invaders
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            cancellationTokenSource.Cancel();
             cpu!.Running = false;
         }
 
