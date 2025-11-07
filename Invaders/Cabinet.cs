@@ -30,7 +30,6 @@ namespace Invaders
         private readonly CachedSound fastinvader3 = new(appPath + @"\Sounds\fastinvader3.wav");
         private readonly CachedSound fastinvader4 = new(appPath + @"\Sounds\fastinvader4.wav");
         private readonly CachedSound explosion = new(appPath + @"\Sounds\explosion.wav");
-        private readonly CachedSound coin = new(appPath + @"\Sounds\coin.wav");
         private readonly CachedSound extendedplay = new(appPath + @"\Sounds\extendedPlay.wav");
 
         private static readonly Pen greenPen = new(Color.FromArgb(0xC0, 0x0F, 0xDF, 0x0F));
@@ -264,7 +263,6 @@ namespace Invaders
             {
                 case 1: // Coin
                     inputPorts[1] &= 0xFE;
-                    AudioPlaybackEngine.Instance.PlaySound(coin);
                     break;
 
                 case 2: // 1P Start
