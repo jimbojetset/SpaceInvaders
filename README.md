@@ -2,7 +2,8 @@ A cycle, timing & sound accurate 8080 CPU based Space Invader Emulator written i
 
 The 8080 CPU is complete and passes the tst8080.COM and the cpudiag.bin test ROMs
 
-![Capture](https://github.com/user-attachments/assets/1146f21e-4c40-4612-9f35-5a3050caed1b)
+<img width="527" height="685" alt="image" src="https://github.com/user-attachments/assets/cbe09ce6-a40e-4d8c-bf1e-b144f39b0549" />
+
 
 C:  Insert Coin
 
