@@ -10,7 +10,7 @@
 // Notice:      Space Invaders is (c) 1978 Taito Corporation.
 //              This emulator is for educational purposes only.
 // ============================================================================
-
+ 
 using System.Diagnostics;
 
 namespace SpaceInvaders.MAINBOARD
