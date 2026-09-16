@@ -43,14 +43,11 @@ The release build has **WebAssembly AOT compilation** enabled (`<RunAOTCompilati
 
 ## Startup
 
-Startup has two screens in both Debug and Release builds:
+The initial loading screen (`wwwroot/index.html`) displays “Loading emulator...” while Blazor WebAssembly loads. It shows the green invader icon at 256 × 186 pixels on desktop, scaled down on mobile.
 
-1. **Initial loading screen** (`wwwroot/index.html`) — displays “Loading emulator...” while Blazor WebAssembly loads.
-2. **Start screen** (`Pages/Index.razor`) — lists the keyboard controls and waits for you to select **START** before loading and running the emulator.
+Once WASM has loaded, the game page automatically loads the ROMs and sounds and starts the emulator. There is no second splash screen or START button. Insert a coin with **C** and press **1** or **2** to play. Audio is enabled by the first keyboard or touch/mouse interaction.
 
-Both screens display the same transparent green PNG icon, `wwwroot/invader-icon.png`, at 256 × 186 pixels on desktop, scaled down on mobile.
-
-Once the emulator is running, insert a coin with **C** and press **1** or **2** to play. No password or PIN is required. Missing ROM files prevent startup; missing sound files show a warning with a **CONTINUE WITHOUT SOUND** button.
+Missing ROM files prevent startup and display an error on the game page. Missing sound files display a warning, and the emulator continues automatically with the available sounds.
 
 ## Controls
 
@@ -110,7 +107,7 @@ SpaceInvaders/
 ├── _Imports.razor              # Global Razor imports
 ├── SpaceInvadersEmulator.cs    # Emulator wrapper with Canvas rendering
 ├── Pages/
-│   └── Index.razor             # Start screen, keyboard controls and game page
+│   └── Index.razor             # Automatic startup, keyboard controls and game page
 ├── MAINBOARD/
 │   ├── Intel8080.cs            # CPU emulation core
 │   ├── Memory.cs               # 64KB addressable memory
@@ -118,7 +115,7 @@ SpaceInvaders/
 │   └── Flags.cs                # Status flags (Z, S, P, CY, AC)
 └── wwwroot/
     ├── index.html              # HTML host page and initial loading screen
-    ├── invader-icon.png        # Shared splash screen icon
+    ├── invader-icon.png        # WASM loading screen icon
     ├── css/app.css             # Styles
     ├── js/game.js              # Canvas and audio interop
     ├── roms/                   # ROM files

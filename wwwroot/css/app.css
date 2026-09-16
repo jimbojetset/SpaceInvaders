@@ -37,7 +37,6 @@ html, body {
 }
 
 .loading .invader-icon {
-    color: #0f0;
     margin-bottom: 1.5rem;
 }
 
@@ -46,124 +45,16 @@ html, body {
     margin-bottom: 1rem;
 }
 
-.splash-controls {
-    margin: 1rem auto;
-    text-align: left;
-    font-size: 0.85rem;
-    line-height: 1.6;
-    border-spacing: 0;
-}
-
-.splash-controls th {
-    padding: 0.25rem 1rem 0.25rem 0;
-    color: #ffd700;
-    white-space: nowrap;
-}
-
-.splash-controls td {
-    padding: 0.25rem 0;
-    color: #fff;
-}
-
-/* Missing file messages on loading screen */
-.missing-files {
-    text-align: left;
-    max-width: 500px;
-    margin: 1.5rem auto 0;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    line-height: 1.6;
-}
-
-.missing-files h2 {
-    font-size: 1rem;
-    margin: 0 0 0.5rem;
-    letter-spacing: 2px;
-}
-
-.missing-files ul {
-    list-style: none;
-    padding: 0;
-    margin: 0.5rem 0;
-}
-
-.missing-files ul li::before {
-    content: "\2718  ";
-    margin-right: 0.25rem;
-}
-
-.missing-files p {
-    margin: 0.4rem 0;
-}
-
-.missing-files .missing-hint {
-    margin-top: 0.75rem;
-    opacity: 0.7;
-    font-size: 0.8rem;
-}
-
-.missing-files code {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.1rem 0.4rem;
-    border-radius: 3px;
-    font-size: 0.8rem;
-}
-
-.missing-error {
-    border: 1px solid rgba(255, 60, 60, 0.5);
-    background: rgba(255, 60, 60, 0.1);
+.startup-error {
     color: #ff6b6b;
 }
 
-.missing-error h2 {
-    color: #ff4444;
-}
-
-.missing-error ul li::before {
-    color: #ff4444;
-}
-
-.missing-warning {
-    border: 1px solid rgba(255, 215, 0, 0.4);
-    background: rgba(255, 215, 0, 0.08);
+.sound-warning {
     color: #ffd700;
 }
 
-.missing-warning h2 {
-    color: #ffc107;
-}
-
-.missing-warning ul li::before {
-    color: #ffc107;
-}
-
-.acknowledge-btn {
-    display: block;
-    margin: 1rem auto 0;
-    padding: 0.6rem 1.5rem;
-    font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
-    font-weight: bold;
-    letter-spacing: 1px;
-    color: #000;
-    background: #ffd700;
-    border: 2px solid #ffc107;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.15s, box-shadow 0.15s;
-}
-
-.acknowledge-btn:hover {
-    background: #ffea00;
-    box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
-}
-
-.acknowledge-btn:active {
-    background: #ffc107;
-}
-
 .game-container {
+    --game-width: 604.8px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -188,7 +79,7 @@ html, body {
     background-position: center;
 }
 
-/* Vertical CRT scanlines overlay - 1px dark stripe every 3px (matches 3x pixel scale) */
+/* Vertical CRT scanlines: 1px dark stripe every 3px. */
 .canvas-wrapper::after {
     content: '';
     position: absolute;
@@ -211,10 +102,8 @@ html, body {
     align-items: center;
     justify-content: center;
     font-size: 3rem;
-    font-family: 'Courier New', monospace;
     font-weight: bold;
     letter-spacing: 8px;
-    color: #fff;
     text-shadow: 0 0 20px #fff, 0 0 40px rgba(255, 255, 255, 0.4);
     background: rgba(0, 0, 0, 0.55);
     pointer-events: none;
@@ -222,24 +111,31 @@ html, body {
 }
 
 #gameCanvas {
+    display: block;
     border: 2px solid #333;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    /* Scale the 224x256 canvas by 3x to 672x768 */
-    width: 672px;
-    height: 768px;
+    width: var(--game-width);
+    height: 691.2px;
     mix-blend-mode: screen;
 }
 
-/* Credit hint text below the game canvas */
-.credit-hint {
-    margin-top: 6px;
-    margin-bottom: 0;
+.credit-hint,
+.controls-hint {
     font-size: 0.85rem;
     color: #888;
     text-align: center;
     letter-spacing: 1px;
     line-height: 1.6;
+}
+
+.credit-hint {
+    margin-top: 6px;
+    margin-bottom: 0;
+}
+
+.controls-hint {
+    margin-top: -12px;
 }
 
 .credit-key {
@@ -247,18 +143,8 @@ html, body {
     text-shadow: 0 0 5px #ffd700;
 }
 
-.controls-hint {
-    margin-top: -12px;
-    font-size: 0.85rem;
-    color: #888;
-    text-align: center;
-    letter-spacing: 1px;
-    line-height: 1.6;
-}
-
 .arrow-text {
-    font-size: 1.6rem !important;
-    margin-top: -2px;
+    font-size: 1.6rem;
 }
 
 #blazor-error-ui {
@@ -282,32 +168,25 @@ html, body {
    ON-SCREEN TOUCH CONTROLS
    ============================================ */
 
-#touch-controls-top {
+#touch-controls-top,
+#touch-controls {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    margin-bottom: 6px;
-    width: 672px;
-    max-width: 672px;
+    width: var(--game-width);
     box-sizing: border-box;
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
 }
 
+#touch-controls-top {
+    margin-bottom: 6px;
+}
+
 #touch-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
     margin-top: 10px;
-    width: 672px;                /* Match the desktop canvas width */
-    max-width: 672px;
-    box-sizing: border-box;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
 }
 
 .touch-row {
@@ -398,38 +277,22 @@ html, body {
    RESPONSIVE / MOBILE STYLES
    ============================================ */
 
-/* Scale everything based on viewport for screens narrower than canvas */
 @media (max-width: 700px) {
-    html, body {
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
-    
     #app {
-        height: auto;
-        min-height: 100vh;
         min-height: 100dvh; /* Dynamic viewport height for mobile */
         padding: 2vw;
         box-sizing: border-box;
-        justify-content: center;
     }
     
     .game-container {
+        --game-width: min(86.4vw, 604.8px);
         width: 100%;
         max-width: 96vw;
     }
     
     #gameCanvas {
-        width: 96vw;
-        height: calc(96vw * 1.143);
-        max-width: 672px;
-        max-height: 768px;
-    }
-
-    #touch-controls,
-    #touch-controls-top {
-        width: 96vw;
-        max-width: 672px;
+        height: calc(86.4vw * 1.143);
+        max-height: 691.2px;
     }
 
     .touch-btn.touch-dir {
@@ -465,10 +328,6 @@ html, body {
         font-size: 3vw;
     }
     
-    .missing-files {
-        max-width: 90vw;
-    }
-
     .copyright-label {
         font-size: 0.51rem; /* 40% smaller than default 0.85rem */
     }

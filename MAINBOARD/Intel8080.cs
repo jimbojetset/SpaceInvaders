@@ -11,25 +11,16 @@
 //              This emulator is for educational purposes only.
 // ============================================================================
  
-using System.Diagnostics;
-
 namespace SpaceInvaders.MAINBOARD
 {
     public class Intel8080
     {
         private bool _running;
-        private bool _paused;
 
         public bool Running
         {
             get => _running;
             set => _running = value;
-        }
-
-        public bool Paused
-        {
-            get => _paused;
-            set => _paused = value;
         }
 
         private byte[] _portIn = new byte[4]; // 0,1,2,3
@@ -48,10 +39,6 @@ namespace SpaceInvaders.MAINBOARD
 
         public Memory Memory => _memory;
 
-        private readonly byte[] _video;
-
-        public byte[] Video => _video;
-
         public ReadOnlySpan<byte> VideoSpan => _memory.Data.AsSpan((int)_videoStartAddress, 0x1C00);
 
         private readonly Registers _registers = new();
@@ -62,14 +49,10 @@ namespace SpaceInvaders.MAINBOARD
         private static readonly int ClockSpeed = 2000000; // 2 Mhz
         private static readonly int Frequency = 60; //60 Hz
         private static readonly int HalfFrameCyclesMax = (ClockSpeed / Frequency) / 2;// 2,000,000/60 = 33,333/2 = 16,666
-        private readonly int FrameTimeMs = 1000 / Frequency; // 1/60 = 16.7ms
-        public int FrameTiming => FrameTimeMs;
-        private readonly Stopwatch _frameTiming = new();
 
         public Intel8080(Memory memory)
         {
             _memory = memory;
-            _video = new byte[0x1C00];
             _videoStartAddress = 0x2400;
             _registers.PC = 0x0000;
         }
@@ -78,8 +61,6 @@ namespace SpaceInvaders.MAINBOARD
         // separated by mid-screen and full-screen interrupts.
         public bool RunFrame()
         {
-            if (_paused) 
-                return false;            
             ExecuteCycles(HalfFrameCyclesMax);  // 1st half of frame
             Interrupt(1);                  // mid screen Interrupt
             ExecuteCycles(HalfFrameCyclesMax);  // 2nd half of frame
@@ -97,12 +78,6 @@ namespace SpaceInvaders.MAINBOARD
                 cycles += CallOpcode(opcode);
                 _registers.PC++;
             }
-        }
-
-        // Stops the CPU by clearing the running flag.
-        public void Stop()
-        {
-            _running = false;
         }
 
         // Reads the two-byte operand following the current opcode (little-endian) and returns it as a 16-bit word.

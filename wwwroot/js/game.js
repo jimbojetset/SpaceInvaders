@@ -42,14 +42,21 @@ window.gameInterop = {
         // Create shared AudioContext for Web Audio API
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+        // Automatic startup has no user gesture to unlock browser audio.
+        const unlockAudio = () => {
+            this.audioCtx.resume().then(() => {
+                if (this.audioCtx.state !== 'running') return;
+                document.removeEventListener('keydown', unlockAudio, true);
+                document.removeEventListener('pointerdown', unlockAudio, true);
+                document.removeEventListener('touchend', unlockAudio, true);
+            });
+        };
+        document.addEventListener('keydown', unlockAudio, true);
+        document.addEventListener('pointerdown', unlockAudio, true);
+        document.addEventListener('touchend', unlockAudio, true);
+
         console.log('Canvas initialized successfully');
         return true;
-    },
-
-    // Returns a promise that resolves after two browser paint frames, guaranteeing
-    // the canvas is fully in the DOM before C# initialization begins.
-    waitForPaint: function() {
-        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     },
 
     // Receive a frame from C# and store it. The rAF render loop will draw it
@@ -109,7 +116,6 @@ window.gameInterop = {
     playSound: function(id) {
         const buffer = this.audioBuffers[id];
         if (!buffer || !this.audioCtx) return;
-        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
         const source = this.audioCtx.createBufferSource();
         source.buffer = buffer;
         source.connect(this.audioCtx.destination);
@@ -121,7 +127,6 @@ window.gameInterop = {
         const buffer = this.audioBuffers[id];
         if (!buffer || !this.audioCtx) return;
         if (this.loopingSources[id]) return; // already looping
-        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
         const source = this.audioCtx.createBufferSource();
         source.buffer = buffer;
         source.loop = true;
@@ -134,7 +139,7 @@ window.gameInterop = {
     stopLoopingSound: function(id) {
         const source = this.loopingSources[id];
         if (source) {
-            try { source.stop(); } catch (_) {}
+            try { source.stop(); } catch {}
             delete this.loopingSources[id];
         }
     },

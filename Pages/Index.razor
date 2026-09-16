@@ -14,73 +14,22 @@
 @inject IJSRuntime JS
 @inject HttpClient Http
 @implements IAsyncDisposable
-@using Microsoft.JSInterop
 
 <div class="game-container" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" @onkeydown:preventDefault="@(!_isLoading)" tabindex="0" @ref="_containerRef">
-    @if (_isLoading)
+    @if (_startupError != null)
     {
-        <div class="loading">
-            <!-- Space Invader Crab Icon -->
-            <img class="invader-icon" src="invader-icon.png" alt="Space Invader" width="256" height="186" />
-            <h1>SPACE INVADERS</h1>
-
-            <table class="splash-controls" aria-label="Keyboard controls">
-                <tbody>
-                    <tr><th scope="row">C</th><td>Insert coin</td></tr>
-                    <tr><th scope="row">1 / 2</th><td>Start 1 / 2 player game</td></tr>
-                    <tr><th scope="row">&larr; / &rarr;</th><td>Move left / right</td></tr>
-                    <tr><th scope="row">SPACE</th><td>Fire</td></tr>
-                    <tr><th scope="row">P</th><td>Pause / resume</td></tr>
-                </tbody>
-            </table>
-
-            @if (!_hasInitialized)
-            {
-                <button class="acknowledge-btn" @onclick="InitializeEmulatorAsync">START</button>
-            }
-            else
-            {
-                <p>@_loadingMessage</p>
-            }
-
-            @if (_missingRoms.Count > 0)
-            {
-                <div class="missing-files missing-error">
-                    <h2>ROM FILES MISSING</h2>
-                    <p>The following ROM files are required to run the emulator:</p>
-                    <ul>
-                        @foreach (var rom in _missingRoms)
-                        {
-                            <li>@rom</li>
-                        }
-                    </ul>
-                </div>
-            }
-            else if (_missingSounds.Count > 0)
-            {
-                <div class="missing-files missing-warning">
-                    <h2>SOUND FILES MISSING</h2>
-                    <p>The following sound files were not found. The game will run without sound:</p>
-                    <ul>
-                        @foreach (var sound in _missingSounds)
-                        {
-                            <li>@sound</li>
-                        }
-                    </ul>
-                    <button class="acknowledge-btn" @onclick="AcknowledgeSoundWarning">CONTINUE WITHOUT SOUND</button>
-                </div>
-            }
-        </div>
+        <p class="startup-error" role="alert">@_startupError</p>
     }
-    
-    @if (!_isLoading)
+    @if (_soundWarning != null)
     {
-        <div class="copyright-label">Space Invaders is &copy; Taito Corporation.</div>
-        <div class="copyright-label">This emulator is for educational purposes only.</div>
+        <p class="sound-warning" role="status">@_soundWarning</p>
     }
+
+    <div class="copyright-label">This emulator is for educational purposes only.</div>
+    <div class="copyright-label">Space Invaders is &copy; Taito Corporation.</div>
 
     <div class="canvas-wrapper">
-        <canvas id="gameCanvas" style="display: @(_isLoading ? "none" : "block")"></canvas>
+        <canvas id="gameCanvas"></canvas>
         @if (_isPaused)
         {
             <div class="pause-overlay">PAUSED</div>
@@ -99,57 +48,32 @@
     private PeriodicTimer? _gameLoop;
     private CancellationTokenSource? _cts;
     private bool _isLoading = true;
-    private string _loadingMessage = "Loading...";
+    private string? _startupError;
+    private string? _soundWarning;
     private ElementReference _containerRef;
-    private bool _hasInitialized;
     private DotNetObjectReference<Index>? _dotNetRef;
-    private List<string> _missingRoms = new();
-    private List<string> _missingSounds = new();
-    private TaskCompletionSource? _soundWarningAcknowledged;
     private bool _isPaused;
     private int _highScore;
 
-    private async Task InitializeEmulatorAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (_hasInitialized) return;
-        _hasInitialized = true;
-        
+        if (!firstRender) return;
+
         try
         {
             _emulator = new SpaceInvadersEmulator(JS, Http);
-            
-            _loadingMessage = "Loading game...";
-            StateHasChanged();
-            
-            var success = await _emulator.InitializeAsync();
-            
-            _missingRoms = _emulator.MissingRoms;
-            _missingSounds = _emulator.MissingSounds;
-            
-            if (!success)
+            if (!await _emulator.InitializeAsync())
             {
-                // ROMs are missing — stay on loading screen with error
-                _loadingMessage = "Unable to start the emulator.";
+                _startupError = $"Unable to start: missing ROM files ({string.Join(", ", _emulator.MissingRoms)}).";
                 StateHasChanged();
                 return;
             }
-            
-            if (_missingSounds.Count > 0)
-            {
-                // Wait for player to acknowledge the sound warning
-                _loadingMessage = "";
-                _soundWarningAcknowledged = new TaskCompletionSource();
-                StateHasChanged();
-                await _soundWarningAcknowledged.Task;
-            }
-            
-            _isLoading = false;
-            StateHasChanged();
-            
-            // Focus the container for keyboard input
-            await Task.Delay(100);
+
+            if (_emulator.MissingSounds.Count > 0)
+                _soundWarning = $"Some sounds are unavailable: {string.Join(", ", _emulator.MissingSounds)}.";
+
             await _containerRef.FocusAsync();
-            
+
             // Initialize touch controls
             _dotNetRef = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("gameInterop.initializeTouchControls", _dotNetRef);
@@ -165,10 +89,12 @@
             _cts = new CancellationTokenSource();
             _gameLoop = new PeriodicTimer(TimeSpan.FromMilliseconds(1000.0 / 60.0));
             _ = Task.Run(GameLoopAsync);
+            _isLoading = false;
+            StateHasChanged();
         }
         catch (Exception ex)
         {
-            _loadingMessage = $"Error: {ex.Message}";
+            _startupError = $"Unable to start: {ex.Message}";
             StateHasChanged();
         }
     }
@@ -219,11 +145,6 @@
         if (_isLoading) return;
 
         _emulator?.KeyUp(e.Key);
-    }
-    
-    private void AcknowledgeSoundWarning()
-    {
-        _soundWarningAcknowledged?.TrySetResult();
     }
     
     [JSInvokable]
