@@ -41,47 +41,9 @@ The release build has **WebAssembly AOT compilation** enabled (`<RunAOTCompilati
 > sudo dotnet workload install wasm-tools
 > ```
 
-## Access Control (PIN Gate)
+## Startup
 
-The published site requires a PIN to be entered before the game loads. This is intended to deter casual unauthorised access; it is not a cryptographic security boundary.
-
-**How it works**
-
-- The PIN is hashed with SHA-256 at the time you enter it and the result is compared to a hash constant stored in `Pages/Index.razor`. The plain-text PIN is never stored anywhere in the repository.
-- Failed attempts are rate-limited to one try every 10 seconds.
-- Input is sanitised before hashing (control characters stripped, length capped).
-
-**PIN gate is automatic per build configuration**
-
-| Configuration | PIN shown? |
-|---|---|
-| `dotnet run` / `dotnet watch run` (Debug) | No |
-| `dotnet publish -c Release` | Yes |
-
-No manual changes are needed for local development.
-
-**Disabling the PIN permanently**
-
-If you have cloned the repository and want to run the published build without a PIN, open `Pages/Index.razor` and locate the following constants near the top of the `@code` block:
-
-```csharp
-#if DEBUG
-    private const bool PinEnabled = false;
-#else
-    private const bool PinEnabled = true;
-#endif
-```
-
-Change the `true` in the `#else` branch to `false`, then republish.
-
-**Changing the PIN**
-
-1. Compute the SHA-256 hash of your chosen PIN (UTF-8 encoded, no trailing newline), for example:
-   ```bash
-   python3 -c "import hashlib; print(hashlib.sha256('YourNewPin'.encode()).hexdigest())"
-   ```
-2. In `Pages/Index.razor`, replace the value of the `PinHash` constant with the new hash string.
-3. Rebuild / republish.
+The opening splash screen appears in both Debug and Release builds and lists the keyboard controls. Select **START** to load and run the emulator, then insert a coin with **C** and press **1** or **2** to play. No password or PIN is required.
 
 ## Controls
 
