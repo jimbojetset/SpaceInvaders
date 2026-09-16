@@ -43,7 +43,14 @@ The release build has **WebAssembly AOT compilation** enabled (`<RunAOTCompilati
 
 ## Startup
 
-The opening splash screen appears in both Debug and Release builds and lists the keyboard controls. Select **START** to load and run the emulator, then insert a coin with **C** and press **1** or **2** to play. No password or PIN is required.
+Startup has two screens in both Debug and Release builds:
+
+1. **Initial loading screen** (`wwwroot/index.html`) — displays “Loading emulator...” while Blazor WebAssembly loads.
+2. **Start screen** (`Pages/Index.razor`) — lists the keyboard controls and waits for you to select **START** before loading and running the emulator.
+
+Both screens display the same transparent green PNG icon, `wwwroot/invader-icon.png`, at 256 × 186 pixels on desktop, scaled down on mobile.
+
+Once the emulator is running, insert a coin with **C** and press **1** or **2** to play. No password or PIN is required. Missing ROM files prevent startup; missing sound files show a warning with a **CONTINUE WITHOUT SOUND** button.
 
 ## Controls
 
@@ -103,14 +110,15 @@ SpaceInvaders/
 ├── _Imports.razor              # Global Razor imports
 ├── SpaceInvadersEmulator.cs    # Emulator wrapper with Canvas rendering
 ├── Pages/
-│   └── Index.razor             # Main game page
+│   └── Index.razor             # Start screen, keyboard controls and game page
 ├── MAINBOARD/
 │   ├── Intel8080.cs            # CPU emulation core
 │   ├── Memory.cs               # 64KB addressable memory
 │   ├── Registers.cs            # CPU registers
 │   └── Flags.cs                # Status flags (Z, S, P, CY, AC)
 └── wwwroot/
-    ├── index.html              # HTML host page
+    ├── index.html              # HTML host page and initial loading screen
+    ├── invader-icon.png        # Shared splash screen icon
     ├── css/app.css             # Styles
     ├── js/game.js              # Canvas and audio interop
     ├── roms/                   # ROM files
