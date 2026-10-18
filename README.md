@@ -54,23 +54,23 @@ Missing ROM files prevent startup and display an error on the game page. Missing
 
 ### Desktop (Keyboard)
 
-| Key | Action |
-| ----- | -------- |
-| **C** | Insert Coin |
-| **1** | 1 Player Start |
-| **2** | 2 Player Start |
-| **←** / **→** | Move |
-| **Space** | Fire |
-| **P** | Pause / Resume |
+| Key           | Action         |
+| ------------- | -------------- |
+| **C**         | Insert Coin    |
+| **1**         | 1 Player Start |
+| **2**         | 2 Player Start |
+| **←** / **→** | Move           |
+| **Space**     | Fire           |
+| **P**         | Pause / Resume |
 
 ### Mobile (Touch Controls)
 
 On mobile devices a set of on-screen touch buttons is displayed below the game screen, replacing the keyboard hints shown on desktop. The buttons are arranged in two rows that match the width of the game canvas:
 
-| Row    | Buttons                                                                                                                                |
-| ------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **Top** | **1P** (1 player start) · **COIN** (insert coin) · **2P** (2 player start)                                                          |
-| **Bottom** | **◀** (move left) · **FIRE** · **▶** (move right)                                                                                |
+| Row        | Buttons                                                                    |
+| ---------- | -------------------------------------------------------------------------- |
+| **Top**    | **1P** (1 player start) · **COIN** (insert coin) · **2P** (2 player start) |
+| **Bottom** | **◀** (move left) · **FIRE** · **▶** (move right)                          |
 
 Mobile detection is automatic — touch controls appear only on phones and tablets, while desktop users continue to use the keyboard as normal.
 
@@ -78,8 +78,8 @@ Mobile detection is automatic — touch controls appear only on phones and table
 
 Place the following ROM files in the `wwwroot/roms/` directory:
 
-| File | Address Range | MD5 Checksum |
-| ------ | --------------- | -------------- |
+| File         | Address Range   | MD5 Checksum                       |
+| ------------ | --------------- | ---------------------------------- |
 | `invaders.h` | 0x0000 - 0x07FF | `E87815985F5208BFA25D567C3FB52418` |
 | `invaders.g` | 0x0800 - 0x0FFF | `9EC2DC89315A0D50C5E166F664F64A48` |
 | `invaders.f` | 0x1000 - 0x17FF | `7709A2576ADB6FEDCDFE175759E5C17A` |
