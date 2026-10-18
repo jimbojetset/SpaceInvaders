@@ -31,7 +31,7 @@ jobs:
         dotnet-version: '10.0.x'
 
     - name: Install WASM workload
-      run: dotnet workload install wasm-tools-net10 --skip-manifest-update
+      run: dotnet workload install wasm-tools --skip-manifest-update
 
     - name: Publish
       run: dotnet publish SpaceInvaders.csproj -c Release -o release
