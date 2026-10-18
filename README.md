@@ -1,8 +1,8 @@
 # Space Invaders - Intel 8080 Emulator
 
-A cross-platform Intel 8080 Space Invaders arcade emulator built with .NET 9 and Blazor WebAssembly.
+A cross-platform Intel 8080 Space Invaders arcade emulator built with .NET 10 and Blazor WebAssembly.
 
-![Space Invaders](https://img.shields.io/badge/.NET-9.0-512BD4) ![Platform](https://img.shields.io/badge/Platform-Web%20Browser-lightgrey)
+![Space Invaders](https://img.shields.io/badge/.NET-10.0-512BD4) ![Platform](https://img.shields.io/badge/Platform-Web%20Browser-lightgrey)
 
 ## Features
 
@@ -17,7 +17,7 @@ A cross-platform Intel 8080 Space Invaders arcade emulator built with .NET 9 and
 
 ## Prerequisites
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 
 ## Build and Run
 
@@ -37,6 +37,7 @@ dotnet publish -c Release
 The release build has **WebAssembly AOT compilation** enabled (`<RunAOTCompilation>true`). This compiles .NET IL to native WASM instructions at publish time, giving lower CPU usage and more consistent frame timing at the cost of a longer publish step and a larger initial download. The extra size is served Brotli-compressed by most static hosts, which reduces the impact significantly.
 
 > **Note:** AOT compilation requires the `wasm-tools` .NET workload. If the publish step fails with a missing workload error, install it once with:
+>
 > ```bash
 > sudo dotnet workload install wasm-tools
 > ```
@@ -54,7 +55,7 @@ Missing ROM files prevent startup and display an error on the game page. Missing
 ### Desktop (Keyboard)
 
 | Key | Action |
-|-----|--------|
+| ----- | -------- |
 | **C** | Insert Coin |
 | **1** | 1 Player Start |
 | **2** | 2 Player Start |
@@ -66,10 +67,10 @@ Missing ROM files prevent startup and display an error on the game page. Missing
 
 On mobile devices a set of on-screen touch buttons is displayed below the game screen, replacing the keyboard hints shown on desktop. The buttons are arranged in two rows that match the width of the game canvas:
 
-| Row | Buttons |
-|-----|---------|
-| **Top** | **1P** (1 player start) · **COIN** (insert coin) · **2P** (2 player start) |
-| **Bottom** | **◀** (move left) · **FIRE** · **▶** (move right) |
+| Row    | Buttons                                                                                                                                |
+| ------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Top** | **1P** (1 player start) · **COIN** (insert coin) · **2P** (2 player start)                                                          |
+| **Bottom** | **◀** (move left) · **FIRE** · **▶** (move right)                                                                                |
 
 Mobile detection is automatic — touch controls appear only on phones and tablets, while desktop users continue to use the keyboard as normal.
 
@@ -78,7 +79,7 @@ Mobile detection is automatic — touch controls appear only on phones and table
 Place the following ROM files in the `wwwroot/roms/` directory:
 
 | File | Address Range | MD5 Checksum |
-|------|---------------|--------------|
+| ------ | --------------- | -------------- |
 | `invaders.h` | 0x0000 - 0x07FF | `E87815985F5208BFA25D567C3FB52418` |
 | `invaders.g` | 0x0800 - 0x0FFF | `9EC2DC89315A0D50C5E166F664F64A48` |
 | `invaders.f` | 0x1000 - 0x17FF | `7709A2576ADB6FEDCDFE175759E5C17A` |
@@ -100,7 +101,7 @@ Place WAV sound files in the `wwwroot/sounds/` directory:
 
 ## Project Structure
 
-```
+```text
 SpaceInvaders/
 ├── Program.cs                  # Blazor WASM entry point
 ├── App.razor                   # Root Blazor component
